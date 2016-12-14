@@ -1,1 +1,1 @@
-com.networknt.oauth.handler.OAuthHandlerProvider
+com.networknt.oauth.code.handler.OAuthHandlerProvider

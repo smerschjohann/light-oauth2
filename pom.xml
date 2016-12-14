@@ -77,6 +77,9 @@
      <modules>
         <module>code</module>
         <module>token</module>
+        <module>client</module>
+        <module>service</module>
+        <module>user</module>
     </modules>
 
     <dependencyManagement>
@@ -91,12 +94,83 @@
                 <artifactId>oauth2-token</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>oauth2-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>oauth2-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>oauth2-user</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>config</artifactId>
                 <version>${version.framework}</version>
             </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>client</artifactId>
+                <version>${version.framework}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>info</artifactId>
+                <version>${version.framework}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>body</artifactId>
+                <version>${version.framework}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>mask</artifactId>
+                <version>${version.framework}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>swagger</artifactId>
+                <version>${version.framework}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>metrics</artifactId>
+                <version>${version.framework}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>handler</artifactId>
+                <version>${version.framework}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>sanitizer</artifactId>
+                <version>${version.framework}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>traceability</artifactId>
+                <version>${version.framework}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>correlation</artifactId>
+                <version>${version.framework}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>service</artifactId>
+                <version>${version.framework}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>utility</artifactId>
