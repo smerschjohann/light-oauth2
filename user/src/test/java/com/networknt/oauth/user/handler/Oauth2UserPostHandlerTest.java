@@ -1,4 +1,4 @@
-package io.swagger.handler;
+package com.networknt.oauth.user.handler;
 
 import com.networknt.client.Client;
 import com.networknt.server.Server;
@@ -27,6 +27,7 @@ public class Oauth2UserPostHandlerTest {
 
     @Test
     public void testOauth2UserPostHandler() throws ClientException, ApiException {
+        String user = "{\"userId\":\"stevehu\",\"userType\":\"employee\",\"firstName\":\"Steve\",\"lastName\":\"Hu\",\"email\":\"stevehu@gmail.com\",\"password\":\"123456\",\"passwordConfirm\":\"123456\"}";
         CloseableHttpClient client = Client.getInstance().getSyncClient();
         HttpPost httpPost = new HttpPost("http://localhost:8080/v1/oauth2/user");
         /*

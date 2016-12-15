@@ -11,6 +11,8 @@ create table users (
   password varchar
 );
 
+CREATE UNIQUE INDEX email_idx ON user(email);
+
 create table clients (
   client_id VARCHAR PRIMARY KEY,
   client_type VARCHAR,  -- server, mobile, api, standalone, browser etc
@@ -18,7 +20,8 @@ create table clients (
   client_name VARCHAR,
   client_desc VARCHAR,
   scope VARCHAR,
-  redirect_url VARCHAR
+  redirect_url VARCHAR,
+  authenticate_class VARCHAR
 );
 
 create table services (
@@ -29,7 +32,7 @@ create table services (
   scope VARCHAR
 );
 
-INSERT INTO users VALUES('admin', 'admin', 'admin', 'admin', 'admin@networknt.com', null);
+INSERT INTO users VALUES('admin', 'admin', 'admin', 'admin', 'admin@networknt.com', 'admin');
 
 INSERT INTO clients VALUES('f7d42348-c647-4efb-a52d-4c5787421e72', 'server', 'f6h1FTI8Q3-7UScPZDzfXA', 'PetStore Web Server', 'PetStore Web Server that calls PetStore API', 'petstore.r petstore.w', 'http://localhost:8080/authorization' );
 

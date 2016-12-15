@@ -1,4 +1,4 @@
-package io.swagger.handler;
+package com.networknt.oauth.user.handler;
 
 import com.networknt.client.Client;
 import com.networknt.server.Server;
@@ -28,16 +28,15 @@ public class Oauth2UserUserIdGetHandlerTest {
     @Test
     public void testOauth2UserUserIdGetHandler() throws ClientException, ApiException {
         CloseableHttpClient client = Client.getInstance().getSyncClient();
-        HttpGet httpGet = new HttpGet("http://localhost:8080/v1/oauth2/user/userId");
-        /*
-        Client.getInstance().addAuthorization(httpPost);
+        HttpGet httpGet = new HttpGet("http://localhost:6885/v1/oauth2/user/admin");
+
         try {
             CloseableHttpResponse response = client.execute(httpGet);
             Assert.assertEquals(200, response.getStatusLine().getStatusCode());
-            Assert.assertEquals("getUser", IOUtils.toString(response.getEntity().getContent(), "utf8"));
+            Assert.assertNotNull(IOUtils.toString(response.getEntity().getContent(), "utf8"));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        */
+
     }
 }
