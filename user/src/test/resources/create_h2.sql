@@ -11,7 +11,7 @@ create table users (
   password varchar
 );
 
-CREATE UNIQUE INDEX email_idx ON user(email);
+CREATE UNIQUE INDEX email_idx ON users(email);
 
 create table clients (
   client_id VARCHAR PRIMARY KEY,

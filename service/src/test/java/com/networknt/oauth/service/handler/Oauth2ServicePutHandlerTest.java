@@ -1,4 +1,4 @@
-package io.swagger.handler;
+package com.networknt.oauth.service.handler;
 
 import com.networknt.client.Client;
 import com.networknt.server.Server;
