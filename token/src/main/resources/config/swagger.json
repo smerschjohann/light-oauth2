@@ -1,0 +1,52 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "OAuth2 Service that issues access tokens.",
+    "version" : "1.0.0",
+    "title" : "OAuth2 Service Token Service",
+    "contact" : {
+      "email" : "stevehu@gmail.com"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host" : "oauth2.networknt.com",
+  "basePath" : "/v1",
+  "schemes" : [ "http", "https" ],
+  "consumes" : [ "application/x-www-form-urlencoded" ],
+  "produces" : [ "application/json" ],
+  "paths" : {
+    "/oauth2/token" : {
+      "post" : {
+        "description" : "JSON object that contains access token",
+        "operationId" : "postToken",
+        "parameters" : [ {
+          "name" : "authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "grant_type",
+          "in" : "formData",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "code",
+          "in" : "formData",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful Operation"
+          }
+        },
+        "x-accepts" : "application/json",
+        "x-contentType" : "application/x-www-form-urlencoded"
+      }
+    }
+  },
+  "definitions" : { }
+}

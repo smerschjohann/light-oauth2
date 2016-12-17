@@ -10,6 +10,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import org.apache.commons.codec.binary.Base64;
+
+import java.util.Arrays;
 import java.util.UUID;
 
 /**
@@ -115,7 +117,7 @@ public class HashUtil {
         SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
         byte[] salt = new byte[16];
         sr.nextBytes(salt);
-        return salt.toString();
+        return Arrays.toString(salt);
     }
 
     private static String toHex(byte[] array) throws NoSuchAlgorithmException

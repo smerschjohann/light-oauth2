@@ -1,4 +1,4 @@
-package com.networknt.oauth;
+package com.networknt.oauth.token.handler;
 
 import com.networknt.security.JwtHelper;
 import org.jose4j.jwt.JwtClaims;
