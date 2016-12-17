@@ -37,7 +37,9 @@ public class Oauth2ServicePostHandlerTest {
         httpPost.setEntity(new StringEntity(service));
         try {
             CloseableHttpResponse response = client.execute(httpPost);
+            //logger.debug("StatusCode = " + response.getStatusLine().getStatusCode());
             Assert.assertEquals(200, response.getStatusLine().getStatusCode());
+            //logger.debug("Response body = " + IOUtils.toString(response.getEntity().getContent(), "utf8"));
             Assert.assertNotNull(IOUtils.toString(response.getEntity().getContent(), "utf8"));
         } catch (Exception e) {
             e.printStackTrace();

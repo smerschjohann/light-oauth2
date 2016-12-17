@@ -24,6 +24,9 @@ create table clients (
   scope VARCHAR,
   redirect_url VARCHAR,
   authenticate_class VARCHAR,
+  owner_id VARCHAR,
+  owner_name VARCHAR,
+  owner_email VARCHAR,
   create_dt DATE,
   update_dt DATE
 );
@@ -34,6 +37,9 @@ create table services (
   service_name VARCHAR,
   service_desc VARCHAR,
   scope VARCHAR,
+  owner_id VARCHAR,
+  owner_name VARCHAR,
+  owner_email VARCHAR,
   create_dt DATE,
   update_dt DATE
 );
