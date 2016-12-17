@@ -21,7 +21,8 @@ import javax.sql.DataSource;
 public class Oauth2ServicePostHandler implements HttpHandler {
     static Logger logger = LoggerFactory.getLogger(Oauth2ServicePostHandler.class);
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    static String sql = "INSERT INTO services (service_id, service_type, service_name, service_desc, scope, create_dt) VALUES (?, ?, ?, ?, ?, ?)";
+    static String sql = "INSERT INTO services (service_id, service_type, service_name, service_desc, scope, owner_id, owner_name, owner_email, create_dt) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         Map<String, Object> service = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);
@@ -34,7 +35,10 @@ public class Oauth2ServicePostHandler implements HttpHandler {
             stmt.setString(3, (String)service.get("serviceName"));
             stmt.setString(4, (String)service.get("serviceDesc"));
             stmt.setString(5, (String)service.get("scope"));
-            stmt.setDate(6, new Date(System.currentTimeMillis()));
+            stmt.setString(6, (String)service.get("ownerId"));
+            stmt.setString(7, (String)service.get("ownerName"));
+            stmt.setString(8, (String)service.get("ownerEmail"));
+            stmt.setDate(9, new Date(System.currentTimeMillis()));
             stmt.executeUpdate();
         } catch (SQLException e) {
             logger.error("Exception:", e);
