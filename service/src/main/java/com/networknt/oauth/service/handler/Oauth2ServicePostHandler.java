@@ -26,11 +26,8 @@ public class Oauth2ServicePostHandler implements HttpHandler {
 
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         Map<String, Object> service = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);
-        String serviceId = (String)service.get("serviceId");
-        // TODO make sure serviceId doesn't exist in database
-
         try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, serviceId);
+            stmt.setString(1, (String)service.get("serviceId"));
             stmt.setString(2, (String)service.get("serviceType"));
             stmt.setString(3, (String)service.get("serviceName"));
             stmt.setString(4, (String)service.get("serviceDesc"));

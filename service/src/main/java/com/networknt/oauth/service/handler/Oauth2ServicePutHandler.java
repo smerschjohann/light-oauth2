@@ -34,7 +34,7 @@ public class Oauth2ServicePutHandler implements HttpHandler {
             stmt.setString(6, (String)service.get("ownerName"));
             stmt.setString(7, (String)service.get("ownerEmail"));
             stmt.setDate(8, new Date(System.currentTimeMillis()));
-            stmt.setString(9, (String)service.get("serviceIda"));
+            stmt.setString(9, (String)service.get("serviceId"));
             stmt.executeUpdate();
         } catch (SQLException e) {
             logger.error("Exception:", e);
