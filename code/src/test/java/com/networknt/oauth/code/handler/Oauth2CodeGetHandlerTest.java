@@ -22,7 +22,7 @@ public class Oauth2CodeGetHandlerTest {
     @Test
     public void testOauth2CodeGetHandler() throws ClientException, ApiException {
         CloseableHttpClient client = Client.getInstance().getSyncClient();
-        HttpGet httpGet = new HttpGet("http://localhost:8080/v1/oauth2/code");
+        HttpGet httpGet = new HttpGet("http://localhost:6881/oauth2/code");
         /*
         Client.getInstance().addAuthorization(httpPost);
         try {
