@@ -28,16 +28,14 @@ public class Oauth2ClientClientIdGetHandlerTest {
     @Test
     public void testOauth2ClientClientIdGetHandler() throws ClientException, ApiException {
         CloseableHttpClient client = Client.getInstance().getSyncClient();
-        HttpGet httpGet = new HttpGet("http://localhost:6884/oauth2/client/clientId");
-        /*
-        Client.getInstance().addAuthorization(httpPost);
+        HttpGet httpGet = new HttpGet("http://localhost:6884/oauth2/client/f7d42348-c647-4efb-a52d-4c5787421e72");
         try {
             CloseableHttpResponse response = client.execute(httpGet);
             Assert.assertEquals(200, response.getStatusLine().getStatusCode());
-            Assert.assertEquals("getClient", IOUtils.toString(response.getEntity().getContent(), "utf8"));
+            String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertNotNull(body);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        */
     }
 }
