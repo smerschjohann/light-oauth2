@@ -23,11 +23,11 @@ import javax.sql.DataSource;
 public class Oauth2ServiceGetHandler implements HttpHandler {
     static Logger logger = LoggerFactory.getLogger(Oauth2ServiceGetHandler.class);
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
+    static String sql = "SELECT * FROM services";
 
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         List<Map<String, Object>> result = new ArrayList<>();
 
-        String sql = "SELECT * FROM services";
         try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
