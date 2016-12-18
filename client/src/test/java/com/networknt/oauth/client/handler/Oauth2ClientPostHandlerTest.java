@@ -29,7 +29,7 @@ public class Oauth2ClientPostHandlerTest {
 
     @Test
     public void testOauth2ClientPostHandler() throws ClientException, ApiException, UnsupportedEncodingException {
-        String c = "{\"clientType\":\"mobile\",\"clientName\":\"AccountViewer\",\"clientDesc\":\"Retail Online Banking Account Viewer\",\"scope\":\"act.r act.w\",\"ownerId\":\"admin\",\"ownerName\":\"admin\",\"ownerEmail\":\"admin@networknt.com\"}";
+        String c = "{\"clientType\":\"mobile\",\"clientName\":\"AccountViewer\",\"clientDesc\":\"Retail Online Banking Account Viewer\",\"scope\":\"act.r act.w\",\"redirectUrl\": \"http://localhost:8080/authorization\",\"ownerId\":\"admin\",\"ownerName\":\"admin\",\"ownerEmail\":\"admin@networknt.com\"}";
         CloseableHttpClient client = Client.getInstance().getSyncClient();
         HttpPost httpPost = new HttpPost("http://localhost:6884/oauth2/client");
         httpPost.setHeader("Content-type", "application/json");

@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 public class Oauth2ClientPostHandler implements HttpHandler {
     static Logger logger = LoggerFactory.getLogger(Oauth2ClientPostHandler.class);
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    static String sql = "INSERT INTO clients (client_id, client_secret, client_type, client_name, client_desc, scope, owner_id, owner_name, owner_email, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    static String sql = "INSERT INTO clients (client_id, client_secret, client_type, client_name, client_desc, scope, redirect_url, owner_id, owner_name, owner_email, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         Map<String, Object> client = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);
@@ -40,10 +40,11 @@ public class Oauth2ClientPostHandler implements HttpHandler {
             stmt.setString(4, (String)client.get("clientName"));
             stmt.setString(5, (String)client.get("clientDesc"));
             stmt.setString(6, (String)client.get("scope"));
-            stmt.setString(7, (String)client.get("ownerId"));
-            stmt.setString(8, (String)client.get("ownerName"));
-            stmt.setString(9, (String)client.get("ownerEmail"));
-            stmt.setDate(10, (Date)client.get("createDt"));
+            stmt.setString(7, (String)client.get("redirectUrl"));
+            stmt.setString(8, (String)client.get("ownerId"));
+            stmt.setString(9, (String)client.get("ownerName"));
+            stmt.setString(10, (String)client.get("ownerEmail"));
+            stmt.setDate(11, (Date)client.get("createDt"));
             stmt.executeUpdate();
             exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
             exchange.getResponseSender().send(Config.getInstance().getMapper().writeValueAsString(client));
