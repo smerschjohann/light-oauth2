@@ -28,7 +28,7 @@ public class Oauth2TokenPostHandlerTest {
     @Test
     public void testOauth2TokenPostHandler() throws ClientException, ApiException {
         CloseableHttpClient client = Client.getInstance().getSyncClient();
-        HttpPost httpPost = new HttpPost("http://localhost:8080/v1/oauth2/token");
+        HttpPost httpPost = new HttpPost("http://localhost:6882/v1/oauth2/token");
         /*
         Client.getInstance().addAuthorization(httpPost);
         try {

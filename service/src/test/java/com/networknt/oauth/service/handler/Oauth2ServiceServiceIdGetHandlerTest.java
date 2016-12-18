@@ -28,7 +28,7 @@ public class Oauth2ServiceServiceIdGetHandlerTest {
     @Test
     public void testOauth2ServiceServiceIdGetHandler() throws ClientException, ApiException {
         CloseableHttpClient client = Client.getInstance().getSyncClient();
-        HttpGet httpGet = new HttpGet("http://localhost:6883/v1/oauth2/service/AACT0001");
+        HttpGet httpGet = new HttpGet("http://localhost:6883/oauth2/service/AACT0001");
 
         try {
             CloseableHttpResponse response = client.execute(httpGet);

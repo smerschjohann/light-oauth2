@@ -32,7 +32,7 @@ public class Oauth2ServicePutHandlerTest {
         String service = "{\"serviceId\":\"AACT0002\",\"serviceType\":\"ms\",\"serviceName\":\"Retail Account\",\"serviceDesc\":\"Microservices for Retail Account\",\"scope\":\"act.r act.w\",\"owner_id\":\"admin\",\"owner_name\":\"admin\",\"owner_email\":\"admin@networknt.com\"}";
 
         CloseableHttpClient client = Client.getInstance().getSyncClient();
-        HttpPut httpPut = new HttpPut("http://localhost:6883/v1/oauth2/service");
+        HttpPut httpPut = new HttpPut("http://localhost:6883/oauth2/service");
         httpPut.setHeader("Content-type", "application/json");
         httpPut.setEntity(new StringEntity(service));
 

@@ -10,11 +10,11 @@ public class PathHandlerProvider implements HandlerProvider {
 
     public HttpHandler getHandler() {
         HttpHandler handler = Handlers.routing()
-            .add(Methods.GET, "/v1/oauth2/service", new Oauth2ServiceGetHandler())
-            .add(Methods.POST, "/v1/oauth2/service", new Oauth2ServicePostHandler())
-            .add(Methods.PUT, "/v1/oauth2/service", new Oauth2ServicePutHandler())
-            .add(Methods.DELETE, "/v1/oauth2/service/{serviceId}", new Oauth2ServiceServiceIdDeleteHandler())
-            .add(Methods.GET, "/v1/oauth2/service/{serviceId}", new Oauth2ServiceServiceIdGetHandler())
+            .add(Methods.GET, "/oauth2/service", new Oauth2ServiceGetHandler())
+            .add(Methods.POST, "/oauth2/service", new Oauth2ServicePostHandler())
+            .add(Methods.PUT, "/oauth2/service", new Oauth2ServicePutHandler())
+            .add(Methods.DELETE, "/oauth2/service/{serviceId}", new Oauth2ServiceServiceIdDeleteHandler())
+            .add(Methods.GET, "/oauth2/service/{serviceId}", new Oauth2ServiceServiceIdGetHandler())
         ;
         return handler;
     }
