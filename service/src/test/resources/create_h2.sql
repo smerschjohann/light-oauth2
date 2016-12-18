@@ -17,7 +17,7 @@ CREATE UNIQUE INDEX email_idx ON users(email);
 
 create table clients (
   client_id VARCHAR PRIMARY KEY,
-  client_type VARCHAR,  -- server, mobile, api, standalone, browser etc
+  client_type VARCHAR,  -- server, mobile, service, standalone, browser etc
   client_secret VARCHAR,
   client_name VARCHAR,
   client_desc VARCHAR,
