@@ -1,5 +1,6 @@
 package com.networknt.oauth.service.handler;
 
+import com.networknt.oauth.service.PathHandlerProvider;
 import com.networknt.service.SingletonServiceFactory;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -26,7 +27,13 @@ public class Oauth2ServiceServiceIdDeleteHandler implements HttpHandler {
         String serviceId = exchange.getQueryParameters().get("serviceId").getFirst();
         try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, serviceId);
-            stmt.executeUpdate();
+            int count = stmt.executeUpdate();
+            if(count == 1) {
+                PathHandlerProvider.services.remove(serviceId);
+
+            } else {
+                // not found
+            }
         } catch (SQLException e) {
             logger.error("Exception:", e);
             // should handle this exception and return an error message.

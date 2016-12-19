@@ -1,5 +1,6 @@
 package com.networknt.oauth.client.handler;
 
+import com.networknt.oauth.client.PathHandlerProvider;
 import com.networknt.service.SingletonServiceFactory;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -28,6 +29,7 @@ public class Oauth2ClientClientIdDeleteHandler implements HttpHandler {
             int count = stmt.executeUpdate();
             if(count == 1) {
                 // successfully deleted
+                PathHandlerProvider.clients.remove(clientId);
 
             } else {
                 // not found 404 error

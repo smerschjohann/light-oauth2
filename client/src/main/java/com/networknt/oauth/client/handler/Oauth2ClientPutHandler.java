@@ -36,6 +36,7 @@ public class Oauth2ClientPutHandler implements HttpHandler {
             stmt.setString(8, (String)client.get("ownerEmail"));
             stmt.setDate(9, new Date(System.currentTimeMillis()));
             stmt.setString(10, (String)client.get("clientId"));
+
             stmt.executeUpdate();
         } catch (SQLException e) {
             logger.error("Exception:", e);

@@ -7,6 +7,13 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang3.StringEscapeUtils;
 
+/**
+ * This handler is for get request, the credentials might in header or just query parameters.
+ * Need to check client info in order to find out which class to handle the authentication
+ * clients are cached so that it has better performance. If client_id cannot be found in cache,
+ * go to db to get it. It must be something added recently and not in cache yet.
+ *
+ */
 public class Oauth2CodeGetHandler implements HttpHandler {
 
     public void handleRequest(HttpServerExchange exchange) throws Exception {

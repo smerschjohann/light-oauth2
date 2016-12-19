@@ -1,6 +1,7 @@
 package com.networknt.oauth.service.handler;
 
 import com.networknt.body.BodyHandler;
+import com.networknt.oauth.service.PathHandlerProvider;
 import com.networknt.service.SingletonServiceFactory;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -36,6 +37,7 @@ public class Oauth2ServicePutHandler implements HttpHandler {
             stmt.setDate(8, new Date(System.currentTimeMillis()));
             stmt.setString(9, (String)service.get("serviceId"));
             stmt.executeUpdate();
+            PathHandlerProvider.services.put((String)service.get("serviceId"), service);
         } catch (SQLException e) {
             logger.error("Exception:", e);
             // should handle this exception and return an error message.

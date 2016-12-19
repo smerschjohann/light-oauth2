@@ -2,6 +2,7 @@ package com.networknt.oauth.client.handler;
 
 import com.networknt.body.BodyHandler;
 import com.networknt.config.Config;
+import com.networknt.oauth.client.PathHandlerProvider;
 import com.networknt.service.SingletonServiceFactory;
 import com.networknt.utility.Util;
 import io.undertow.server.HttpHandler;
@@ -23,7 +24,8 @@ import javax.sql.DataSource;
 public class Oauth2ClientPostHandler implements HttpHandler {
     static Logger logger = LoggerFactory.getLogger(Oauth2ClientPostHandler.class);
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    static String sql = "INSERT INTO clients (client_id, client_secret, client_type, client_name, client_desc, scope, redirect_url, owner_id, owner_name, owner_email, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    static String sql = "INSERT INTO clients (client_id, client_secret, client_type, client_name, client_desc, scope, " +
+            "redirect_url, owner_id, owner_name, owner_email, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         Map<String, Object> client = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);
@@ -46,6 +48,8 @@ public class Oauth2ClientPostHandler implements HttpHandler {
             stmt.setString(10, (String)client.get("ownerEmail"));
             stmt.setDate(11, (Date)client.get("createDt"));
             stmt.executeUpdate();
+            // put it into the cache
+            PathHandlerProvider.clients.put(clientId, client);
             exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
             exchange.getResponseSender().send(Config.getInstance().getMapper().writeValueAsString(client));
         } catch (SQLException e) {
