@@ -3,6 +3,7 @@ package com.networknt.oauth.client.handler;
 import com.networknt.config.Config;
 import com.networknt.oauth.client.PathHandlerProvider;
 import com.networknt.service.SingletonServiceFactory;
+import com.networknt.status.Status;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
@@ -20,23 +21,26 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 
 public class Oauth2ClientClientIdGetHandler implements HttpHandler {
+    static String CLIENT_NOT_FOUND = "ERR12014";
+
     static Logger logger = LoggerFactory.getLogger(Oauth2ClientClientIdGetHandler.class);
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
     static String sql = "SELECT * FROM clients WHERE client_id = ?";
 
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-        Map<String, Object> result = new HashMap<>();
-
+        Map<String, Object> result = null;
         String clientId = exchange.getQueryParameters().get("clientId").getFirst();
         result = (Map<String, Object>)PathHandlerProvider.clients.get(clientId);
         if(result != null) {
             exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
             exchange.getResponseSender().send(Config.getInstance().getMapper().writeValueAsString(result));
+            return;
         } else {
             try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, clientId);
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
+                        result = new HashMap<>();
                         result.put("clientId", clientId);
                         result.put("clientSecret", rs.getString("client_secret"));
                         result.put("clientType", rs.getString("client_type"));
@@ -52,8 +56,12 @@ public class Oauth2ClientClientIdGetHandler implements HttpHandler {
                         PathHandlerProvider.clients.put(clientId, result);
                         exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
                         exchange.getResponseSender().send(Config.getInstance().getMapper().writeValueAsString(result));
+                        return;
                     } else {
-                        // TODO not found.
+                        Status status = new Status(CLIENT_NOT_FOUND, clientId);
+                        exchange.setStatusCode(status.getStatusCode());
+                        exchange.getResponseSender().send(status.toString());
+                        return;
                     }
                 }
             } catch (SQLException e) {

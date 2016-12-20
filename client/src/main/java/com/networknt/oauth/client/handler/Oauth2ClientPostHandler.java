@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 
 public class Oauth2ClientPostHandler implements HttpHandler {
+
     static Logger logger = LoggerFactory.getLogger(Oauth2ClientPostHandler.class);
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
     static String sql = "INSERT INTO clients (client_id, client_secret, client_type, client_name, client_desc, scope, " +

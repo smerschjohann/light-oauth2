@@ -3,6 +3,7 @@ package com.networknt.oauth.client;
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
 import com.networknt.oauth.client.handler.*;
 import com.networknt.server.HandlerProvider;
 import io.undertow.Handlers;
@@ -13,15 +14,16 @@ import java.util.Map;
 
 public class PathHandlerProvider implements HandlerProvider {
 
-    public static Map<String, Object> users;
-    public static Map<String, Object> clients;
-    public static Map<String, Object> codes;
-    public static Map<String, Object> services;
+    public static IMap<String, Object> users;
+    public static IMap<String, Object> clients;
+    public static IMap<String, Object> codes;
+    public static IMap<String, Object> services;
 
     static {
         Config cfg = new Config();
         HazelcastInstance hz = Hazelcast.newHazelcastInstance(cfg);
         users = hz.getMap("users");
+        users.addIndex("email", true);
         clients = hz.getMap("clients");
         codes = hz.getMap("codes");
         services = hz.getMap("services");

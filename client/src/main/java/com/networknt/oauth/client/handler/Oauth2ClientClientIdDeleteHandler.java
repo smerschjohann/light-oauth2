@@ -2,6 +2,7 @@ package com.networknt.oauth.client.handler;
 
 import com.networknt.oauth.client.PathHandlerProvider;
 import com.networknt.service.SingletonServiceFactory;
+import com.networknt.status.Status;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
@@ -18,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 
 public class Oauth2ClientClientIdDeleteHandler implements HttpHandler {
+    static String CLIENT_NOT_FOUND = "ERR12014";
+
     static Logger logger = LoggerFactory.getLogger(Oauth2ClientClientIdDeleteHandler.class);
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
     static String sql = "DELETE FROM clients WHERE client_id = ?";
@@ -28,12 +31,13 @@ public class Oauth2ClientClientIdDeleteHandler implements HttpHandler {
             stmt.setString(1, clientId);
             int count = stmt.executeUpdate();
             if(count == 1) {
-                // successfully deleted
                 PathHandlerProvider.clients.remove(clientId);
-
             } else {
                 // not found 404 error
-
+                Status status = new Status(CLIENT_NOT_FOUND, clientId);
+                exchange.setStatusCode(status.getStatusCode());
+                exchange.getResponseSender().send(status.toString());
+                return;
             }
         } catch (SQLException e) {
             logger.error("Exception:", e);

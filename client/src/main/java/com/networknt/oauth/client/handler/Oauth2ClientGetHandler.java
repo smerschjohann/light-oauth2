@@ -27,12 +27,10 @@ public class Oauth2ClientGetHandler implements HttpHandler {
 
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         List<Map<String, Object>> result = new ArrayList<>();
-
         try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Map<String, Object> client = new HashMap<>();
-
                     client.put("clientId", rs.getString("client_id"));
                     client.put("clientType", rs.getString("client_type"));
                     client.put("clientName", rs.getString("client_name"));
