@@ -22,7 +22,7 @@ import javax.sql.DataSource;
 public class Oauth2ClientPutHandler implements HttpHandler {
     static Logger logger = LoggerFactory.getLogger(Oauth2ClientPutHandler.class);
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    static String sql = "UPDATE clients SET client_type = ?, client_name=?, client_desc=?, scope=?, redirect_url=?, owner_id=?, owner_name=?, owner_email=?, update_dt=? WHERE client_id=?";
+    static String sql = "UPDATE clients SET client_type=?, client_name=?, client_desc=?, scope=?, redirect_url=?, owner_id=?, update_dt=? WHERE client_id=?";
 
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         Map<String, Object> client = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);
@@ -33,10 +33,8 @@ public class Oauth2ClientPutHandler implements HttpHandler {
             stmt.setString(4, (String)client.get("scope"));
             stmt.setString(5, (String)client.get("redirectUrl"));
             stmt.setString(6, (String)client.get("ownerId"));
-            stmt.setString(7, (String)client.get("ownerName"));
-            stmt.setString(8, (String)client.get("ownerEmail"));
-            stmt.setDate(9, new Date(System.currentTimeMillis()));
-            stmt.setString(10, (String)client.get("clientId"));
+            stmt.setDate(7, new Date(System.currentTimeMillis()));
+            stmt.setString(8, (String)client.get("clientId"));
             stmt.executeUpdate();
             PathHandlerProvider.clients.put((String)client.get("clientId"), client);
 

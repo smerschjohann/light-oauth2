@@ -37,8 +37,6 @@ public class Oauth2ClientGetHandler implements HttpHandler {
                     client.put("clientDesc", rs.getString("client_desc"));
                     client.put("scope", rs.getString("scope"));
                     client.put("ownerId", rs.getString("owner_id"));
-                    client.put("ownerName", rs.getString("owner_name"));
-                    client.put("ownerEmail", rs.getString("owner_email"));
                     client.put("createDt", rs.getDate("create_dt"));
                     client.put("updateDt", rs.getDate("update_dt"));
                     result.add(client);
