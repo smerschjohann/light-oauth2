@@ -22,7 +22,7 @@ import javax.sql.DataSource;
 public class Oauth2ServicePutHandler implements HttpHandler {
     static Logger logger = LoggerFactory.getLogger(Oauth2ServicePostHandler.class);
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    static String sql = "UPDATE services SET service_type = ?, service_name=?, service_desc=?, scope=?, owner_id=?, owner_name=?, owner_email=?, update_dt=? WHERE service_id=?";
+    static String sql = "UPDATE services SET service_type = ?, service_name=?, service_desc=?, scope=?, owner_id=?, update_dt=? WHERE service_id=?";
 
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         Map<String, Object> service = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);
@@ -32,10 +32,8 @@ public class Oauth2ServicePutHandler implements HttpHandler {
             stmt.setString(3, (String)service.get("serviceDesc"));
             stmt.setString(4, (String)service.get("scope"));
             stmt.setString(5, (String)service.get("ownerId"));
-            stmt.setString(6, (String)service.get("ownerName"));
-            stmt.setString(7, (String)service.get("ownerEmail"));
-            stmt.setDate(8, new Date(System.currentTimeMillis()));
-            stmt.setString(9, (String)service.get("serviceId"));
+            stmt.setDate(6, new Date(System.currentTimeMillis()));
+            stmt.setString(7, (String)service.get("serviceId"));
             stmt.executeUpdate();
             PathHandlerProvider.services.put((String)service.get("serviceId"), service);
         } catch (SQLException e) {

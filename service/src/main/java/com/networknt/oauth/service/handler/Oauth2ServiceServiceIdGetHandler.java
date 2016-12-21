@@ -45,8 +45,6 @@ public class Oauth2ServiceServiceIdGetHandler implements HttpHandler {
                         result.put("serviceDesc", rs.getString("service_desc"));
                         result.put("scope", rs.getString("scope"));
                         result.put("ownerId", rs.getString("owner_id"));
-                        result.put("ownerName", rs.getString("owner_name"));
-                        result.put("ownerEmail", rs.getString("owner_email"));
                         result.put("createDt", rs.getDate("create_dt"));
                         result.put("updateDt", rs.getDate("update_dt"));
                         exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");

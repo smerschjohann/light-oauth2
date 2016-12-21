@@ -38,6 +38,8 @@ public class Oauth2ServiceGetHandler implements HttpHandler {
                     service.put("serviceName", rs.getString("service_name"));
                     service.put("serviceDesc", rs.getString("service_desc"));
                     service.put("scope", rs.getString("scope"));
+                    service.put("ownerId", rs.getString("owner_id"));
+                    service.put("createDt", rs.getDate("create_dt"));
                     result.add(service);
                 }
             }

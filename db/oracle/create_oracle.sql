@@ -4,9 +4,9 @@ create table users (
   first_name VARCHAR2(32) NOT NULL,
   last_name VARCHAR2(32) NOT NULL,
   email VARCHAR2(64) NOT NULL,
-  password VARCHAR2(256) NOT NULL,
-  create_dt DATETIME NOT NULL,
-  update_dt DATETIME,
+  password VARCHAR2(1024) NOT NULL,
+  create_dt DATE NOT NULL,
+  update_dt DATE,
   CONSTRAINT users_pk PRIMARY KEY (user_id)
 );
 
@@ -22,8 +22,8 @@ create table clients (
   redirect_url VARCHAR2(1024),
   authenticate_class VARCHAR2(256),
   owner_id VARCHAR2(32) NOT NULL,
-  create_dt DATETIME NOT NULL,
-  update_dt DATETIME,
+  create_dt DATE NOT NULL,
+  update_dt DATE,
   CONSTRAINT clients_pk PRIMARY KEY (client_id),
   CONSTRAINT clients_users_fk
     FOREIGN KEY (owner_id)
@@ -37,13 +37,12 @@ create table services (
   service_desc VARCHAR2(1024),
   scope VARCHAR2(1024),
   owner_id VARCHAR2(32) NOT NULL,
-  create_dt DATETIME NOT NULL,
-  update_dt DATETIME,
+  create_dt DATE NOT NULL,
+  update_dt DATE,
   CONSTRAINT services_pk PRIMARY KEY (service_id),
   CONSTRAINT services_users_fk
     FOREIGN KEY (owner_id)
     REFERENCES users(user_id)
-
 );
 
 INSERT INTO users (user_id, user_type, first_name, last_name, email, password, create_dt)
