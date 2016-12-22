@@ -29,7 +29,7 @@ public class Oauth2UserPostHandlerTest {
     public void testOauth2UserPostHandler() throws ClientException, ApiException {
         String user = "{\"userId\":\"stevehu\",\"userType\":\"employee\",\"firstName\":\"Steve\",\"lastName\":\"Hu\",\"email\":\"stevehu@gmail.com\",\"password\":\"123456\",\"passwordConfirm\":\"123456\"}";
         CloseableHttpClient client = Client.getInstance().getSyncClient();
-        HttpPost httpPost = new HttpPost("http://localhost:8080/v1/oauth2/user");
+        HttpPost httpPost = new HttpPost("http://localhost:6885/oauth2/user");
         /*
         Client.getInstance().addAuthorization(httpPost);
         try {

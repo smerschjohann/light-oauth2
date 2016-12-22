@@ -28,7 +28,7 @@ public class Oauth2UserUserIdGetHandlerTest {
     @Test
     public void testOauth2UserUserIdGetHandler() throws ClientException, ApiException {
         CloseableHttpClient client = Client.getInstance().getSyncClient();
-        HttpGet httpGet = new HttpGet("http://localhost:6885/v1/oauth2/user/admin");
+        HttpGet httpGet = new HttpGet("http://localhost:6885/oauth2/user/admin");
 
         try {
             CloseableHttpResponse response = client.execute(httpGet);

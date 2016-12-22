@@ -10,10 +10,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -29,7 +26,7 @@ public class Oauth2UserPostHandler implements HttpHandler {
 
     static Logger logger = LoggerFactory.getLogger(Oauth2UserPostHandler.class);
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    static String sql = "INSERT INTO users (user_id, user_type, first_name, last_name, email, password) VALUES (?, ?, ?, ?, ?, ?)";
+    static String sql = "INSERT INTO users (user_id, user_type, first_name, last_name, email, password, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?)";
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         Map<String, Object> user = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);
         String password = (String)user.get("password");
@@ -46,6 +43,7 @@ public class Oauth2UserPostHandler implements HttpHandler {
                     stmt.setString(4, (String)user.get("lastName"));
                     stmt.setString(5, (String)user.get("email"));
                     stmt.setString(6, hashedPass);
+                    stmt.setDate(7, new Date(System.currentTimeMillis()));
                     stmt.executeUpdate();
                     user.remove("passwordConfirm");
                     user.put("password", hashedPass);

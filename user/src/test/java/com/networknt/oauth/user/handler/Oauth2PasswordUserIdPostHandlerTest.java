@@ -28,7 +28,7 @@ public class Oauth2PasswordUserIdPostHandlerTest {
     @Test
     public void testOauth2PasswordUserIdPostHandler() throws ClientException, ApiException {
         CloseableHttpClient client = Client.getInstance().getSyncClient();
-        HttpPost httpPost = new HttpPost("http://localhost:8080/v1/oauth2/password/userId");
+        HttpPost httpPost = new HttpPost("http://localhost:6885/oauth2/password/userId");
         /*
         Client.getInstance().addAuthorization(httpPost);
         try {
