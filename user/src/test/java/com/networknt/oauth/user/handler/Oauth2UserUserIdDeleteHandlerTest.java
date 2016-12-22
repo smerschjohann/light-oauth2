@@ -28,16 +28,14 @@ public class Oauth2UserUserIdDeleteHandlerTest {
     @Test
     public void testOauth2UserUserIdDeleteHandler() throws ClientException, ApiException {
         CloseableHttpClient client = Client.getInstance().getSyncClient();
-        HttpDelete httpDelete = new HttpDelete("http://localhost:6885/oauth2/user/userId");
-        /*
-        Client.getInstance().addAuthorization(httpPost);
+        HttpDelete httpDelete = new HttpDelete("http://localhost:6885/oauth2/user/stevehu");
+
         try {
             CloseableHttpResponse response = client.execute(httpDelete);
             Assert.assertEquals(200, response.getStatusLine().getStatusCode());
-            Assert.assertEquals("deleteUser", IOUtils.toString(response.getEntity().getContent(), "utf8"));
+            //Assert.assertNotNull(IOUtils.toString(response.getEntity().getContent(), "utf8"));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        */
     }
 }
