@@ -28,7 +28,7 @@ public class Oauth2ClientClientIdDeleteHandlerTest {
     @Test
     public void testOauth2ClientClientIdDeleteHandler() throws ClientException, ApiException {
         CloseableHttpClient client = Client.getInstance().getSyncClient();
-        HttpDelete httpDelete = new HttpDelete("http://localhost:6884/oauth2/client/f7d42348-c647-4efb-a52d-4c5787421e72");
+        HttpDelete httpDelete = new HttpDelete("http://localhost:6884/oauth2/client/59f347a0-c92d-11e6-9d9d-cec0c932ce01");
         try {
             CloseableHttpResponse response = client.execute(httpDelete);
             Assert.assertEquals(200, response.getStatusLine().getStatusCode());
