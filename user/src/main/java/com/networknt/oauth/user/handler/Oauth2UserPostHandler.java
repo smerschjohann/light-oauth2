@@ -2,7 +2,7 @@ package com.networknt.oauth.user.handler;
 
 import com.networknt.body.BodyHandler;
 import com.networknt.config.Config;
-import com.networknt.oauth.user.HashUtil;
+import com.networknt.utility.HashUtil;
 import com.networknt.oauth.user.PathHandlerProvider;
 import com.networknt.service.SingletonServiceFactory;
 import com.networknt.status.Status;

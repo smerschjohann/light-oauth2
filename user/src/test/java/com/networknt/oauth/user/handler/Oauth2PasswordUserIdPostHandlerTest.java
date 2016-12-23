@@ -1,7 +1,7 @@
 package com.networknt.oauth.user.handler;
 
 import com.networknt.client.Client;
-import com.networknt.oauth.user.HashUtil;
+import com.networknt.utility.HashUtil;
 import com.networknt.oauth.user.PathHandlerProvider;
 import com.networknt.server.Server;
 import com.networknt.exception.ClientException;
