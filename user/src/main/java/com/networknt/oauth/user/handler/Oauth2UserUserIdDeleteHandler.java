@@ -2,6 +2,7 @@ package com.networknt.oauth.user.handler;
 
 import com.networknt.oauth.user.PathHandlerProvider;
 import com.networknt.service.SingletonServiceFactory;
+import com.networknt.status.Status;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
@@ -18,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 
 public class Oauth2UserUserIdDeleteHandler implements HttpHandler {
+    static String USER_NOT_FOUND = "ERR12013";
+
     static Logger logger = LoggerFactory.getLogger(Oauth2UserUserIdDeleteHandler.class);
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
     static String sql = "DELETE FROM users WHERE user_id = ?";
@@ -30,7 +33,10 @@ public class Oauth2UserUserIdDeleteHandler implements HttpHandler {
             if(count == 1) {
                 PathHandlerProvider.services.remove(userId);
             } else {
-                // not found
+                Status status = new Status(USER_NOT_FOUND, userId);
+                exchange.setStatusCode(status.getStatusCode());
+                exchange.getResponseSender().send(status.toString());
+                return;
             }
         } catch (SQLException e) {
             logger.error("Exception:", e);

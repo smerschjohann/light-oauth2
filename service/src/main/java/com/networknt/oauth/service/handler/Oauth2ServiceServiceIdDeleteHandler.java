@@ -2,6 +2,7 @@ package com.networknt.oauth.service.handler;
 
 import com.networknt.oauth.service.PathHandlerProvider;
 import com.networknt.service.SingletonServiceFactory;
+import com.networknt.status.Status;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 
 public class Oauth2ServiceServiceIdDeleteHandler implements HttpHandler {
+    static String SERVICE_NOT_FOUND = "ERR12015";
     static Logger logger = LoggerFactory.getLogger(Oauth2ServiceServiceIdGetHandler.class);
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
     static String sql = "DELETE FROM services WHERE service_id = ?";
@@ -32,7 +34,10 @@ public class Oauth2ServiceServiceIdDeleteHandler implements HttpHandler {
                 PathHandlerProvider.services.remove(serviceId);
 
             } else {
-                // not found
+                Status status = new Status(SERVICE_NOT_FOUND, serviceId);
+                exchange.setStatusCode(status.getStatusCode());
+                exchange.getResponseSender().send(status.toString());
+                return;
             }
         } catch (SQLException e) {
             logger.error("Exception:", e);
