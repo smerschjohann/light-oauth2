@@ -1,8 +1,7 @@
 package com.networknt.oauth.user.handler;
 
 import com.networknt.body.BodyHandler;
-import com.networknt.config.Config;
-import com.networknt.oauth.user.HashUtil;
+import com.networknt.utility.HashUtil;
 import com.networknt.oauth.user.PathHandlerProvider;
 import com.networknt.service.SingletonServiceFactory;
 import com.networknt.status.Status;
@@ -22,6 +21,7 @@ import javax.sql.DataSource;
 public class Oauth2PasswordUserIdPostHandler implements HttpHandler {
     static String INCORRECT_PASSWORD = "ERR12016";
     static String PASSWORD_PASSWORDCONFIRM_NOT_MATCH = "ERR12012";
+    static String USER_NOT_FOUND = "ERR12013";
 
     static Logger logger = LoggerFactory.getLogger(Oauth2PasswordUserIdPostHandler.class);
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
@@ -40,6 +40,13 @@ public class Oauth2PasswordUserIdPostHandler implements HttpHandler {
         Map<String, Object> user = (Map<String, Object>)PathHandlerProvider.users.get(userId);
         if(user == null) {
             user = selectUser(userId);
+        }
+        if(user == null) {
+            // user not found.
+            Status status = new Status(USER_NOT_FOUND, userId);
+            exchange.setStatusCode(status.getStatusCode());
+            exchange.getResponseSender().send(status.toString());
+            return;
         }
         if(!HashUtil.validatePassword(password, (String)user.get("password"))) {
             Status status = new Status(INCORRECT_PASSWORD);

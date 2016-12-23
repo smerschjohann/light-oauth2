@@ -1,6 +1,9 @@
 package com.networknt.oauth.code.auth;
 
 import com.networknt.exception.ApiException;
+import com.networknt.oauth.code.PathHandlerProvider;
+import com.networknt.status.Status;
+import com.networknt.utility.HashUtil;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.FlexBase64;
 import org.slf4j.Logger;
@@ -10,8 +13,12 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static io.undertow.util.Headers.AUTHORIZATION;
 import static io.undertow.util.Headers.BASIC;
@@ -19,14 +26,18 @@ import static io.undertow.util.Headers.BASIC;
 /**
  * Created by stevehu on 2016-12-18.
  */
-public class BasicAuthentication implements Authentication {
+public class BasicAuthentication extends AbstractAuthentication {
     static Logger logger = LoggerFactory.getLogger(BasicAuthentication.class);
+    static String INCORRECT_PASSWORD = "ERR12016";
+    static String USER_NOT_FOUND = "ERR12013";
+    static String RUNTIME_EXCEPTION = "ERR10010";
 
     private static final String BASIC_PREFIX = BASIC + " ";
     private static final String LOWERCASE_BASIC_PREFIX = BASIC_PREFIX.toLowerCase(Locale.ENGLISH);
     private static final int PREFIX_LENGTH = BASIC_PREFIX.length();
     private static final String COLON = ":";
 
+    @Override
     public boolean authenticate(HttpServerExchange exchange) throws ApiException {
         boolean result = false;
         List<String> authHeaders = exchange.getRequestHeaders().get(AUTHORIZATION);
@@ -42,20 +53,32 @@ public class BasicAuthentication implements Authentication {
                         Charset charset = StandardCharsets.UTF_8;
                         plainChallenge = new String(decode.array(), decode.arrayOffset(), decode.limit(), charset);
                         logger.debug("Found basic auth header %s (decoded using charset %s) in %s", plainChallenge, charset, exchange);
-                    } catch (IOException e) {
-                        logger.error("IOException:", e);
-                    }
-                    int colonPos;
-                    if (plainChallenge != null && (colonPos = plainChallenge.indexOf(COLON)) > -1) {
-                        String userName = plainChallenge.substring(0, colonPos);
-                        char[] password = plainChallenge.substring(colonPos + 1).toCharArray();
-
-                        // match with db/cached user credentials.
-
+                        int colonPos;
+                        if (plainChallenge != null && (colonPos = plainChallenge.indexOf(COLON)) > -1) {
+                            String userId = plainChallenge.substring(0, colonPos);
+                            String password = plainChallenge.substring(colonPos + 1);
+                            // match with db/cached user credentials.
+                            Map<String, Object> user = (Map<String, Object>)PathHandlerProvider.users.get(userId);
+                            if(user == null) {
+                                user = selectUser(userId);
+                            }
+                            if(user == null) {
+                                throw new ApiException(new Status(USER_NOT_FOUND));
+                            }
+                            if(!HashUtil.validatePassword(password, (String)user.get("password"))) {
+                                throw new ApiException(new Status(INCORRECT_PASSWORD));
+                            }
+                            result = true;
+                        }
+                    } catch (Exception e) {
+                        logger.error("Exception:", e);
+                        throw new ApiException(new Status(RUNTIME_EXCEPTION));
                     }
                 }
             }
         }
         return result;
     }
+
+
 }
