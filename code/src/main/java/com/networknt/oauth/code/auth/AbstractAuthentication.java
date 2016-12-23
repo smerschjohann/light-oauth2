@@ -24,7 +24,7 @@ public abstract class AbstractAuthentication implements Authentication {
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
     static String sqlSelect = "SELECT * FROM users WHERE user_id = ?";
 
-    public abstract boolean authenticate(HttpServerExchange exchange) throws ApiException;
+    public abstract String authenticate(HttpServerExchange exchange) throws ApiException;
 
     Map<String, Object> selectUser(String userId) throws Exception {
         Map<String, Object> result = null;

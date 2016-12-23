@@ -38,8 +38,8 @@ public class BasicAuthentication extends AbstractAuthentication {
     private static final String COLON = ":";
 
     @Override
-    public boolean authenticate(HttpServerExchange exchange) throws ApiException {
-        boolean result = false;
+    public String authenticate(HttpServerExchange exchange) throws ApiException {
+        String result = null;
         List<String> authHeaders = exchange.getRequestHeaders().get(AUTHORIZATION);
         if (authHeaders != null) {
             for (String current : authHeaders) {
@@ -68,7 +68,7 @@ public class BasicAuthentication extends AbstractAuthentication {
                             if(!HashUtil.validatePassword(password, (String)user.get("password"))) {
                                 throw new ApiException(new Status(INCORRECT_PASSWORD));
                             }
-                            result = true;
+                            result = userId;
                         }
                     } catch (Exception e) {
                         logger.error("Exception:", e);

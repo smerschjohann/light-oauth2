@@ -7,5 +7,5 @@ import io.undertow.server.HttpServerExchange;
  * Created by stevehu on 2016-12-18.
  */
 public interface Authentication {
-    boolean authenticate(HttpServerExchange exchange) throws ApiException;
+    String authenticate(HttpServerExchange exchange) throws ApiException;
 }

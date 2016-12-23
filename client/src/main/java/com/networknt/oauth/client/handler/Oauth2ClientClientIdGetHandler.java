@@ -48,6 +48,7 @@ public class Oauth2ClientClientIdGetHandler implements HttpHandler {
                         result.put("clientDesc", rs.getString("client_desc"));
                         result.put("scope", rs.getString("scope"));
                         result.put("redirectUrl", rs.getString("redirect_url"));
+                        result.put("authenticateClass", rs.getString("authenticate_class"));
                         result.put("ownerId", rs.getString("owner_id"));
                         result.put("createDt", rs.getDate("create_dt"));
                         result.put("updateDt", rs.getDate("update_dt"));

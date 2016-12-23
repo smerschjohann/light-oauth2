@@ -7,8 +7,8 @@ import io.undertow.server.HttpServerExchange;
  * Created by stevehu on 2016-12-19.
  */
 public class FormAuthentication implements Authentication {
-    public boolean authenticate(HttpServerExchange exchange) throws ApiException {
-        boolean result = false;
+    public String authenticate(HttpServerExchange exchange) throws ApiException {
+        String result = null;
 
 
         return result;
