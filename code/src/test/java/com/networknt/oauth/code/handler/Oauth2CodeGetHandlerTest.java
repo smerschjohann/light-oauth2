@@ -5,6 +5,7 @@ import com.networknt.config.Config;
 import com.networknt.exception.ClientException;
 import com.networknt.exception.ApiException;
 import com.networknt.status.Status;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.*;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -37,20 +38,107 @@ public class Oauth2CodeGetHandlerTest {
         // at this moment, an exception will help as it is redirected to localhost:8080 and it is not up.
     }
 
-    //@Test
+    @Test
     public void testCodeWithoutResponseType() throws Exception {
-        String url = "http://localhost:6881/v1/oauth2/code?client_id=6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d&redirect_uri=http://localhost:8888/authorization";
+        String url = "http://localhost:6881/oauth2/code?client_id=6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d&redirect_url=http://localhost:8888/authorization";
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpGet httpGet = new HttpGet(url);
+        httpGet.setHeader("Authorization", "Basic " + encodeCredentials("admin", "123456"));
+        try {
+            CloseableHttpResponse response = client.execute(httpGet);
+            int statusCode = response.getStatusLine().getStatusCode();
+            Assert.assertEquals(400, statusCode);
+            if(statusCode == 400) {
+                Status status = Config.getInstance().getMapper().readValue(response.getEntity().getContent(), Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR11000", status.getCode());
+                Assert.assertEquals("VALIDATOR_REQUEST_PARAMETER_QUERY_MISSING", status.getMessage()); // response_type missing
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testCodeWithoutClientId() throws Exception {
+        String url = "http://localhost:6881/oauth2/code?response_type=code&redirect_url=http://localhost:8888/authorization";
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpGet httpGet = new HttpGet(url);
+        httpGet.setHeader("Authorization", "Basic " + encodeCredentials("admin", "123456"));
+        try {
+            CloseableHttpResponse response = client.execute(httpGet);
+            int statusCode = response.getStatusLine().getStatusCode();
+            Assert.assertEquals(400, statusCode);
+            if(statusCode == 400) {
+                Status status = Config.getInstance().getMapper().readValue(response.getEntity().getContent(), Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR11000", status.getCode());
+                Assert.assertEquals("VALIDATOR_REQUEST_PARAMETER_QUERY_MISSING", status.getMessage()); // client_id missing
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testCodeWrongPassword() throws Exception {
+        String url = "http://localhost:6881/oauth2/code?response_type=code&client_id=6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d&redirect_url=http://localhost:8888/authorization";
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
         httpGet.setHeader("Authorization", "Basic " + encodeCredentials("admin", "admin"));
         try {
             CloseableHttpResponse response = client.execute(httpGet);
             int statusCode = response.getStatusLine().getStatusCode();
+            String body  = IOUtils.toString(response.getEntity().getContent(), "utf8");
             Assert.assertEquals(401, statusCode);
             if(statusCode == 401) {
                 Status status = Config.getInstance().getMapper().readValue(response.getEntity().getContent(), Status.class);
                 Assert.assertNotNull(status);
-                Assert.assertEquals("ERR12009", status.getCode());
+                Assert.assertEquals("ERR12016", status.getCode());
+                Assert.assertEquals("INCORRECT_PASSWORD", status.getMessage()); // client_id missing
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testCodeInvalidResponseType() throws Exception {
+        String url = "http://localhost:6881/oauth2/code?response_type=wrong&client_id=6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d&redirect_url=http://localhost:8888/authorization";
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpGet httpGet = new HttpGet(url);
+        httpGet.setHeader("Authorization", "Basic " + encodeCredentials("admin", "123456"));
+        try {
+            CloseableHttpResponse response = client.execute(httpGet);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body  = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertEquals(400, statusCode);
+            if(statusCode == 400) {
+                Status status = Config.getInstance().getMapper().readValue(response.getEntity().getContent(), Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR11002", status.getCode());
+                Assert.assertEquals("VALIDATOR_REQUEST_PARAMETER_ENUM_INVALID", status.getMessage()); // response type wrong
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    public void testCodeClientNotFound() throws Exception {
+        String url = "http://localhost:6881/oauth2/code?response_type=code&client_id=fake&redirect_url=http://localhost:8888/authorization";
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpGet httpGet = new HttpGet(url);
+        httpGet.setHeader("Authorization", "Basic " + encodeCredentials("admin", "123456"));
+        try {
+            CloseableHttpResponse response = client.execute(httpGet);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body  = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertEquals(404, statusCode);
+            if(statusCode == 404) {
+                Status status = Config.getInstance().getMapper().readValue(response.getEntity().getContent(), Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR12014", status.getCode());
+                Assert.assertEquals("CLIENT_NOT_FOUND", status.getMessage()); // client not found
             }
         } catch (Exception e) {
             e.printStackTrace();

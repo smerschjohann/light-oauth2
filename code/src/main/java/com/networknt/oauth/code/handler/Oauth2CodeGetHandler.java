@@ -34,7 +34,6 @@ import javax.sql.DataSource;
 public class Oauth2CodeGetHandler implements HttpHandler {
     static final Logger logger = LoggerFactory.getLogger(Oauth2CodeGetHandler.class);
     static final String INVALID_CODE_REQUEST = "ERR12009";
-    static final String INVALID_RESPONSE_TYPE = "ERR12010";
     static final String CLIENT_NOT_FOUND = "ERR12014";
     static final String MISSING_AUTHORIZATION_HEADER = "ERR12002";
 
@@ -64,46 +63,39 @@ public class Oauth2CodeGetHandler implements HttpHandler {
             exchange.getResponseSender().send(status.toString());
             return;
         } else {
-            if(!"code".equals(responseType)) {
-                Status status = new Status(INVALID_RESPONSE_TYPE, responseType);
+            // check if the client_id is valid
+            Map<String, Object> client = (Map<String, Object>)PathHandlerProvider.clients.get(clientId);
+            if(client == null) {
+                client = getClient(clientId);
+            }
+            if(client == null) {
+                Status status = new Status(CLIENT_NOT_FOUND, clientId);
                 exchange.setStatusCode(status.getStatusCode());
                 exchange.getResponseSender().send(status.toString());
                 return;
             } else {
-                // check if the client_id is valid
-                Map<String, Object> client = (Map<String, Object>)PathHandlerProvider.clients.get(clientId);
-                if(client == null) {
-                    client = getClient(clientId);
-                }
-                if(client == null) {
-                    Status status = new Status(CLIENT_NOT_FOUND, clientId);
+                String clazz = (String)client.get("authenticateClass");
+                if(clazz == null) clazz = DEFAULT_AUTHENTICATE_CLASS;
+                Authentication auth = (Authentication)Class.forName(clazz).newInstance();
+                String userId = auth.authenticate(exchange);
+                if(userId == null) {
+                    Status status = new Status(MISSING_AUTHORIZATION_HEADER, clientId);
                     exchange.setStatusCode(status.getStatusCode());
                     exchange.getResponseSender().send(status.toString());
                     return;
-                } else {
-                    String clazz = (String)client.get("authenticateClass");
-                    if(clazz == null) clazz = DEFAULT_AUTHENTICATE_CLASS;
-                    Authentication auth = (Authentication)Class.forName(clazz).newInstance();
-                    String userId = auth.authenticate(exchange);
-                    if(userId == null) {
-                        Status status = new Status(MISSING_AUTHORIZATION_HEADER, clientId);
-                        exchange.setStatusCode(status.getStatusCode());
-                        exchange.getResponseSender().send(status.toString());
-                        return;
-                    }
-                    // generate auth code
-                    String code = Util.getUUID();
-                    PathHandlerProvider.codes.put(code, userId);
-                    String redirectUrl = params.get("redirect_url");
-                    if(redirectUrl == null) {
-                        redirectUrl = (String)client.get("redirect_url");
-                    }
-                    redirectUrl = redirectUrl + "?code=" + code;
-                    // now redirect here.
-                    exchange.setStatusCode(StatusCodes.FOUND);
-                    exchange.getResponseHeaders().put(Headers.LOCATION, redirectUrl);
-                    exchange.endExchange();
                 }
+                // generate auth code
+                String code = Util.getUUID();
+                PathHandlerProvider.codes.put(code, userId);
+                String redirectUrl = params.get("redirect_url");
+                if(redirectUrl == null) {
+                    redirectUrl = (String)client.get("redirect_url");
+                }
+                redirectUrl = redirectUrl + "?code=" + code;
+                // now redirect here.
+                exchange.setStatusCode(StatusCodes.FOUND);
+                exchange.getResponseHeaders().put(Headers.LOCATION, redirectUrl);
+                exchange.endExchange();
             }
         }
     }

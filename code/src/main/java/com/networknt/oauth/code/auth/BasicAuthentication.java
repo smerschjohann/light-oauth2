@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -70,7 +72,7 @@ public class BasicAuthentication extends AbstractAuthentication {
                             }
                             result = userId;
                         }
-                    } catch (Exception e) {
+                    } catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
                         logger.error("Exception:", e);
                         throw new ApiException(new Status(RUNTIME_EXCEPTION));
                     }
