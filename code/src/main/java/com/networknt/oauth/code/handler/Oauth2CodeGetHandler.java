@@ -19,7 +19,6 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +38,7 @@ public class Oauth2CodeGetHandler implements HttpHandler {
     static final String CLIENT_NOT_FOUND = "ERR12014";
     static final String MISSING_AUTHORIZATION_HEADER = "ERR12002";
 
-    static final String DEFAULT_AUTHENTICATE_CLASS = "com.networknt.oauth.code.BasicAuthentication";
+    static final String DEFAULT_AUTHENTICATE_CLASS = "com.networknt.oauth.code.auth.BasicAuthentication";
 
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
 
@@ -111,15 +110,24 @@ public class Oauth2CodeGetHandler implements HttpHandler {
 
     private Map<String, Object> getClient(String clientId) throws Exception {
         Map<String, Object> client = null;
-        String sql = "SELECT redirect_url, authenticate_class FROM clients WHERE client_id = ?";
+        String sql = "SELECT * FROM clients WHERE client_id = ?";
         try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, clientId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     client = new HashMap<>();
                     client.put("clientId", clientId);
+                    client.put("clientSecret", rs.getString("client_secret"));
+                    client.put("clientType", rs.getString("client_type"));
+                    client.put("clientName", rs.getString("client_name"));
+                    client.put("clientDesc", rs.getString("client_desc"));
+                    client.put("scope", rs.getString("scope"));
                     client.put("redirectUrl", rs.getString("redirect_url"));
-                    client.put("authenticate_class", rs.getString("authenticate_class"));
+                    client.put("authenticateClass", rs.getString("authenticate_class"));
+                    client.put("ownerId", rs.getString("owner_id"));
+                    client.put("createDt", rs.getDate("create_dt"));
+                    client.put("updateDt", rs.getDate("update_dt"));
+                    PathHandlerProvider.clients.put(clientId, client);
                 }
             }
         } catch (SQLException e) {
