@@ -35,6 +35,10 @@ public class Oauth2CodeGetHandlerTest {
         // add authentication header
         httpGet.setHeader("Authorization", "Basic " + encodeCredentials("admin", "123456"));
         CloseableHttpResponse response = client.execute(httpGet);
+        int statusCode = response.getStatusLine().getStatusCode();
+        String body  = IOUtils.toString(response.getEntity().getContent(), "utf8");
+        Assert.assertEquals(statusCode, 302);
+
         // at this moment, an exception will help as it is redirected to localhost:8080 and it is not up.
     }
 
