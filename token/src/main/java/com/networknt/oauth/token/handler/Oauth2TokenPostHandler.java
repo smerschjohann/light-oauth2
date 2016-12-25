@@ -36,7 +36,7 @@ public class Oauth2TokenPostHandler implements HttpHandler {
     static final String INVALID_AUTHORIZATION_HEADER = "ERR12003";
     static final String INVALID_BASIC_CREDENTIALS = "ERR12004";
     static final String JSON_PROCESSING_EXCEPTION = "ERR12005";
-    static final String CLIENT_ID_NOTFOUND = "ERR12006";
+    static final String CLIENT_NOT_FOUND = "ERR12014";
     static final String UNAUTHORIZED_CLIENT = "ERR12007";
     static final String INVALID_AUTHORIZATION_CODE = "ERR12008";
     static final String GENERIC_EXCEPTION = "ERR10014";
@@ -111,7 +111,7 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                         client = getClient(clientId);
                     }
                     if(client == null) {
-                        throw new ApiException(new Status(CLIENT_ID_NOTFOUND, clientId));
+                        throw new ApiException(new Status(CLIENT_NOT_FOUND, clientId));
                     } else {
                         String secret = (String)client.get("clientSecret");
                         if(secret.equals(clientSecret)) {
@@ -167,7 +167,7 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                         client = getClient(clientId);
                     }
                     if(client == null) {
-                        throw new ApiException(new Status(CLIENT_ID_NOTFOUND, clientId));
+                        throw new ApiException(new Status(CLIENT_NOT_FOUND, clientId));
                     } else {
                         String secret = (String)client.get("client_secret");
                         if(secret.equals(clientSecret)) {
