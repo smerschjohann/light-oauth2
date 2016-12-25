@@ -115,7 +115,7 @@ public class Oauth2CodeGetHandlerTest {
         try {
             CloseableHttpResponse response = client.execute(httpGet);
             int statusCode = response.getStatusLine().getStatusCode();
-            String body  = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            //String body  = IOUtils.toString(response.getEntity().getContent(), "utf8");
             Assert.assertEquals(400, statusCode);
             if(statusCode == 400) {
                 Status status = Config.getInstance().getMapper().readValue(response.getEntity().getContent(), Status.class);

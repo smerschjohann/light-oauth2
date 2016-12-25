@@ -91,9 +91,10 @@ public class Oauth2CodeGetHandler implements HttpHandler {
                 PathHandlerProvider.codes.put(code, userId);
                 String redirectUrl = params.get("redirect_url");
                 if(redirectUrl == null) {
-                    redirectUrl = (String)client.get("redirect_url");
+                    redirectUrl = (String)client.get("redirectUrl");
                 }
                 redirectUrl = redirectUrl + "?code=" + code;
+                if(logger.isDebugEnabled()) logger.debug("redirectUrl = " + redirectUrl);
                 // now redirect here.
                 exchange.setStatusCode(StatusCodes.FOUND);
                 exchange.getResponseHeaders().put(Headers.LOCATION, redirectUrl);
