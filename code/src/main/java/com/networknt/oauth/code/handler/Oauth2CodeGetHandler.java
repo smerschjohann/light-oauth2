@@ -54,7 +54,7 @@ public class Oauth2CodeGetHandler implements HttpHandler {
                 params.put(pname, pvalues.next());
             }
         }
-        //logger.debug("params", params);
+        if(logger.isDebugEnabled()) logger.debug("params", params);
         String responseType = params.get("response_type");
         String clientId = params.get("client_id");
         if(responseType == null || clientId == null) {
@@ -66,6 +66,7 @@ public class Oauth2CodeGetHandler implements HttpHandler {
             // check if the client_id is valid
             Map<String, Object> client = (Map<String, Object>)PathHandlerProvider.clients.get(clientId);
             if(client == null) {
+                if(logger.isDebugEnabled()) logger.debug("load client from db");
                 client = getClient(clientId);
             }
             if(client == null) {
@@ -84,6 +85,7 @@ public class Oauth2CodeGetHandler implements HttpHandler {
                     exchange.getResponseSender().send(status.toString());
                     return;
                 }
+                if(logger.isDebugEnabled()) logger.debug("User is authenticated " + userId);
                 // generate auth code
                 String code = Util.getUUID();
                 PathHandlerProvider.codes.put(code, userId);
