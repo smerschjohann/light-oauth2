@@ -4,6 +4,7 @@ import com.networknt.oauth.code.PathHandlerProvider;
 import com.networknt.oauth.code.auth.Authentication;
 import com.networknt.status.Status;
 import com.networknt.utility.Util;
+import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpHandler;
 import io.undertow.util.StatusCodes;
 import io.undertow.server.HttpServerExchange;
@@ -36,8 +37,6 @@ public class Oauth2CodeGetHandler implements HttpHandler {
     static final String INVALID_CODE_REQUEST = "ERR12009";
     static final String CLIENT_NOT_FOUND = "ERR12014";
     static final String MISSING_AUTHORIZATION_HEADER = "ERR12002";
-
-    static final String DEFAULT_AUTHENTICATE_CLASS = "com.networknt.oauth.code.auth.BasicAuthentication";
 
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
 
@@ -75,19 +74,10 @@ public class Oauth2CodeGetHandler implements HttpHandler {
                 exchange.getResponseSender().send(status.toString());
                 return;
             } else {
-                String clazz = (String)client.get("authenticateClass");
-                if(clazz == null) clazz = DEFAULT_AUTHENTICATE_CLASS;
-                Authentication auth = (Authentication)Class.forName(clazz).newInstance();
-                String userId = auth.authenticate(exchange);
-                if(userId == null) {
-                    Status status = new Status(MISSING_AUTHORIZATION_HEADER, clientId);
-                    exchange.setStatusCode(status.getStatusCode());
-                    exchange.getResponseSender().send(status.toString());
-                    return;
-                }
-                if(logger.isDebugEnabled()) logger.debug("User is authenticated " + userId);
-                // generate auth code
                 String code = Util.getUUID();
+                final SecurityContext context = exchange.getSecurityContext();
+                String userId = context.getAuthenticatedAccount().getPrincipal().getName();
+
                 PathHandlerProvider.codes.put(code, userId);
                 String redirectUrl = params.get("redirect_url");
                 if(redirectUrl == null) {

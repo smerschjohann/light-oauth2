@@ -28,6 +28,7 @@ import static io.undertow.util.Headers.BASIC;
 /**
  * Created by stevehu on 2016-12-18.
  */
+@Deprecated
 public class BasicAuthentication extends AbstractAuthentication {
     static Logger logger = LoggerFactory.getLogger(BasicAuthentication.class);
     static String INCORRECT_PASSWORD = "ERR12016";
