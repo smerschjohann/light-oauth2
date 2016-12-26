@@ -85,6 +85,7 @@
         <module>client</module>
         <module>service</module>
         <module>user</module>
+        <module>key</module>
     </modules>
 
     <repositories>
@@ -120,6 +121,11 @@
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>oauth2-user</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>oauth2-key</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
