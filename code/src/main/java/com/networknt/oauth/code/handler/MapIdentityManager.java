@@ -59,6 +59,7 @@ public class MapIdentityManager implements IdentityManager {
                 logger.error("Exception:", e);
             }
         }
+        if(logger.isDebugEnabled()) logger.debug("verfifyCredential = " + match);
         return match;
     }
 

@@ -8,7 +8,6 @@ import com.networknt.oauth.code.handler.Oauth2CodeGetHandler;
 import com.networknt.oauth.code.handler.Oauth2CodePostHandler;
 import com.networknt.server.HandlerProvider;
 import com.networknt.service.SingletonServiceFactory;
-import com.networknt.status.Status;
 import io.undertow.Handlers;
 import io.undertow.security.api.AuthenticationMechanism;
 import io.undertow.security.api.AuthenticationMode;
@@ -19,7 +18,6 @@ import io.undertow.security.handlers.SecurityInitialHandler;
 import io.undertow.security.idm.IdentityManager;
 import io.undertow.security.impl.BasicAuthenticationMechanism;
 import io.undertow.server.HttpHandler;
-import io.undertow.util.HttpString;
 import io.undertow.util.Methods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PathHandlerProvider implements HandlerProvider {
-    Logger logger = LoggerFactory.getLogger(PathHandlerProvider.class);
+    static final Logger logger = LoggerFactory.getLogger(PathHandlerProvider.class);
     public static Map<String, Object> users;
     public static Map<String, Object> clients;
     public static Map<String, Object> codes;
@@ -75,7 +73,7 @@ public class PathHandlerProvider implements HandlerProvider {
         return handler;
     }
 
-    private Map<String, Object> getUser() {
+    private static Map<String, Object> getUser() {
         Map<String, Object> users = null;
         String sql = "SELECT * FROM users";
         try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -83,11 +81,11 @@ public class PathHandlerProvider implements HandlerProvider {
                 while (rs.next()) {
                     users = new HashMap<>();
                     Map<String, Object> user = new HashMap<>();
-                    user.put("userId", rs.getString("user_id"));
+                    String userId = rs.getString("user_id");
                     user.put("userType", rs.getString("user_type"));
                     user.put("email", rs.getString("email"));
                     user.put("password", rs.getString("password"));
-                    users.put((String)user.get("userId"), user);
+                    users.put(userId, user);
                 }
                 //PathHandlerProvider.users.putAll(users);
             }
@@ -95,6 +93,13 @@ public class PathHandlerProvider implements HandlerProvider {
             logger.error("Exception:", e);
             // this is the best effort basis and it won't get code if users are not loaded.
             //throw e;
+        }
+        if(logger.isDebugEnabled()) {
+            try {
+                logger.debug("users = " + com.networknt.config.Config.getInstance().getMapper().writeValueAsString(users));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return users;
     }

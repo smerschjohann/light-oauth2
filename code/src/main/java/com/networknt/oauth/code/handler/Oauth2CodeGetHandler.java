@@ -36,7 +36,6 @@ public class Oauth2CodeGetHandler implements HttpHandler {
     static final Logger logger = LoggerFactory.getLogger(Oauth2CodeGetHandler.class);
     static final String INVALID_CODE_REQUEST = "ERR12009";
     static final String CLIENT_NOT_FOUND = "ERR12014";
-    static final String MISSING_AUTHORIZATION_HEADER = "ERR12002";
 
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
 
