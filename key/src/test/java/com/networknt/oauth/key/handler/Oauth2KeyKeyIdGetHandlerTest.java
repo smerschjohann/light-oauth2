@@ -68,4 +68,26 @@ public class Oauth2KeyKeyIdGetHandlerTest {
         }
     }
 
+    @Test
+    public void testWrongClientSecret() throws ClientException, ApiException {
+        CloseableHttpClient client = Client.getInstance().getSyncClient();
+        HttpGet httpGet = new HttpGet("http://localhost:6886/oauth2/key/101");
+        // must have client_id and client_secret as Basic Auth in header.
+        httpGet.setHeader("Authorization", "Basic " + encodeCredentials("f7d42348-c647-4efb-a52d-4c5787421e72", "fake"));
+        try {
+            CloseableHttpResponse response = client.execute(httpGet);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body  = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertEquals(401, statusCode);
+            if(statusCode == 401) {
+                Status status = Config.getInstance().getMapper().readValue(response.getEntity().getContent(), Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR12007", status.getCode());
+                Assert.assertEquals("UNAUTHORIZATION_CLIENT", status.getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

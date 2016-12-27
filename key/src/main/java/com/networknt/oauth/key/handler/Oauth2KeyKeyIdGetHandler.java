@@ -77,26 +77,30 @@ public class Oauth2KeyKeyIdGetHandler implements HttpHandler {
             exchange.getResponseSender().send(status.toString());
             return;
         }
+        String clientId = authenticate(authHeader);
+        if(clientId != null) {
+            if(logger.isDebugEnabled()) logger.debug("clientId = " + clientId);
 
-        String keyId = exchange.getQueryParameters().get("keyId").getFirst();
-        if(logger.isDebugEnabled()) logger.debug("keyId = " + keyId);
-        // find the location of the certificate
-        Map<String, Object> config = Config.getInstance().getJsonMapConfig(CONFIG_SECURITY);
-        Map<String, Object> jwtConfig = (Map<String, Object>)config.get(CONFIG_JWT);
-        Map<String, Object> certificateConfig = (Map<String, Object>)jwtConfig.get(CONFIG_CERTIFICATE);
-        // find the path for certificate file
-        String filename = (String)certificateConfig.get(keyId);
-        String content = Config.getInstance().getStringFromFile(filename);
-        if(logger.isDebugEnabled()) logger.debug("certificate = " + content);
-        if(content != null) {
-            exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/text");
-            exchange.getResponseSender().send(content);
-        } else {
-            logger.info("Certificate " + Encode.forJava(filename) + " not found.");
-            Status status = new Status(KEY_NOT_FOUND, keyId);
-            exchange.setStatusCode(status.getStatusCode());
-            exchange.getResponseSender().send(status.toString());
-            return;
+            String keyId = exchange.getQueryParameters().get("keyId").getFirst();
+            if(logger.isDebugEnabled()) logger.debug("keyId = " + keyId);
+            // find the location of the certificate
+            Map<String, Object> config = Config.getInstance().getJsonMapConfig(CONFIG_SECURITY);
+            Map<String, Object> jwtConfig = (Map<String, Object>)config.get(CONFIG_JWT);
+            Map<String, Object> certificateConfig = (Map<String, Object>)jwtConfig.get(CONFIG_CERTIFICATE);
+            // find the path for certificate file
+            String filename = (String)certificateConfig.get(keyId);
+            String content = Config.getInstance().getStringFromFile(filename);
+            if(logger.isDebugEnabled()) logger.debug("certificate = " + content);
+            if(content != null) {
+                exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/text");
+                exchange.getResponseSender().send(content);
+            } else {
+                logger.info("Certificate " + Encode.forJava(filename) + " not found.");
+                Status status = new Status(KEY_NOT_FOUND, keyId);
+                exchange.setStatusCode(status.getStatusCode());
+                exchange.getResponseSender().send(status.toString());
+                return;
+            }
         }
     }
 
