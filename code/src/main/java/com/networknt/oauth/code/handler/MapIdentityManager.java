@@ -20,7 +20,7 @@ import java.util.Set;
  * Created by steve on 21/09/16.
  */
 public class MapIdentityManager implements IdentityManager {
-    Logger logger = LoggerFactory.getLogger(MapIdentityManager.class);
+    final Logger logger = LoggerFactory.getLogger(MapIdentityManager.class);
 
     private final IMap<String, Object> users;
 

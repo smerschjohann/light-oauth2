@@ -23,6 +23,7 @@ public class Oauth2CodePostHandler implements HttpHandler {
     static final String MISSING_AUTHORIZATION_HEADER = "ERR12002";
 
     static final String DEFAULT_AUTHENTICATE_CLASS = "com.networknt.oauth.code.auth.FormAuthentication";
+    @SuppressWarnings("unchecked")
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");

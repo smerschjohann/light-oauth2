@@ -15,12 +15,12 @@ import java.util.Map;
  * Created by stevehu on 2016-12-27.
  */
 public class UserMapStore implements MapStore<String, Map<String, Object>> {
-    static Logger logger = LoggerFactory.getLogger(ServiceMapStore.class);
-    static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    static String insert = "INSERT INTO users (user_id, user_type, first_name, last_name, email, password, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    static String delete = "DELETE FROM users WHERE user_id = ?";
-    static String select = "SELECT * FROM users WHERE user_id = ?";
-    static String update = "UPDATE users SET user_type=?, first_name=?, last_name=?, email=?, password=?, update_dt=? WHERE user_id = ?";
+    static final Logger logger = LoggerFactory.getLogger(ServiceMapStore.class);
+    static final DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
+    static final String insert = "INSERT INTO users (user_id, user_type, first_name, last_name, email, password, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    static final String delete = "DELETE FROM users WHERE user_id = ?";
+    static final String select = "SELECT * FROM users WHERE user_id = ?";
+    static final String update = "UPDATE users SET user_type=?, first_name=?, last_name=?, email=?, password=?, update_dt=? WHERE user_id = ?";
     @Override
     public synchronized void delete(String key) {
         if(logger.isDebugEnabled()) logger.debug("Delete:" + key);

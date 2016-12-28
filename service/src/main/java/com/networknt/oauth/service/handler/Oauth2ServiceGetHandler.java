@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 public class Oauth2ServiceGetHandler implements HttpHandler {
-    static Logger logger = LoggerFactory.getLogger(Oauth2ServiceGetHandler.class);
-    static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    static String sql = "SELECT * FROM services";
+    static final Logger logger = LoggerFactory.getLogger(Oauth2ServiceGetHandler.class);
+    static final DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
+    static final String sql = "SELECT * FROM services";
     static final String SQL_EXCEPTION = "ERR10017";
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {

@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Oauth2ClientClientIdDeleteHandler implements HttpHandler {
-    static String CLIENT_NOT_FOUND = "ERR12014";
+    static final String CLIENT_NOT_FOUND = "ERR12014";
 
     static Logger logger = LoggerFactory.getLogger(Oauth2ClientClientIdDeleteHandler.class);
     @Override

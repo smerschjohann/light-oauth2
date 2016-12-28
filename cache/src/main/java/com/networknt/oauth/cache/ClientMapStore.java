@@ -15,12 +15,12 @@ import java.util.Map;
  * Created by stevehu on 2016-12-27.
  */
 public class ClientMapStore implements MapStore<String, Map<String, Object>> {
-    static Logger logger = LoggerFactory.getLogger(ClientMapStore.class);
-    static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    static String insert = "INSERT INTO clients (client_id, client_secret, client_type, client_name, client_desc, scope, redirect_url, owner_id, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    static String delete = "DELETE FROM clients WHERE client_id = ?";
-    static String select = "SELECT * FROM clients WHERE client_id = ?";
-    static String update = "UPDATE clients SET client_type=?, client_name=?, client_desc=?, scope=?, redirect_url=?, owner_id=?, update_dt=? WHERE client_id=?";
+    static final Logger logger = LoggerFactory.getLogger(ClientMapStore.class);
+    static final DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
+    static final String insert = "INSERT INTO clients (client_id, client_secret, client_type, client_name, client_desc, scope, redirect_url, owner_id, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    static final String delete = "DELETE FROM clients WHERE client_id = ?";
+    static final String select = "SELECT * FROM clients WHERE client_id = ?";
+    static final String update = "UPDATE clients SET client_type=?, client_name=?, client_desc=?, scope=?, redirect_url=?, owner_id=?, update_dt=? WHERE client_id=?";
     @Override
     public synchronized void delete(String key) {
         if(logger.isDebugEnabled()) logger.debug("Delete:" + key);

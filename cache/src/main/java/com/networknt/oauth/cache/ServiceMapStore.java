@@ -15,12 +15,12 @@ import java.util.Map;
  * Created by stevehu on 2016-12-27.
  */
 public class ServiceMapStore implements MapStore<String, Map<String, Object>> {
-    static Logger logger = LoggerFactory.getLogger(ServiceMapStore.class);
-    static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    static String insert = "INSERT INTO services (service_id, service_type, service_name, service_desc, scope, owner_id, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    static String delete = "DELETE FROM services WHERE service_id = ?";
-    static String select = "SELECT * FROM services WHERE service_id = ?";
-    static String update = "UPDATE services SET service_type = ?, service_name=?, service_desc=?, scope=?, owner_id=?, update_dt=? WHERE service_id=?";
+    static final Logger logger = LoggerFactory.getLogger(ServiceMapStore.class);
+    static final DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
+    static final String insert = "INSERT INTO services (service_id, service_type, service_name, service_desc, scope, owner_id, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    static final String delete = "DELETE FROM services WHERE service_id = ?";
+    static final String select = "SELECT * FROM services WHERE service_id = ?";
+    static final String update = "UPDATE services SET service_type = ?, service_name=?, service_desc=?, scope=?, owner_id=?, update_dt=? WHERE service_id=?";
     @Override
     public synchronized void delete(String key) {
         if(logger.isDebugEnabled()) logger.debug("Delete:" + key);

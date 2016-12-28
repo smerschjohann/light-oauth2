@@ -24,7 +24,7 @@ import static io.undertow.util.Headers.AUTHORIZATION;
 import static io.undertow.util.Headers.BASIC;
 
 public class Oauth2KeyKeyIdGetHandler implements HttpHandler {
-    static Logger logger = LoggerFactory.getLogger(Oauth2KeyKeyIdGetHandler.class);
+    static final Logger logger = LoggerFactory.getLogger(Oauth2KeyKeyIdGetHandler.class);
 
     static final String CONFIG_SECURITY = "security";
     static final String CONFIG_JWT = "jwt";
@@ -41,6 +41,7 @@ public class Oauth2KeyKeyIdGetHandler implements HttpHandler {
     private static final int PREFIX_LENGTH = BASIC_PREFIX.length();
     private static final String COLON = ":";
 
+    @SuppressWarnings("unchecked")
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         // check if client_id and client_secret in header are valid pair.
@@ -86,6 +87,7 @@ public class Oauth2KeyKeyIdGetHandler implements HttpHandler {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private String authenticate(String authHeader) throws ApiException {
         String result = null;
         if (authHeader.toLowerCase(Locale.ENGLISH).startsWith(LOWERCASE_BASIC_PREFIX)) {

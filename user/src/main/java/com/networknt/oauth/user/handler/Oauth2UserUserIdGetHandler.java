@@ -13,8 +13,9 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 public class Oauth2UserUserIdGetHandler implements HttpHandler {
-    static String USER_NOT_FOUND = "ERR12013";
+    static final String USER_NOT_FOUND = "ERR12013";
     static Logger logger = LoggerFactory.getLogger(Oauth2UserUserIdGetHandler.class);
+    @SuppressWarnings("unchecked")
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         String userId = exchange.getQueryParameters().get("userId").getFirst();

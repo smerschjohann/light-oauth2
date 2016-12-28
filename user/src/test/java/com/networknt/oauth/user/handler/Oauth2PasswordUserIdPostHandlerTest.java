@@ -66,6 +66,7 @@ public class Oauth2PasswordUserIdPostHandlerTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testResetPassword() throws ClientException, ApiException, UnsupportedEncodingException {
         String password = "{\"password\":\"123456\",\"newPassword\":\"stevehu\",\"newPasswordConfirm\":\"stevehu\"}";

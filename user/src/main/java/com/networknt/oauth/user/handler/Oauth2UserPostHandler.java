@@ -13,11 +13,12 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 public class Oauth2UserPostHandler implements HttpHandler {
-    static String PASSWORD_OR_PASSWORDCONFIRM_EMPTY = "ERR12011";
-    static String PASSWORD_PASSWORDCONFIRM_NOT_MATCH = "ERR12012";
+    static final String PASSWORD_OR_PASSWORDCONFIRM_EMPTY = "ERR12011";
+    static final String PASSWORD_PASSWORDCONFIRM_NOT_MATCH = "ERR12012";
     static final String USER_ID_EXISTS = "ERR12020";
 
     static Logger logger = LoggerFactory.getLogger(Oauth2UserPostHandler.class);
+    @SuppressWarnings("unchecked")
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         Map<String, Object> user = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);

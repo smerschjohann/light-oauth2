@@ -19,7 +19,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class TestServer extends ExternalResource {
     static final Logger logger = LoggerFactory.getLogger(TestServer.class);
 
-    private static AtomicInteger refCount = new AtomicInteger(0);
+    private static final AtomicInteger refCount = new AtomicInteger(0);
     private static Server server;
 
     private static final TestServer instance  = new TestServer();

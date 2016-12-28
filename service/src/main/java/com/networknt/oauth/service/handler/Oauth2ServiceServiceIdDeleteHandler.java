@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Oauth2ServiceServiceIdDeleteHandler implements HttpHandler {
-    static String SERVICE_NOT_FOUND = "ERR12015";
+    static final String SERVICE_NOT_FOUND = "ERR12015";
     static Logger logger = LoggerFactory.getLogger(Oauth2ServiceServiceIdGetHandler.class);
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {

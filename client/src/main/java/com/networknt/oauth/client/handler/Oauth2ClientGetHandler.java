@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 public class Oauth2ClientGetHandler implements HttpHandler {
-    static Logger logger = LoggerFactory.getLogger(Oauth2ClientGetHandler.class);
-    static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    static String sql = "SELECT * FROM clients";
+    static final Logger logger = LoggerFactory.getLogger(Oauth2ClientGetHandler.class);
+    static final DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
+    static final String sql = "SELECT * FROM clients";
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         List<Map<String, Object>> result = new ArrayList<>();

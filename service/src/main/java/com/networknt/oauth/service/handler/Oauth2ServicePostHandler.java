@@ -14,6 +14,7 @@ import java.util.Map;
 public class Oauth2ServicePostHandler implements HttpHandler {
     static Logger logger = LoggerFactory.getLogger(Oauth2ServicePostHandler.class);
     static final String SERVICE_ID_EXISTS = "ERR12018";
+    @SuppressWarnings("unchecked")
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         Map<String, Object> service = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);

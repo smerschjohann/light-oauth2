@@ -17,10 +17,11 @@ import java.util.UUID;
 public class Oauth2ClientPostHandler implements HttpHandler {
 
     static Logger logger = LoggerFactory.getLogger(Oauth2ClientPostHandler.class);
-    static String CLIENT_ID_EXISTS = "ERR12019";
+    static final String CLIENT_ID_EXISTS = "ERR12019";
+    @SuppressWarnings("unchecked")
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-        Map<String, Object> client = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);
+        Map<String, Object> client = (Map<String, Object>)exchange.getAttachment(BodyHandler.REQUEST_BODY);
 
         // generate client_id and client_secret here.
         String clientId = UUID.randomUUID().toString();

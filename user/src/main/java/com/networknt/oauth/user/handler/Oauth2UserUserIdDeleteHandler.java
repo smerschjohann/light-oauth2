@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Oauth2UserUserIdDeleteHandler implements HttpHandler {
-    static String USER_NOT_FOUND = "ERR12013";
+    static final String USER_NOT_FOUND = "ERR12013";
     static Logger logger = LoggerFactory.getLogger(Oauth2UserUserIdDeleteHandler.class);
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {

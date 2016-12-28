@@ -78,6 +78,7 @@ public class Oauth2TokenPostHandler implements HttpHandler {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Map<String, Object> handleClientCredentials(HttpServerExchange exchange) throws ApiException {
         // get Authorization header.
         String auth = exchange.getRequestHeaders().getFirst("Authorization");
@@ -130,6 +131,7 @@ public class Oauth2TokenPostHandler implements HttpHandler {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Map<String, Object> handleAuthorizationCode(HttpServerExchange exchange, String code) throws ApiException {
         // get Authorization header.
         String auth = exchange.getRequestHeaders().getFirst("Authorization");

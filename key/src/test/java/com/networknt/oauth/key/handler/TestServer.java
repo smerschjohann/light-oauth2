@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TestServer extends ExternalResource {
     static final Logger logger = LoggerFactory.getLogger(TestServer.class);
 
-    private static AtomicInteger refCount = new AtomicInteger(0);
+    private static final AtomicInteger refCount = new AtomicInteger(0);
     private static Server server;
 
     private static final TestServer instance  = new TestServer();
