@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -86,6 +87,58 @@ public class CacheStartupHookProviderTest {
         services.delete("AACT0001");
 
         System.out.println("services size = " + services.size());
+
+        CacheShutdownHookProvider shutdown = new CacheShutdownHookProvider();
+        shutdown.onShutdown();
+
+    }
+
+    @Test
+    public void testUserCache() {
+        CacheStartupHookProvider start = new CacheStartupHookProvider();
+        start.onStartup();
+
+        final IMap<String, Object> users = CacheStartupHookProvider.hz.getMap("users");
+
+        Map<String, Object> user = (Map<String, Object>)users.get("admin");
+        System.out.println("user = " + user);
+
+        user.put("userType", "customer");
+        users.put("admin", user);
+
+        System.out.println("users size = " + users.size());
+
+        users.delete("admin");
+
+        System.out.println("users size = " + users.size());
+
+        CacheShutdownHookProvider shutdown = new CacheShutdownHookProvider();
+        shutdown.onShutdown();
+
+    }
+
+    @Test
+    public void testCodeCache() {
+        CacheStartupHookProvider start = new CacheStartupHookProvider();
+        start.onStartup();
+
+        final IMap<String, Object> codes = CacheStartupHookProvider.hz.getMap("codes");
+        Map<String, Object> user = new HashMap<>();
+        user.put("userId", "admin");
+        user.put("userType", "customer");
+
+        Map<String, Object> code = new HashMap<>();
+        code.put("code1", user);
+
+        System.out.println("code = " + code);
+
+        codes.put("code1", code);
+
+        System.out.println("codes size = " + codes.size());
+
+        codes.delete("code1");
+
+        System.out.println("codes size = " + codes.size());
 
         CacheShutdownHookProvider shutdown = new CacheShutdownHookProvider();
         shutdown.onShutdown();

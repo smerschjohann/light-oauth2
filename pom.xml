@@ -80,6 +80,7 @@
     </properties>
  
      <modules>
+        <module>cache</module>
         <module>code</module>
         <module>token</module>
         <module>client</module>
@@ -98,6 +99,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>oauth2-cache</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>oauth2-code</artifactId>

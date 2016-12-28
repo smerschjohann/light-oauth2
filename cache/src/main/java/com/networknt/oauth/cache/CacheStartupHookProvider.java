@@ -65,6 +65,10 @@ public class CacheStartupHookProvider implements StartupHookProvider {
         userConfig.setBackupCount(1);
         userConfig.getMaxSizeConfig().setSize(100000);
         userConfig.setTimeToLiveSeconds(60 * 60 * 1000); // 1 hour TTL
+        userConfig.getMapStoreConfig()
+                .setEnabled(true)
+                .setClassName("com.networknt.oauth.cache.UserMapStore");
+
         config.addMapConfig(userConfig);
 
         hz = Hazelcast.newHazelcastInstance( config );
