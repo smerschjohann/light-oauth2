@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.config.Config;
 import com.networknt.exception.ApiException;
+import com.networknt.oauth.cache.CacheStartupHookProvider;
 import com.networknt.oauth.token.PathHandlerProvider;
 import com.networknt.security.JwtHelper;
 import com.networknt.service.SingletonServiceFactory;
@@ -28,7 +29,6 @@ import java.util.*;
 
 public class Oauth2TokenPostHandler implements HttpHandler {
     static final Logger logger = LoggerFactory.getLogger(Oauth2TokenPostHandler.class);
-    static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
 
     static final String UNABLE_TO_PARSE_FORM_DATA = "ERR12000";
     static final String UNSUPPORTED_GRANT_TYPE = "ERR12001";
@@ -40,7 +40,6 @@ public class Oauth2TokenPostHandler implements HttpHandler {
     static final String UNAUTHORIZED_CLIENT = "ERR12007";
     static final String INVALID_AUTHORIZATION_CODE = "ERR12008";
     static final String GENERIC_EXCEPTION = "ERR10014";
-    static final String SQL_EXCEPTION = "ERR10017";
 
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         ObjectMapper mapper = Config.getInstance().getMapper();
@@ -106,10 +105,7 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                 if(pos != -1) {
                     clientId = credentials.substring(0, pos);
                     clientSecret = credentials.substring(pos + 1);
-                    Map<String, Object> client = (Map<String, Object>) PathHandlerProvider.clients.get(clientId);
-                    if(client == null) {
-                        client = getClient(clientId);
-                    }
+                    Map<String, Object> client = (Map<String, Object>) CacheStartupHookProvider.hz.getMap("clients").get(clientId);
                     if(client == null) {
                         throw new ApiException(new Status(CLIENT_NOT_FOUND, clientId));
                     } else {
@@ -162,21 +158,15 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                     clientId = credentials.substring(0, pos);
                     clientSecret = credentials.substring(pos + 1);
 
-                    Map<String, Object> client = (Map<String, Object>)PathHandlerProvider.clients.get(clientId);
-                    if(client == null) {
-                        client = getClient(clientId);
-                    }
+                    Map<String, Object> client = (Map<String, Object>)CacheStartupHookProvider.hz.getMap("clients").get(clientId);
                     if(client == null) {
                         throw new ApiException(new Status(CLIENT_NOT_FOUND, clientId));
                     } else {
                         String secret = (String)client.get("client_secret");
                         if(secret.equals(clientSecret)) {
-                            String userId = (String)PathHandlerProvider.codes.remove(code);
+                            String userId = (String)CacheStartupHookProvider.hz.getMap("codes").remove(code);
                             if(userId != null) {
-                                Map<String, Object> user = (Map<String, Object>)PathHandlerProvider.users.get(userId);
-                                if(user == null) {
-                                    user = selectUser(userId);
-                                }
+                                Map<String, Object> user = (Map<String, Object>)CacheStartupHookProvider.hz.getMap("users").get(userId);
                                 String scope = (String)client.get("scope");
                                 String jwt = null;
                                 try {
@@ -227,58 +217,4 @@ public class Oauth2TokenPostHandler implements HttpHandler {
     public static String decodeCredentials(String cred) {
         return new String(org.apache.commons.codec.binary.Base64.decodeBase64(cred));
     }
-
-    private Map<String, Object> getClient(String clientId) throws ApiException {
-        Map<String, Object> client = null;
-        String sql = "SELECT * FROM clients WHERE client_id = ?";
-        try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, clientId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    client = new HashMap<>();
-                    client.put("clientId", clientId);
-                    client.put("clientSecret", rs.getString("client_secret"));
-                    client.put("clientType", rs.getString("client_type"));
-                    client.put("clientName", rs.getString("client_name"));
-                    client.put("clientDesc", rs.getString("client_desc"));
-                    client.put("scope", rs.getString("scope"));
-                    client.put("redirectUrl", rs.getString("redirect_url"));
-                    client.put("authenticateClass", rs.getString("authenticate_class"));
-                    client.put("ownerId", rs.getString("owner_id"));
-                    client.put("createDt", rs.getDate("create_dt"));
-                    client.put("updateDt", rs.getDate("update_dt"));
-                    PathHandlerProvider.clients.put(clientId, client);
-                }
-            }
-        } catch (SQLException e) {
-            logger.error("Exception:", e);
-            throw new ApiException(new Status(SQL_EXCEPTION, e.getMessage()));
-        }
-        return client;
-    }
-
-    Map<String, Object> selectUser(String userId) throws ApiException {
-        Map<String, Object> result = null;
-        String sqlSelect = "SELECT * FROM users WHERE user_id = ?";
-        try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(sqlSelect)) {
-            stmt.setString(1, userId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    result = new HashMap<>();
-                    result.put("userId", userId);
-                    result.put("userType", rs.getString("user_type"));
-                    result.put("firstName", rs.getString("first_name"));
-                    result.put("lastName", rs.getString("last_name"));
-                    result.put("email", rs.getString("email"));
-                    result.put("password", rs.getString("password"));
-                    PathHandlerProvider.users.put(userId, result);
-                }
-            }
-        } catch (SQLException e) {
-            logger.error("Exception:", e);
-            throw new ApiException(new Status(SQL_EXCEPTION, e.getMessage()));
-        }
-        return result;
-    }
-
 }
