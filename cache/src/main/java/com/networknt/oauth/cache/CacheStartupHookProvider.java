@@ -13,6 +13,7 @@ import com.networknt.server.StartupHookProvider;
  */
 public class CacheStartupHookProvider implements StartupHookProvider {
     public static HazelcastInstance hz;
+    @Override
     public void onStartup() {
         Config config = new Config();
         config.getNetworkConfig().setPort( 5900 )

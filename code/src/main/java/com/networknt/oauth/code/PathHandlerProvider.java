@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class PathHandlerProvider implements HandlerProvider {
+    @Override
     public HttpHandler getHandler() {
         IMap<String, Object> users = CacheStartupHookProvider.hz.getMap("users");
         final IdentityManager identityManager = new MapIdentityManager(users);

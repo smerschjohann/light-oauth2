@@ -27,6 +27,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class Oauth2TokenPostHandler implements HttpHandler {
     static final Logger logger = LoggerFactory.getLogger(Oauth2TokenPostHandler.class);
 
@@ -215,6 +217,6 @@ public class Oauth2TokenPostHandler implements HttpHandler {
     }
 
     public static String decodeCredentials(String cred) {
-        return new String(org.apache.commons.codec.binary.Base64.decodeBase64(cred));
+        return new String(org.apache.commons.codec.binary.Base64.decodeBase64(cred), UTF_8);
     }
 }

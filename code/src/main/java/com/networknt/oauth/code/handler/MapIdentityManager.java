@@ -27,12 +27,12 @@ public class MapIdentityManager implements IdentityManager {
     public MapIdentityManager(final IMap<String, Object> users) {
         this.users = users;
     }
-
+    @Override
     public Account verify(Account account) {
         // An existing account so for testing assume still valid.
         return account;
     }
-
+    @Override
     public Account verify(String id, Credential credential) {
         Account account = getAccount(id);
         if (account != null && verifyCredential(account, credential)) {
@@ -41,7 +41,7 @@ public class MapIdentityManager implements IdentityManager {
 
         return null;
     }
-
+    @Override
     public Account verify(Credential credential) {
         // TODO Auto-generated method stub
         return null;
@@ -68,16 +68,16 @@ public class MapIdentityManager implements IdentityManager {
             return new Account() {
 
                 private final Principal principal = new Principal() {
-
+                    @Override
                     public String getName() {
                         return id;
                     }
                 };
-
+                @Override
                 public Principal getPrincipal() {
                     return principal;
                 }
-
+                @Override
                 public Set<String> getRoles() {
                     return Collections.emptySet();
                 }

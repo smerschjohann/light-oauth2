@@ -16,6 +16,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Created by stevehu on 2016-12-27.
  */
@@ -32,7 +34,7 @@ public class CacheStartupHookProviderTest {
             if (in == null) {
                 throw new RuntimeException("Failed to load resource: " + schemaResourceName);
             }
-            InputStreamReader reader = new InputStreamReader(in);
+            InputStreamReader reader = new InputStreamReader(in, UTF_8);
             RunScript.execute(connection, reader);
 
         } catch (SQLException e) {

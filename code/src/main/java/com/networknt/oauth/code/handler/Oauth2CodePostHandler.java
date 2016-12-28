@@ -23,7 +23,7 @@ public class Oauth2CodePostHandler implements HttpHandler {
     static final String MISSING_AUTHORIZATION_HEADER = "ERR12002";
 
     static final String DEFAULT_AUTHENTICATE_CLASS = "com.networknt.oauth.code.auth.FormAuthentication";
-
+    @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
 
@@ -56,7 +56,7 @@ public class Oauth2CodePostHandler implements HttpHandler {
             } else {
                 String clazz = (String)client.get("authenticateClass");
                 if(clazz == null) clazz = DEFAULT_AUTHENTICATE_CLASS;
-                Authentication auth = (Authentication)Class.forName(clazz).newInstance();
+                Authentication auth = (Authentication)Class.forName(clazz).getConstructor().newInstance();
                 String userId = auth.authenticate(exchange);
                 if(userId == null) {
                     Status status = new Status(MISSING_AUTHORIZATION_HEADER, clientId);

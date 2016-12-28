@@ -26,7 +26,7 @@ public class Oauth2ClientClientIdGetHandler implements HttpHandler {
     static String CLIENT_NOT_FOUND = "ERR12014";
 
     static Logger logger = LoggerFactory.getLogger(Oauth2ClientClientIdGetHandler.class);
-
+    @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         String clientId = exchange.getQueryParameters().get("clientId").getFirst();
 

@@ -14,6 +14,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class TestServer extends ExternalResource {
     static final Logger logger = LoggerFactory.getLogger(TestServer.class);
 
@@ -35,7 +37,7 @@ public class TestServer extends ExternalResource {
             if (in == null) {
                 throw new RuntimeException("Failed to load resource: " + schemaResourceName);
             }
-            InputStreamReader reader = new InputStreamReader(in);
+            InputStreamReader reader = new InputStreamReader(in, UTF_8);
             RunScript.execute(connection, reader);
 
         } catch (SQLException e) {

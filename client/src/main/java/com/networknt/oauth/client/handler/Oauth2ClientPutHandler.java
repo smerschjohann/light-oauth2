@@ -25,7 +25,7 @@ import javax.sql.DataSource;
 public class Oauth2ClientPutHandler implements HttpHandler {
     static Logger logger = LoggerFactory.getLogger(Oauth2ClientPutHandler.class);
     static String CLIENT_NOT_FOUND = "ERR12014";
-
+    @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         Map<String, Object> client = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);
         String clientId = (String)client.get("clientId");

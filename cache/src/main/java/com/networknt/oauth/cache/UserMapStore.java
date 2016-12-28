@@ -21,7 +21,7 @@ public class UserMapStore implements MapStore<String, Map<String, Object>> {
     static String delete = "DELETE FROM users WHERE user_id = ?";
     static String select = "SELECT * FROM users WHERE user_id = ?";
     static String update = "UPDATE users SET user_type=?, first_name=?, last_name=?, email=?, password=?, update_dt=? WHERE user_id = ?";
-
+    @Override
     public synchronized void delete(String key) {
         if(logger.isDebugEnabled()) logger.debug("Delete:" + key);
         try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(delete)) {
@@ -32,7 +32,7 @@ public class UserMapStore implements MapStore<String, Map<String, Object>> {
             throw new RuntimeException(e);
         }
     }
-
+    @Override
     public synchronized void store(String key, Map<String, Object> value) {
         if(logger.isDebugEnabled()) logger.debug("Store:"  + key);
         if(load(key) == null) {
@@ -65,16 +65,16 @@ public class UserMapStore implements MapStore<String, Map<String, Object>> {
             }
         }
     }
-
+    @Override
     public synchronized void storeAll(Map<String, Map<String, Object>> map) {
         for (Map.Entry<String, Map<String, Object>> entry : map.entrySet())
             store(entry.getKey(), entry.getValue());
     }
-
+    @Override
     public synchronized void deleteAll(Collection<String> keys) {
         for (String key : keys) delete(key);
     }
-
+    @Override
     public synchronized Map<String, Object> load(String key) {
         if(logger.isDebugEnabled()) logger.debug("Load:"  + key);
         Map<String, Object> result = null;
@@ -99,13 +99,13 @@ public class UserMapStore implements MapStore<String, Map<String, Object>> {
         }
         return result;
     }
-
+    @Override
     public synchronized Map<String, Map<String, Object>> loadAll(Collection<String> keys) {
         Map<String, Map<String, Object>> result = new HashMap();
         for (String key : keys) result.put(key, load(key));
         return result;
     }
-
+    @Override
     public Iterable<String> loadAllKeys() {
         return null;
     }

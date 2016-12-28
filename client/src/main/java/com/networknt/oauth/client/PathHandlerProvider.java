@@ -13,6 +13,7 @@ import io.undertow.util.Methods;
 import java.util.Map;
 
 public class PathHandlerProvider implements HandlerProvider {
+    @Override
     public HttpHandler getHandler() {
         HttpHandler handler = Handlers.routing()
             .add(Methods.DELETE, "/oauth2/client/{clientId}", new Oauth2ClientClientIdDeleteHandler())
