@@ -2,10 +2,8 @@ package com.networknt.oauth.key.handler;
 
 import com.networknt.config.Config;
 import com.networknt.exception.ApiException;
-import com.networknt.oauth.key.PathHandlerProvider;
-import com.networknt.service.SingletonServiceFactory;
+import com.networknt.oauth.cache.CacheStartupHookProvider;
 import com.networknt.status.Status;
-import com.networknt.utility.HashUtil;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.FlexBase64;
@@ -13,36 +11,21 @@ import io.undertow.util.HeaderValues;
 import io.undertow.util.HttpString;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.security.spec.InvalidKeySpecException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
 
 import static io.undertow.util.Headers.AUTHORIZATION;
 import static io.undertow.util.Headers.BASIC;
 
 public class Oauth2KeyKeyIdGetHandler implements HttpHandler {
     static Logger logger = LoggerFactory.getLogger(Oauth2KeyKeyIdGetHandler.class);
-
-    static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
 
     static final String CONFIG_SECURITY = "security";
     static final String CONFIG_JWT = "jwt";
@@ -120,10 +103,7 @@ public class Oauth2KeyKeyIdGetHandler implements HttpHandler {
                     String clientId = plainChallenge.substring(0, colonPos);
                     String clientSecret = plainChallenge.substring(colonPos + 1);
                     // match with db/cached user credentials.
-                    Map<String, Object> client = (Map<String, Object>) PathHandlerProvider.clients.get(clientId);
-                    if(client == null) {
-                        client = getClient(clientId);
-                    }
+                    Map<String, Object> client = (Map<String, Object>) CacheStartupHookProvider.hz.getMap("clients").get(clientId);
                     if(client == null) {
                         throw new ApiException(new Status(CLIENT_NOT_FOUND, clientId));
                     }
@@ -139,34 +119,4 @@ public class Oauth2KeyKeyIdGetHandler implements HttpHandler {
         }
         return result;
     }
-
-    private Map<String, Object> getClient(String clientId) throws ApiException {
-        Map<String, Object> client = null;
-        String sql = "SELECT * FROM clients WHERE client_id = ?";
-        try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, clientId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    client = new HashMap<>();
-                    client.put("clientId", clientId);
-                    client.put("clientSecret", rs.getString("client_secret"));
-                    client.put("clientType", rs.getString("client_type"));
-                    client.put("clientName", rs.getString("client_name"));
-                    client.put("clientDesc", rs.getString("client_desc"));
-                    client.put("scope", rs.getString("scope"));
-                    client.put("redirectUrl", rs.getString("redirect_url"));
-                    client.put("authenticateClass", rs.getString("authenticate_class"));
-                    client.put("ownerId", rs.getString("owner_id"));
-                    client.put("createDt", rs.getDate("create_dt"));
-                    client.put("updateDt", rs.getDate("update_dt"));
-                    PathHandlerProvider.clients.put(clientId, client);
-                }
-            }
-        } catch (SQLException e) {
-            logger.error("Exception:", e);
-            throw new ApiException(new Status(SQL_EXCEPTION, e.getMessage()));
-        }
-        return client;
-    }
-
 }
