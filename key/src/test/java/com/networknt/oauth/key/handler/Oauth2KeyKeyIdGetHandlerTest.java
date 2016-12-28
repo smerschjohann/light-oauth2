@@ -80,7 +80,7 @@ public class Oauth2KeyKeyIdGetHandlerTest {
                 Status status = Config.getInstance().getMapper().readValue(body, Status.class);
                 Assert.assertNotNull(status);
                 Assert.assertEquals("ERR12007", status.getCode());
-                Assert.assertEquals("UNAUTHORIZATION_CLIENT", status.getMessage());
+                Assert.assertEquals("UNAUTHORIZED_CLIENT", status.getMessage());
             }
         } catch (Exception e) {
             e.printStackTrace();
