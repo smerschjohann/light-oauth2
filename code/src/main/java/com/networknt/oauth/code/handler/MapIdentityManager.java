@@ -1,5 +1,6 @@
 package com.networknt.oauth.code.handler;
 
+import com.hazelcast.core.IMap;
 import com.networknt.utility.HashUtil;
 import io.undertow.security.idm.Account;
 import io.undertow.security.idm.Credential;
@@ -11,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -22,9 +22,9 @@ import java.util.Set;
 public class MapIdentityManager implements IdentityManager {
     Logger logger = LoggerFactory.getLogger(MapIdentityManager.class);
 
-    private final Map<String, Object> users;
+    private final IMap<String, Object> users;
 
-    public MapIdentityManager(final Map<String, Object> users) {
+    public MapIdentityManager(final IMap<String, Object> users) {
         this.users = users;
     }
 

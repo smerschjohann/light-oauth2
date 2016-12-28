@@ -1,9 +1,6 @@
 package com.networknt.oauth.code.handler;
 
-import com.networknt.client.Client;
 import com.networknt.config.Config;
-import com.networknt.exception.ClientException;
-import com.networknt.exception.ApiException;
 import com.networknt.status.Status;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.*;

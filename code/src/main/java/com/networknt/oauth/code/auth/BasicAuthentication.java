@@ -1,7 +1,7 @@
 package com.networknt.oauth.code.auth;
 
 import com.networknt.exception.ApiException;
-import com.networknt.oauth.code.PathHandlerProvider;
+import com.networknt.oauth.cache.CacheStartupHookProvider;
 import com.networknt.status.Status;
 import com.networknt.utility.HashUtil;
 import io.undertow.server.HttpServerExchange;
@@ -15,9 +15,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -29,7 +26,7 @@ import static io.undertow.util.Headers.BASIC;
  * Created by stevehu on 2016-12-18.
  */
 @Deprecated
-public class BasicAuthentication extends AbstractAuthentication {
+public class BasicAuthentication implements Authentication {
     static Logger logger = LoggerFactory.getLogger(BasicAuthentication.class);
     static String INCORRECT_PASSWORD = "ERR12016";
     static String USER_NOT_FOUND = "ERR12013";
@@ -61,10 +58,7 @@ public class BasicAuthentication extends AbstractAuthentication {
                             String userId = plainChallenge.substring(0, colonPos);
                             String password = plainChallenge.substring(colonPos + 1);
                             // match with db/cached user credentials.
-                            Map<String, Object> user = (Map<String, Object>)PathHandlerProvider.users.get(userId);
-                            if(user == null) {
-                                user = selectUser(userId);
-                            }
+                            Map<String, Object> user = (Map<String, Object>) CacheStartupHookProvider.hz.getMap("users").get(userId);
                             if(user == null) {
                                 throw new ApiException(new Status(USER_NOT_FOUND));
                             }
