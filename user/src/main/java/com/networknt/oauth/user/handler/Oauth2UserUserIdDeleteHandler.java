@@ -1,5 +1,7 @@
 package com.networknt.oauth.user.handler;
 
+import com.hazelcast.core.IMap;
+import com.networknt.oauth.cache.CacheStartupHookProvider;
 import com.networknt.oauth.user.PathHandlerProvider;
 import com.networknt.service.SingletonServiceFactory;
 import com.networknt.status.Status;
@@ -20,28 +22,18 @@ import javax.sql.DataSource;
 
 public class Oauth2UserUserIdDeleteHandler implements HttpHandler {
     static String USER_NOT_FOUND = "ERR12013";
-
     static Logger logger = LoggerFactory.getLogger(Oauth2UserUserIdDeleteHandler.class);
-    static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    static String sql = "DELETE FROM users WHERE user_id = ?";
 
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         String userId = exchange.getQueryParameters().get("userId").getFirst();
-        try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, userId);
-            int count = stmt.executeUpdate();
-            if(count == 1) {
-                PathHandlerProvider.services.remove(userId);
-            } else {
-                Status status = new Status(USER_NOT_FOUND, userId);
-                exchange.setStatusCode(status.getStatusCode());
-                exchange.getResponseSender().send(status.toString());
-                return;
-            }
-        } catch (SQLException e) {
-            logger.error("Exception:", e);
-            // should handle this exception and return an error message.
-            throw e;
+        IMap<String, Object> users = CacheStartupHookProvider.hz.getMap("users");
+        if(users.get(userId) == null) {
+            Status status = new Status(USER_NOT_FOUND, userId);
+            exchange.setStatusCode(status.getStatusCode());
+            exchange.getResponseSender().send(status.toString());
+            return;
+        } else {
+            users.delete(userId);
         }
     }
 }

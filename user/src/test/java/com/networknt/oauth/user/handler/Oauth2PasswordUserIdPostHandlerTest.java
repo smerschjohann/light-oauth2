@@ -1,6 +1,7 @@
 package com.networknt.oauth.user.handler;
 
 import com.networknt.client.Client;
+import com.networknt.oauth.cache.CacheStartupHookProvider;
 import com.networknt.utility.HashUtil;
 import com.networknt.oauth.user.PathHandlerProvider;
 import com.networknt.server.Server;
@@ -81,7 +82,7 @@ public class Oauth2PasswordUserIdPostHandlerTest {
             Assert.assertEquals(200, response.getStatusLine().getStatusCode());
             String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
             logger.debug("Response body = " + body);
-            Map<String, Object> user = (Map<String, Object>)PathHandlerProvider.users.get("admin");
+            Map<String, Object> user = (Map<String, Object>) CacheStartupHookProvider.hz.getMap("users").get("admin");
             boolean match = HashUtil.validatePassword("stevehu", (String)user.get("password"));
             Assert.assertTrue(match);
         } catch (Exception e) {

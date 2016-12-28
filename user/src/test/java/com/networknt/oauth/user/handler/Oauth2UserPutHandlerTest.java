@@ -29,7 +29,7 @@ public class Oauth2UserPutHandlerTest {
 
     @Test
     public void testOauth2UserPutHandler() throws ClientException, ApiException, UnsupportedEncodingException {
-        String user = "{\"firstName\":\"Steve\",\"lastName\":\"Hu\",\"userType\":\"partner\",\"userId\":\"stevehu\",\"email\":\"stevehu@gmail.com\"}";
+        String user = "{\"firstName\":\"Steve\",\"lastName\":\"Hu\",\"userType\":\"partner\",\"userId\":\"test\",\"email\":\"test@gmail.com\"}";
         CloseableHttpClient client = Client.getInstance().getSyncClient();
         HttpPut httpPut = new HttpPut("http://localhost:6885/oauth2/user");
         httpPut.setHeader("Content-type", "application/json");
