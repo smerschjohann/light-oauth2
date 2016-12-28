@@ -75,7 +75,7 @@ public class ClientMapStore implements MapStore<String, Map<String, Object>> {
     }
     @Override
     public synchronized void deleteAll(Collection<String> keys) {
-        for (String key : keys) delete(key);
+        keys.forEach(this::delete);
     }
     @Override
     public synchronized Map<String, Object> load(String key) {

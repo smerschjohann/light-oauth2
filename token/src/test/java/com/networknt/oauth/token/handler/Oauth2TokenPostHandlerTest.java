@@ -52,7 +52,7 @@ public class Oauth2TokenPostHandlerTest {
         HttpPost httpPost = new HttpPost(url);
         httpPost.setHeader("Authorization", "Basic " + encodeCredentials("f7d42348-c647-4efb-a52d-4c5787421e72", "f6h1FTI8Q3-7UScPZDzfXA"));
 
-        List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+        List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("grant_type", "client_credentials"));
         httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
         HttpResponse response = client.execute(httpPost);
@@ -82,7 +82,7 @@ public class Oauth2TokenPostHandlerTest {
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);
         httpPost.setHeader("Authorization", "Basic " + encodeCredentials("f7d42348-c647-4efb-a52d-4c5787421e72", "f6h1FTI8Q3-7UScPZDzfXA"));
-        List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+        List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("grant_type", "fake"));
         httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
         HttpResponse response = client.execute(httpPost);
@@ -98,7 +98,7 @@ public class Oauth2TokenPostHandlerTest {
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);
         //httpPost.setHeader("Authorization", "Basic " + encodeCredentials("f7d42348-c647-4efb-a52d-4c5787421e72", "f6h1FTI8Q3-7UScPZDzfXA"));
-        List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+        List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("grant_type", "client_credentials"));
         httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
         HttpResponse response = client.execute(httpPost);
@@ -115,7 +115,7 @@ public class Oauth2TokenPostHandlerTest {
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);
         httpPost.setHeader("Authorization", "Basic " + encodeCredentials("fake", "f6h1FTI8Q3-7UScPZDzfXA"));
-        List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+        List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("grant_type", "client_credentials"));
         httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
         HttpResponse response = client.execute(httpPost);
@@ -132,7 +132,7 @@ public class Oauth2TokenPostHandlerTest {
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);
         httpPost.setHeader("Authorization", "Basic " + encodeCredentials("f7d42348-c647-4efb-a52d-4c5787421e72", "fake"));
-        List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+        List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("grant_type", "client_credentials"));
         httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
         HttpResponse response = client.execute(httpPost);
@@ -148,7 +148,7 @@ public class Oauth2TokenPostHandlerTest {
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);
         httpPost.setHeader("Authorization", "Basic abc");
-        List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+        List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("grant_type", "client_credentials"));
         httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
         HttpResponse response = client.execute(httpPost);
@@ -164,7 +164,7 @@ public class Oauth2TokenPostHandlerTest {
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);
         httpPost.setHeader("Authorization", "Bearer abc");
-        List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+        List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("grant_type", "client_credentials"));
         httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
         HttpResponse response = client.execute(httpPost);

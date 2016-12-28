@@ -38,15 +38,13 @@ public class Oauth2TokenPostHandler implements HttpHandler {
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         ObjectMapper mapper = Config.getInstance().getMapper();
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-        Map<String, Object> formMap = new HashMap<String, Object>();
+        Map<String, Object> formMap = new HashMap<>();
 
         final FormParserFactory parserFactory = FormParserFactory.builder().build();
         final FormDataParser parser = parserFactory.createParser(exchange);
         try {
             FormData data = parser.parseBlocking();
-            Iterator<String> it = data.iterator();
-            while(it.hasNext()) {
-                String fd = it.next();
+            for (String fd : data) {
                 for (FormData.FormValue val : data.get(fd)) {
                     //logger.debug("fd = " + fd + " value = " + val.getValue());
                     formMap.put(fd, val.getValue());
@@ -111,7 +109,7 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                             } catch (Exception e) {
                                 throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
                             }
-                            Map<String, Object> resMap = new HashMap<String, Object>();
+                            Map<String, Object> resMap = new HashMap<>();
                             resMap.put("access_token", jwt);
                             resMap.put("token_type", "bearer");
                             resMap.put("expires_in", 600);
@@ -168,7 +166,7 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                                 } catch (Exception e) {
                                     throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
                                 }
-                                Map<String, Object> resMap = new HashMap<String, Object>();
+                                Map<String, Object> resMap = new HashMap<>();
                                 resMap.put("access_token", jwt);
                                 resMap.put("token_type", "bearer");
                                 resMap.put("expires_in", 600);

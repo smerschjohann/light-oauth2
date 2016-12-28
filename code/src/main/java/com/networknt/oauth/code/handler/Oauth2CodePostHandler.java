@@ -29,7 +29,7 @@ public class Oauth2CodePostHandler implements HttpHandler {
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
 
         // parse all the parameters here as this is a redirected get request.
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         Map<String, Deque<String>> pnames = exchange.getQueryParameters();
         for (Map.Entry<String, Deque<String>> entry : pnames.entrySet()) {
             String pname = entry.getKey();
