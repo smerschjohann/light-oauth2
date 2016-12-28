@@ -42,6 +42,7 @@ public class Oauth2KeyKeyIdGetHandler implements HttpHandler {
     private static final int PREFIX_LENGTH = BASIC_PREFIX.length();
     private static final String COLON = ":";
 
+    @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         // check if client_id and client_secret in header are valid pair.
         HeaderValues values = exchange.getRequestHeaders().get(AUTHORIZATION);

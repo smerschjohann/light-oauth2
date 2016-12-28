@@ -13,6 +13,7 @@ import io.undertow.util.Methods;
 import java.util.Map;
 
 public class PathHandlerProvider implements HandlerProvider {
+    @Override
     public HttpHandler getHandler() {
         HttpHandler handler = Handlers.routing()
             .add(Methods.POST, "/oauth2/password/{userId}", new Oauth2PasswordUserIdPostHandler())

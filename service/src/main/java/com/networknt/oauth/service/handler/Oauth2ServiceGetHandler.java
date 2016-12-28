@@ -27,7 +27,7 @@ public class Oauth2ServiceGetHandler implements HttpHandler {
     static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
     static String sql = "SELECT * FROM services";
     static final String SQL_EXCEPTION = "ERR10017";
-
+    @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         List<Map<String, Object>> result = new ArrayList<>();
         try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {

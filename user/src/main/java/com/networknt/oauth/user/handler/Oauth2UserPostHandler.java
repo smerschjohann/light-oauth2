@@ -27,7 +27,7 @@ public class Oauth2UserPostHandler implements HttpHandler {
     static final String USER_ID_EXISTS = "ERR12020";
 
     static Logger logger = LoggerFactory.getLogger(Oauth2UserPostHandler.class);
-
+    @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         Map<String, Object> user = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);
         String password = (String)user.get("password");

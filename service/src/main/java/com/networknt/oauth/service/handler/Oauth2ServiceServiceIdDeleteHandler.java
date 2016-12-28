@@ -24,7 +24,7 @@ import javax.sql.DataSource;
 public class Oauth2ServiceServiceIdDeleteHandler implements HttpHandler {
     static String SERVICE_NOT_FOUND = "ERR12015";
     static Logger logger = LoggerFactory.getLogger(Oauth2ServiceServiceIdGetHandler.class);
-
+    @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         String serviceId = exchange.getQueryParameters().get("serviceId").getFirst();
         IMap<String, Object> services = CacheStartupHookProvider.hz.getMap("services");

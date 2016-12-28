@@ -26,7 +26,7 @@ import java.util.Map;
 public class Oauth2UserUserIdGetHandler implements HttpHandler {
     static String USER_NOT_FOUND = "ERR12013";
     static Logger logger = LoggerFactory.getLogger(Oauth2UserUserIdGetHandler.class);
-
+    @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         String userId = exchange.getQueryParameters().get("userId").getFirst();
 

@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 public class Oauth2UserUserIdDeleteHandler implements HttpHandler {
     static String USER_NOT_FOUND = "ERR12013";
     static Logger logger = LoggerFactory.getLogger(Oauth2UserUserIdDeleteHandler.class);
-
+    @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         String userId = exchange.getQueryParameters().get("userId").getFirst();
         IMap<String, Object> users = CacheStartupHookProvider.hz.getMap("users");

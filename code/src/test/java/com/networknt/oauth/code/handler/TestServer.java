@@ -12,11 +12,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestServer extends ExternalResource {
     static final Logger logger = LoggerFactory.getLogger(TestServer.class);
 
-    private static volatile int refCount = 0;
+    private static AtomicInteger refCount = new AtomicInteger(0);
     private static Server server;
 
     private static final TestServer instance  = new TestServer();
@@ -43,20 +44,22 @@ public class TestServer extends ExternalResource {
 
     }
 
+    @Override
     protected void before() {
         try {
-            if (refCount == 0) {
+            if (refCount.get() == 0) {
                 server.start();
             }
         }
         finally {
-            refCount++;
+            refCount.getAndIncrement();
         }
     }
 
+    @Override
     protected void after() {
-        refCount--;
-        if (refCount == 0) {
+        refCount.getAndDecrement();
+        if (refCount.get() == 0) {
             server.stop();
         }
     }
