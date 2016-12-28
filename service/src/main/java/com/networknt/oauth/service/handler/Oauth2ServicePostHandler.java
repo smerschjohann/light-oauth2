@@ -2,26 +2,14 @@ package com.networknt.oauth.service.handler;
 
 import com.hazelcast.core.IMap;
 import com.networknt.body.BodyHandler;
-import com.networknt.oauth.cache.CacheShutdownHookProvider;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
-import com.networknt.oauth.service.PathHandlerProvider;
-import com.networknt.service.SingletonServiceFactory;
 import com.networknt.status.Status;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.HttpString;
-
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
+import java.util.Map;
 
 public class Oauth2ServicePostHandler implements HttpHandler {
     static Logger logger = LoggerFactory.getLogger(Oauth2ServicePostHandler.class);
@@ -38,7 +26,6 @@ public class Oauth2ServicePostHandler implements HttpHandler {
             Status status = new Status(SERVICE_ID_EXISTS, serviceId);
             exchange.setStatusCode(status.getStatusCode());
             exchange.getResponseSender().send(status.toString());
-            return;
         }
     }
 }

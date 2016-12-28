@@ -3,10 +3,13 @@ package com.networknt.oauth.code.handler;
 import com.networknt.config.Config;
 import com.networknt.status.Status;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +36,7 @@ public class Oauth2CodeGetHandlerTest {
         httpGet.setHeader("Authorization", "Basic " + encodeCredentials("admin", "123456"));
         CloseableHttpResponse response = client.execute(httpGet);
         int statusCode = response.getStatusLine().getStatusCode();
-        String body  = IOUtils.toString(response.getEntity().getContent(), "utf8");
+        //String body  = IOUtils.toString(response.getEntity().getContent(), "utf8");
         Assert.assertEquals(statusCode, 302);
 
         // at this moment, an exception will help as it is redirected to localhost:8080 and it is not up.
@@ -93,7 +96,7 @@ public class Oauth2CodeGetHandlerTest {
             String body  = IOUtils.toString(response.getEntity().getContent(), "utf8");
             Assert.assertEquals(401, statusCode);
             if(statusCode == 401) {
-                Status status = Config.getInstance().getMapper().readValue(response.getEntity().getContent(), Status.class);
+                Status status = Config.getInstance().getMapper().readValue(body, Status.class);
                 Assert.assertNotNull(status);
                 Assert.assertEquals("ERR12016", status.getCode());
                 Assert.assertEquals("INCORRECT_PASSWORD", status.getMessage()); // client_id missing
@@ -136,7 +139,7 @@ public class Oauth2CodeGetHandlerTest {
             String body  = IOUtils.toString(response.getEntity().getContent(), "utf8");
             Assert.assertEquals(404, statusCode);
             if(statusCode == 404) {
-                Status status = Config.getInstance().getMapper().readValue(response.getEntity().getContent(), Status.class);
+                Status status = Config.getInstance().getMapper().readValue(body, Status.class);
                 Assert.assertNotNull(status);
                 Assert.assertEquals("ERR12014", status.getCode());
                 Assert.assertEquals("CLIENT_NOT_FOUND", status.getMessage()); // client not found

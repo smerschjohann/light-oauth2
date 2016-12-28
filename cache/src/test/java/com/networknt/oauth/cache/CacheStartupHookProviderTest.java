@@ -1,6 +1,5 @@
 package com.networknt.oauth.cache;
 
-import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 import com.networknt.service.SingletonServiceFactory;
 import org.h2.tools.RunScript;
@@ -49,6 +48,7 @@ public class CacheStartupHookProviderTest {
         System.out.println("@AfterClass - runOnceAfterClass");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testClientCache() {
         CacheStartupHookProvider start = new CacheStartupHookProvider();
@@ -71,6 +71,7 @@ public class CacheStartupHookProviderTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testServiceCache() {
         CacheStartupHookProvider start = new CacheStartupHookProvider();
@@ -95,6 +96,7 @@ public class CacheStartupHookProviderTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testUserCache() {
         CacheStartupHookProvider start = new CacheStartupHookProvider();

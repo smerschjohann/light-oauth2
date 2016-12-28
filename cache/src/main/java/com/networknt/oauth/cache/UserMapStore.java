@@ -101,7 +101,7 @@ public class UserMapStore implements MapStore<String, Map<String, Object>> {
     }
     @Override
     public synchronized Map<String, Map<String, Object>> loadAll(Collection<String> keys) {
-        Map<String, Map<String, Object>> result = new HashMap();
+        Map<String, Map<String, Object>> result = new HashMap<>();
         for (String key : keys) result.put(key, load(key));
         return result;
     }

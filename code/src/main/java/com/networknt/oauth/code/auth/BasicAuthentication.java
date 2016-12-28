@@ -46,7 +46,7 @@ public class BasicAuthentication implements Authentication {
                 if (current.toLowerCase(Locale.ENGLISH).startsWith(LOWERCASE_BASIC_PREFIX)) {
 
                     String base64Challenge = current.substring(PREFIX_LENGTH);
-                    String plainChallenge = null;
+                    String plainChallenge;
                     try {
                         ByteBuffer decode = FlexBase64.decode(base64Challenge);
                         // assume charset is UTF_8
@@ -54,7 +54,7 @@ public class BasicAuthentication implements Authentication {
                         plainChallenge = new String(decode.array(), decode.arrayOffset(), decode.limit(), charset);
                         logger.debug("Found basic auth header %s (decoded using charset %s) in %s", plainChallenge, charset, exchange);
                         int colonPos;
-                        if (plainChallenge != null && (colonPos = plainChallenge.indexOf(COLON)) > -1) {
+                        if ((colonPos = plainChallenge.indexOf(COLON)) > -1) {
                             String userId = plainChallenge.substring(0, colonPos);
                             String password = plainChallenge.substring(colonPos + 1);
                             // match with db/cached user credentials.

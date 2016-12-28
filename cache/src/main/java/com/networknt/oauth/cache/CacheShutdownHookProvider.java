@@ -1,8 +1,6 @@
 package com.networknt.oauth.cache;
 
-import com.hazelcast.core.HazelcastInstance;
 import com.networknt.server.ShutdownHookProvider;
-import com.networknt.server.StartupHookProvider;
 
 /**
  * Created by stevehu on 2016-12-27.

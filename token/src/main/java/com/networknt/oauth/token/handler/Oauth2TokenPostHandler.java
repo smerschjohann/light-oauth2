@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.config.Config;
 import com.networknt.exception.ApiException;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
-import com.networknt.oauth.token.PathHandlerProvider;
 import com.networknt.security.JwtHelper;
-import com.networknt.service.SingletonServiceFactory;
 import com.networknt.status.Status;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -15,16 +13,10 @@ import io.undertow.server.handlers.form.FormData;
 import io.undertow.server.handlers.form.FormDataParser;
 import io.undertow.server.handlers.form.FormParserFactory;
 import io.undertow.util.Headers;
-import io.undertow.util.HttpString;
 import org.jose4j.jwt.JwtClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -75,13 +67,11 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                 Status status = new Status(UNSUPPORTED_GRANT_TYPE, formMap.get("grant_type"));
                 exchange.setStatusCode(status.getStatusCode());
                 exchange.getResponseSender().send(status.toString());
-                return;
             }
         } catch (JsonProcessingException e) {
             Status status = new Status(JSON_PROCESSING_EXCEPTION, e.getMessage());
             exchange.setStatusCode(status.getStatusCode());
             exchange.getResponseSender().send(status.toString());
-            return;
         } catch (ApiException e) {
             exchange.setStatusCode(e.getStatus().getStatusCode());
             exchange.getResponseSender().send(e.getStatus().toString());
@@ -114,7 +104,7 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                         String secret = (String)client.get("clientSecret");
                         if(secret.equals(clientSecret)) {
                             String scope = (String)client.get("scope");
-                            String jwt = null;
+                            String jwt;
                             try {
                                 jwt = JwtHelper.getJwt(mockCcClaims(clientId, scope));
                             } catch (Exception e) {
@@ -170,7 +160,7 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                             if(userId != null) {
                                 Map<String, Object> user = (Map<String, Object>)CacheStartupHookProvider.hz.getMap("users").get(userId);
                                 String scope = (String)client.get("scope");
-                                String jwt = null;
+                                String jwt;
                                 try {
                                     jwt = JwtHelper.getJwt(mockAcClaims(clientId, scope, userId, (String)user.get("userType")));
                                 } catch (Exception e) {

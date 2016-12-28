@@ -7,14 +7,14 @@ import com.networknt.utility.Util;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
+import io.undertow.util.StatusCodes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import io.undertow.util.StatusCodes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Oauth2CodePostHandler implements HttpHandler {
     static final Logger logger = LoggerFactory.getLogger(Oauth2CodeGetHandler.class);
@@ -44,7 +44,6 @@ public class Oauth2CodePostHandler implements HttpHandler {
             Status status = new Status(INVALID_CODE_REQUEST);
             exchange.setStatusCode(status.getStatusCode());
             exchange.getResponseSender().send(status.toString());
-            return;
         } else {
             // check if the client_id is valid
             Map<String, Object> client = (Map<String, Object>) CacheStartupHookProvider.hz.getMap("clients").get(clientId);
@@ -52,7 +51,6 @@ public class Oauth2CodePostHandler implements HttpHandler {
                 Status status = new Status(CLIENT_NOT_FOUND, clientId);
                 exchange.setStatusCode(status.getStatusCode());
                 exchange.getResponseSender().send(status.toString());
-                return;
             } else {
                 String clazz = (String)client.get("authenticateClass");
                 if(clazz == null) clazz = DEFAULT_AUTHENTICATE_CLASS;

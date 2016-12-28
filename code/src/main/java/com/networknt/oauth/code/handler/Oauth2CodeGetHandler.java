@@ -5,15 +5,16 @@ import com.networknt.status.Status;
 import com.networknt.utility.Util;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpHandler;
-import io.undertow.util.StatusCodes;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
+import io.undertow.util.StatusCodes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This handler is for get request, the credentials might in header or just query parameters.
@@ -47,7 +48,6 @@ public class Oauth2CodeGetHandler implements HttpHandler {
             Status status = new Status(INVALID_CODE_REQUEST);
             exchange.setStatusCode(status.getStatusCode());
             exchange.getResponseSender().send(status.toString());
-            return;
         } else {
             // check if the client_id is valid
             Map<String, Object> client = (Map<String, Object>) CacheStartupHookProvider.hz.getMap("clients").get(clientId);
@@ -55,7 +55,6 @@ public class Oauth2CodeGetHandler implements HttpHandler {
                 Status status = new Status(CLIENT_NOT_FOUND, clientId);
                 exchange.setStatusCode(status.getStatusCode());
                 exchange.getResponseSender().send(status.toString());
-                return;
             } else {
                 String code = Util.getUUID();
                 final SecurityContext context = exchange.getSecurityContext();

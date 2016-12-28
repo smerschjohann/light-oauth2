@@ -1,29 +1,23 @@
 package com.networknt.oauth.token.handler;
 
-import com.networknt.client.Client;
 import com.networknt.config.Config;
-import com.networknt.server.Server;
-import com.networknt.exception.ClientException;
-import com.networknt.exception.ApiException;
 import com.networknt.status.Status;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,13 +33,13 @@ public class Oauth2TokenPostHandlerTest {
     static final Logger logger = LoggerFactory.getLogger(Oauth2TokenPostHandlerTest.class);
 
     public static String encodeCredentials(String clientId, String clientSecret) {
-        String cred = "";
+        String cred;
         if(clientSecret != null) {
             cred = clientId + ":" + clientSecret;
         } else {
             cred = clientId;
         }
-        String encodedValue = null;
+        String encodedValue;
         byte[] encodedBytes = Base64.encodeBase64(cred.getBytes(UTF_8));
         encodedValue = new String(encodedBytes, UTF_8);
         return encodedValue;

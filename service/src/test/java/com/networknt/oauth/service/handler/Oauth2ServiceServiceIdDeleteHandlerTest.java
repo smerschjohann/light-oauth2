@@ -3,7 +3,6 @@ package com.networknt.oauth.service.handler;
 import com.networknt.client.Client;
 import com.networknt.exception.ApiException;
 import com.networknt.exception.ClientException;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.impl.client.CloseableHttpClient;

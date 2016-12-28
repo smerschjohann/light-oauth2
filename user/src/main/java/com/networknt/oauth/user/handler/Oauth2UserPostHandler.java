@@ -2,24 +2,15 @@ package com.networknt.oauth.user.handler;
 
 import com.hazelcast.core.IMap;
 import com.networknt.body.BodyHandler;
-import com.networknt.config.Config;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
-import com.networknt.utility.HashUtil;
-import com.networknt.oauth.user.PathHandlerProvider;
-import com.networknt.service.SingletonServiceFactory;
 import com.networknt.status.Status;
+import com.networknt.utility.HashUtil;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.HttpString;
-
-import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
+import java.util.Map;
 
 public class Oauth2UserPostHandler implements HttpHandler {
     static String PASSWORD_OR_PASSWORDCONFIRM_EMPTY = "ERR12011";
@@ -48,21 +39,18 @@ public class Oauth2UserPostHandler implements HttpHandler {
                     Status status = new Status(USER_ID_EXISTS, userId);
                     exchange.setStatusCode(status.getStatusCode());
                     exchange.getResponseSender().send(status.toString());
-                    return;
                 }
             } else {
                 // password and passwordConfirm not match.
                 Status status = new Status(PASSWORD_PASSWORDCONFIRM_NOT_MATCH, password, passwordConfirm);
                 exchange.setStatusCode(status.getStatusCode());
                 exchange.getResponseSender().send(status.toString());
-                return;
             }
         } else {
             // error password or passwordConform is empty
             Status status = new Status(PASSWORD_OR_PASSWORDCONFIRM_EMPTY, password, passwordConfirm);
             exchange.setStatusCode(status.getStatusCode());
             exchange.getResponseSender().send(status.toString());
-            return;
         }
     }
 }

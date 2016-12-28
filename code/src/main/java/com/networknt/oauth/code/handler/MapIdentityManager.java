@@ -47,6 +47,7 @@ public class MapIdentityManager implements IdentityManager {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private boolean verifyCredential(Account account, Credential credential) {
         boolean match = false;
         if (credential instanceof PasswordCredential) {

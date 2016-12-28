@@ -50,7 +50,7 @@ public class TestServer extends ExternalResource {
     protected void before() {
         try {
             if (refCount.get() == 0) {
-                server.start();
+                Server.start();
             }
         }
         finally {
@@ -62,7 +62,7 @@ public class TestServer extends ExternalResource {
     protected void after() {
         refCount.getAndDecrement();
         if (refCount.get() == 0) {
-            server.stop();
+            Server.stop();
         }
     }
 

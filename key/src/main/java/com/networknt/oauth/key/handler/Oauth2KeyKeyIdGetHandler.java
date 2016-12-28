@@ -9,6 +9,9 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.util.FlexBase64;
 import io.undertow.util.HeaderValues;
 import io.undertow.util.HttpString;
+import org.owasp.encoder.Encode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -16,10 +19,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Map;
-import org.owasp.encoder.Encode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 import static io.undertow.util.Headers.AUTHORIZATION;
 import static io.undertow.util.Headers.BASIC;
@@ -46,7 +45,7 @@ public class Oauth2KeyKeyIdGetHandler implements HttpHandler {
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         // check if client_id and client_secret in header are valid pair.
         HeaderValues values = exchange.getRequestHeaders().get(AUTHORIZATION);
-        String authHeader = null;
+        String authHeader;
         if(values != null) {
             authHeader = values.getFirst();
         } else {
@@ -83,7 +82,6 @@ public class Oauth2KeyKeyIdGetHandler implements HttpHandler {
                 Status status = new Status(KEY_NOT_FOUND, keyId);
                 exchange.setStatusCode(status.getStatusCode());
                 exchange.getResponseSender().send(status.toString());
-                return;
             }
         }
     }
@@ -92,7 +90,7 @@ public class Oauth2KeyKeyIdGetHandler implements HttpHandler {
         String result = null;
         if (authHeader.toLowerCase(Locale.ENGLISH).startsWith(LOWERCASE_BASIC_PREFIX)) {
             String base64Challenge = authHeader.substring(PREFIX_LENGTH);
-            String plainChallenge = null;
+            String plainChallenge;
             try {
                 ByteBuffer decode = FlexBase64.decode(base64Challenge);
                 // assume charset is UTF_8
@@ -100,7 +98,7 @@ public class Oauth2KeyKeyIdGetHandler implements HttpHandler {
                 plainChallenge = new String(decode.array(), decode.arrayOffset(), decode.limit(), charset);
                 logger.debug("Found basic auth header %s (decoded using charset %s) in %s", plainChallenge, charset, authHeader);
                 int colonPos;
-                if (plainChallenge != null && (colonPos = plainChallenge.indexOf(COLON)) > -1) {
+                if ((colonPos = plainChallenge.indexOf(COLON)) > -1) {
                     String clientId = plainChallenge.substring(0, colonPos);
                     String clientSecret = plainChallenge.substring(colonPos + 1);
                     // match with db/cached user credentials.
@@ -108,7 +106,7 @@ public class Oauth2KeyKeyIdGetHandler implements HttpHandler {
                     if(client == null) {
                         throw new ApiException(new Status(CLIENT_NOT_FOUND, clientId));
                     }
-                    if(clientSecret != null && !clientSecret.equals(client.get("clientSecret"))) {
+                    if(!clientSecret.equals(client.get("clientSecret"))) {
                         throw new ApiException(new Status(UNAUTHORIZED_CLIENT));
                     }
                     result = clientId;

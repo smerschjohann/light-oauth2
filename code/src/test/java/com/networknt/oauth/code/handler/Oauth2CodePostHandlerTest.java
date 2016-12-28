@@ -1,11 +1,12 @@
 package com.networknt.oauth.code.handler;
 
 import com.networknt.client.Client;
-import com.networknt.exception.ClientException;
 import com.networknt.exception.ApiException;
-import org.apache.http.client.methods.*;
+import com.networknt.exception.ClientException;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.junit.*;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

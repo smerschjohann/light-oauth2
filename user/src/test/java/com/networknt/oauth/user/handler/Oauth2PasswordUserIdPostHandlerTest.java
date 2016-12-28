@@ -1,24 +1,21 @@
 package com.networknt.oauth.user.handler;
 
 import com.networknt.client.Client;
+import com.networknt.exception.ApiException;
+import com.networknt.exception.ClientException;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
 import com.networknt.utility.HashUtil;
-import com.networknt.oauth.user.PathHandlerProvider;
-import com.networknt.server.Server;
-import com.networknt.exception.ClientException;
-import com.networknt.exception.ApiException;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 

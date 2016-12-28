@@ -17,6 +17,7 @@ import io.undertow.security.idm.IdentityManager;
 import io.undertow.security.impl.BasicAuthenticationMechanism;
 import io.undertow.server.HttpHandler;
 import io.undertow.util.Methods;
+
 import java.util.Collections;
 import java.util.List;
 

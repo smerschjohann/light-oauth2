@@ -3,22 +3,14 @@ package com.networknt.oauth.user.handler;
 import com.hazelcast.core.IMap;
 import com.networknt.body.BodyHandler;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
-import com.networknt.utility.HashUtil;
-import com.networknt.oauth.user.PathHandlerProvider;
-import com.networknt.service.SingletonServiceFactory;
 import com.networknt.status.Status;
+import com.networknt.utility.HashUtil;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.HttpString;
-
-import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
+import java.util.Map;
 
 public class Oauth2PasswordUserIdPostHandler implements HttpHandler {
     static String INCORRECT_PASSWORD = "ERR12016";
@@ -40,7 +32,6 @@ public class Oauth2PasswordUserIdPostHandler implements HttpHandler {
             Status status = new Status(USER_NOT_FOUND, userId);
             exchange.setStatusCode(status.getStatusCode());
             exchange.getResponseSender().send(status.toString());
-            return;
         } else {
             if(!HashUtil.validatePassword(password, (String)user.get("password"))) {
                 Status status = new Status(INCORRECT_PASSWORD);
@@ -56,7 +47,6 @@ public class Oauth2PasswordUserIdPostHandler implements HttpHandler {
                 Status status = new Status(PASSWORD_PASSWORDCONFIRM_NOT_MATCH, newPassword, newPasswordConfirm);
                 exchange.setStatusCode(status.getStatusCode());
                 exchange.getResponseSender().send(status.toString());
-                return;
             }
         }
     }
