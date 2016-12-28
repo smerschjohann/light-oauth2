@@ -29,7 +29,7 @@ public class Oauth2ServicePutHandlerTest {
 
     @Test
     public void testOauth2ServicePutHandler() throws ClientException, ApiException, UnsupportedEncodingException {
-        String service = "{\"serviceId\":\"AACT0002\",\"serviceType\":\"ms\",\"serviceName\":\"Retail Account\",\"serviceDesc\":\"Microservices for Retail Account\",\"scope\":\"act.r act.w\",\"ownerId\":\"admin\"}";
+        String service = "{\"serviceId\":\"AACT0001\",\"serviceType\":\"ms\",\"serviceName\":\"Retail Account\",\"serviceDesc\":\"Microservices for Retail Account\",\"scope\":\"act.r act.w\",\"ownerId\":\"admin\"}";
 
         CloseableHttpClient client = Client.getInstance().getSyncClient();
         HttpPut httpPut = new HttpPut("http://localhost:6883/oauth2/service");

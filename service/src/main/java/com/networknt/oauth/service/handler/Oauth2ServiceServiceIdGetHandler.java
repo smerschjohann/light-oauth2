@@ -1,8 +1,11 @@
 package com.networknt.oauth.service.handler;
 
+import com.hazelcast.core.IMap;
 import com.networknt.config.Config;
+import com.networknt.oauth.cache.CacheStartupHookProvider;
 import com.networknt.oauth.service.PathHandlerProvider;
 import com.networknt.service.SingletonServiceFactory;
+import com.networknt.status.Status;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.PathHandler;
@@ -22,41 +25,21 @@ import javax.sql.DataSource;
 
 public class Oauth2ServiceServiceIdGetHandler implements HttpHandler {
     static Logger logger = LoggerFactory.getLogger(Oauth2ServiceServiceIdGetHandler.class);
-    static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    static String sql = "SELECT * FROM services WHERE service_id = ?";
+    static final String SERVICE_NOT_FOUND = "ERR12015";
 
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-        Map<String, Object> result = null;
-
         String serviceId = exchange.getQueryParameters().get("serviceId").getFirst();
-        result = (Map<String, Object>)PathHandlerProvider.services.get(serviceId);
-        if(result != null) {
-            exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
-            exchange.getResponseSender().send(Config.getInstance().getMapper().writeValueAsString(result));
-        } else {
-            result = new HashMap<>();
-            try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setString(1, serviceId);
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        result.put("serviceId", serviceId);
-                        result.put("serviceType", rs.getString("service_type"));
-                        result.put("serviceName", rs.getString("service_name"));
-                        result.put("serviceDesc", rs.getString("service_desc"));
-                        result.put("scope", rs.getString("scope"));
-                        result.put("ownerId", rs.getString("owner_id"));
-                        result.put("createDt", rs.getDate("create_dt"));
-                        result.put("updateDt", rs.getDate("update_dt"));
-                        exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
-                        exchange.getResponseSender().send(Config.getInstance().getMapper().writeValueAsString(result));
-                    } else {
-                        // TODO not found.
-                    }
-                }
-            } catch (SQLException e) {
-                logger.error("Exception:", e);
-                throw e;
-            }
+
+        IMap<String, Object> services = CacheStartupHookProvider.hz.getMap("services");
+        Map<String, Object> service = (Map<String, Object>)services.get(serviceId);
+
+        if(service == null) {
+            Status status = new Status(SERVICE_NOT_FOUND, serviceId);
+            exchange.setStatusCode(status.getStatusCode());
+            exchange.getResponseSender().send(status.toString());
+            return;
         }
+        exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
+        exchange.getResponseSender().send(Config.getInstance().getMapper().writeValueAsString(service));
     }
 }

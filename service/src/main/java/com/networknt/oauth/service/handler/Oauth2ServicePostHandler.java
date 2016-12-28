@@ -1,8 +1,12 @@
 package com.networknt.oauth.service.handler;
 
+import com.hazelcast.core.IMap;
 import com.networknt.body.BodyHandler;
+import com.networknt.oauth.cache.CacheShutdownHookProvider;
+import com.networknt.oauth.cache.CacheStartupHookProvider;
 import com.networknt.oauth.service.PathHandlerProvider;
 import com.networknt.service.SingletonServiceFactory;
+import com.networknt.status.Status;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
@@ -21,26 +25,20 @@ import javax.sql.DataSource;
 
 public class Oauth2ServicePostHandler implements HttpHandler {
     static Logger logger = LoggerFactory.getLogger(Oauth2ServicePostHandler.class);
-    static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    static String sql = "INSERT INTO services (service_id, service_type, service_name, service_desc, scope, owner_id, create_dt) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?)";
+    static final String SERVICE_ID_EXISTS = "ERR12018";
 
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         Map<String, Object> service = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);
-        try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, (String)service.get("serviceId"));
-            stmt.setString(2, (String)service.get("serviceType"));
-            stmt.setString(3, (String)service.get("serviceName"));
-            stmt.setString(4, (String)service.get("serviceDesc"));
-            stmt.setString(5, (String)service.get("scope"));
-            stmt.setString(6, (String)service.get("ownerId"));
-            stmt.setDate(7, new Date(System.currentTimeMillis()));
-            stmt.executeUpdate();
-            PathHandlerProvider.services.put((String)service.get("serviceId"), service);
-        } catch (SQLException e) {
-            logger.error("Exception:", e);
-            // should handle this exception and return an error message.
-            throw e;
+        String serviceId = (String)service.get("serviceId");
+
+        IMap<String, Object> services = CacheStartupHookProvider.hz.getMap("services");
+        if(services.get(serviceId) == null) {
+            services.set(serviceId, service);
+        } else {
+            Status status = new Status(SERVICE_ID_EXISTS, serviceId);
+            exchange.setStatusCode(status.getStatusCode());
+            exchange.getResponseSender().send(status.toString());
+            return;
         }
     }
 }

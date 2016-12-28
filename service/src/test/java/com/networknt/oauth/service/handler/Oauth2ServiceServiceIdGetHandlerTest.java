@@ -32,8 +32,12 @@ public class Oauth2ServiceServiceIdGetHandlerTest {
 
         try {
             CloseableHttpResponse response = client.execute(httpGet);
-            Assert.assertEquals(200, response.getStatusLine().getStatusCode());
-            Assert.assertNotNull(IOUtils.toString(response.getEntity().getContent(), "utf8"));
+            int statusCode = response.getStatusLine().getStatusCode();
+            logger.debug("statusCode = " + statusCode);
+            String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            logger.debug("body = " + body);
+            Assert.assertEquals(200, statusCode);
+            Assert.assertNotNull(body);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -3,3 +3,4 @@
 
 # config Json Path to use Jackson Parser
 com.networknt.server.JsonPathStartupHookProvider
+com.networknt.oauth.cache.CacheStartupHookProvider
