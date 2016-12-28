@@ -1,9 +1,12 @@
 package com.networknt.oauth.client.handler;
 
+import com.hazelcast.core.IMap;
 import com.networknt.body.BodyHandler;
 import com.networknt.config.Config;
+import com.networknt.oauth.cache.CacheStartupHookProvider;
 import com.networknt.oauth.client.PathHandlerProvider;
 import com.networknt.service.SingletonServiceFactory;
+import com.networknt.status.Status;
 import com.networknt.utility.Util;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -24,37 +27,26 @@ import javax.sql.DataSource;
 public class Oauth2ClientPostHandler implements HttpHandler {
 
     static Logger logger = LoggerFactory.getLogger(Oauth2ClientPostHandler.class);
-    static DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    static String sql = "INSERT INTO clients (client_id, client_secret, client_type, client_name, client_desc, scope, " +
-            "redirect_url, owner_id, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    static String CLIENT_ID_EXISTS = "ERR12019";
 
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         Map<String, Object> client = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);
+
         // generate client_id and client_secret here.
         String clientId = UUID.randomUUID().toString();
         client.put("clientId", clientId);
         String clientSecret = Util.getUUID();
         client.put("clientSecret", clientSecret);
         client.put("createDt", new Date(System.currentTimeMillis()));
-        try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, clientId);
-            stmt.setString(2, clientSecret);
-            stmt.setString(3, (String)client.get("clientType"));
-            stmt.setString(4, (String)client.get("clientName"));
-            stmt.setString(5, (String)client.get("clientDesc"));
-            stmt.setString(6, (String)client.get("scope"));
-            stmt.setString(7, (String)client.get("redirectUrl"));
-            stmt.setString(8, (String)client.get("ownerId"));
-            stmt.setDate(9, (Date)client.get("createDt"));
-            stmt.executeUpdate();
-            // put it into the cache
-            PathHandlerProvider.clients.put(clientId, client);
-            exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
-            exchange.getResponseSender().send(Config.getInstance().getMapper().writeValueAsString(client));
-        } catch (SQLException e) {
-            logger.error("Exception:", e);
-            // should handle this exception and return an error message.
-            throw e;
+
+        IMap<String, Object> clients = CacheStartupHookProvider.hz.getMap("clients");
+        if(clients.get(clientId) == null) {
+            clients.set(clientId, client);
+        } else {
+            Status status = new Status(CLIENT_ID_EXISTS, clientId);
+            exchange.setStatusCode(status.getStatusCode());
+            exchange.getResponseSender().send(status.toString());
+            return;
         }
     }
 }
