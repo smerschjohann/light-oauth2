@@ -5,7 +5,9 @@
       volumes:
         - ./db/oracle:/docker-entrypoint-initdb.d
       ports:
-        - 1521:1521
+        - "1521:1521"
+      networks:
+        - light
     oauth2-code:
       build: code/
       ports:
@@ -14,12 +16,12 @@
         - light
       depends_on:
         - oracle
-      logging:
-        driver: "gelf"
-        options:
-          gelf-address: "udp://localhost:12201"
-          tag: "oauth2-code"
-          env: "dev"
+      #logging:
+      #  driver: "gelf"
+      #  options:
+      #    gelf-address: "udp://localhost:12201"
+      #    tag: "oauth2-code"
+      #    env: "dev"
     oauth2-token:
       build: token/
       ports:
@@ -28,12 +30,12 @@
         - light
       depends_on:
         - oracle
-      logging:
-        driver: "gelf"
-        options:
-          gelf-address: "udp://localhost:12201"
-          tag: "oauth2-token"
-          env: "dev"
+      #logging:
+      #  driver: "gelf"
+      #  options:
+      #    gelf-address: "udp://localhost:12201"
+      #    tag: "oauth2-token"
+      #    env: "dev"
     oauth2-service:
       build: service/
       ports:
@@ -42,12 +44,12 @@
         - light
       depends_on:
         - oracle
-      logging:
-        driver: "gelf"
-        options:
-          gelf-address: "udp://localhost:12201"
-          tag: "oauth2-service"
-          env: "dev"
+      #logging:
+      #  driver: "gelf"
+      #  options:
+      #    gelf-address: "udp://localhost:12201"
+      #    tag: "oauth2-service"
+      #    env: "dev"
     oauth2-client:
       build: client/
       ports:
@@ -56,12 +58,12 @@
         - light
       depends_on:
         - oracle
-      logging:
-        driver: "gelf"
-        options:
-          gelf-address: "udp://localhost:12201"
-          tag: "oauth2-client"
-          env: "dev"
+      #logging:
+      #  driver: "gelf"
+      #  options:
+      #    gelf-address: "udp://localhost:12201"
+      #    tag: "oauth2-client"
+      #    env: "dev"
     oauth2-user:
       build: user/
       ports:
@@ -70,12 +72,12 @@
         - light
       depends_on:
         - oracle
-      logging:
-        driver: "gelf"
-        options:
-          gelf-address: "udp://localhost:12201"
-          tag: "oauth2-user"
-          env: "dev"
+      #logging:
+      #  driver: "gelf"
+      #  options:
+      #    gelf-address: "udp://localhost:12201"
+      #    tag: "oauth2-user"
+      #    env: "dev"
     oauth2-key:
       build: key/
       ports:
@@ -84,12 +86,12 @@
         - light
       depends_on:
         - oracle
-      logging:
-        driver: "gelf"
-        options:
-          gelf-address: "udp://localhost:12201"
-          tag: "oauth2-key"
-          env: "dev"
+      #logging:
+      #  driver: "gelf"
+      #  options:
+      #    gelf-address: "udp://localhost:12201"
+      #    tag: "oauth2-key"
+      #    env: "dev"
 
   networks:
     light:
