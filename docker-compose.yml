@@ -1,8 +1,80 @@
- version: '2'
- services:
-   oracle:
-     image: wnameless/oracle-xe-11g
-     volumes:
-       - ./db/oracle:/docker-entrypoint-initdb.d
-     ports:
-       - 1521:1521
+  version: '2'
+  services:
+    oracle:
+      image: wnameless/oracle-xe-11g
+      volumes:
+        - ./db/oracle:/docker-entrypoint-initdb.d
+      ports:
+        - 1521:1521
+    oauth2-code:
+      build: code/
+        ports:
+          - "6881:6881"
+        networks:
+          - light
+        logging:
+          driver: "gelf"
+          options:
+            gelf-address: "udp://localhost:12201"
+            tag: "oauth2-code"
+            env: "dev"
+    oauth2-token:
+      build: token/
+        ports:
+          - "6882:6882"
+        networks:
+          - light
+        logging:
+          driver: "gelf"
+          options:
+            gelf-address: "udp://localhost:12201"
+            tag: "oauth2-token"
+            env: "dev"
+    oauth2-service:
+      build: service/
+        ports:
+          - "6883:6883"
+        networks:
+          - light
+        logging:
+          driver: "gelf"
+          options:
+            gelf-address: "udp://localhost:12201"
+            tag: "oauth2-service"
+            env: "dev"
+    oauth2-client:
+      build: client/
+        ports:
+          - "6884:6884"
+        networks:
+          - light
+        logging:
+          driver: "gelf"
+          options:
+            gelf-address: "udp://localhost:12201"
+            tag: "oauth2-client"
+            env: "dev"
+    oauth2-user:
+      build: user/
+        ports:
+          - "6885:6885"
+        networks:
+          - light
+        logging:
+          driver: "gelf"
+          options:
+            gelf-address: "udp://localhost:12201"
+            tag: "oauth2-user"
+            env: "dev"
+    oauth2-key:
+      build: key/
+        ports:
+          - "6886:6886"
+        networks:
+          - light
+        logging:
+          driver: "gelf"
+          options:
+            gelf-address: "udp://localhost:12201"
+            tag: "oauth2-key"
+            env: "dev"

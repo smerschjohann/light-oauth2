@@ -2,49 +2,32 @@
 
 An OAuth2 service provider based on [light-java](https://github.com/networknt/light-java)
 
-There are three versions of OAuth2 servers that are designed for different purposes. 
-
-* OAuth2 Developer Server
-
-This is the simplest OAuth2 server designed for dev as it doesn't have any dependency. 
-Client and User info is retrieved from configuration files which can be externalized
-and modified. 
-
-This server has two endpoints:
-
-/oauth2/code      
-
-/oauth2/token
-
-The code endpoint is to authenticate user and provide authorization code redirect to
-the user-agent. It can handle 60K requests per second user login to get auth code on
-a core i7 laptop.
-
-The token endpoint is to issue access token and other tokens. It can generate 700
-private key signed JWT tokens per second on a core i7 laptop.
-
-As client and user info are in JSON config files, it can only manage up to hundreds
-of clients and users for development purpose.
-
-codebase can be accessed from dev branch and it is functional.
-
-* OAuth2 Enterprise Server
+# OAuth2 Enterprise Server
 
 A microservices and database based OAuth2 server that have several endpoints to 
-support user login, access token, user registration, service registration and 
-client registration. It can support millions users and thousands of clients and 
-services with scopes. It should be easily handle thousands of concurrent users and 
-each microservices can be scaled individually.
+support user login, access token, user registration, service registration, client 
+registration and public key certificate distribution. It can support millions users
+and thousands of clients and services with scopes. It should be easily handle 
+thousands of concurrent users and each service can be scaled individually if 
+necessary.
 
-codebase can be accessed from db branch and it is working in progress.
+Currently, it support Oracle XE 11g during runtime and H2 for test cases. MySQL and
+Postgres will be supported soon.
 
-* OAuth2 Provider Server
+Codebase can be accessed from db branch and specifications can be found at
+https://github.com/networknt/swagger
 
-This is a microservices based OAuth2 provider that built on top of light-eventuate
-with event sourcing and CQRS. It is designed for OAuth2 service providers who want
-ultimate scalability, maximum throughput and minimum latency.
 
-codebase can be accessed from kafka branch and it is in planning phase.
+# Start Oracle Docker Container
+There is a docker-compose.yml file in root folder of light-oauth2 and it can be used
+to start Oracle database. 
+
+```
+docker-compose up
+```
+
+The above command will start Oracle database and load init script from db folder.
+
 
 # Key generation
 
