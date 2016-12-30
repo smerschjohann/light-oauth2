@@ -12,6 +12,8 @@
         - "6881:6881"
       networks:
         - light
+      depends_on:
+        - oracle
       logging:
         driver: "gelf"
         options:
@@ -24,6 +26,8 @@
         - "6882:6882"
       networks:
         - light
+      depends_on:
+        - oracle
       logging:
         driver: "gelf"
         options:
@@ -36,6 +40,8 @@
         - "6883:6883"
       networks:
         - light
+      depends_on:
+        - oracle
       logging:
         driver: "gelf"
         options:
@@ -48,6 +54,8 @@
         - "6884:6884"
       networks:
         - light
+      depends_on:
+        - oracle
       logging:
         driver: "gelf"
         options:
@@ -60,6 +68,8 @@
         - "6885:6885"
       networks:
         - light
+      depends_on:
+        - oracle
       logging:
         driver: "gelf"
         options:
@@ -72,9 +82,15 @@
         - "6886:6886"
       networks:
         - light
+      depends_on:
+        - oracle
       logging:
         driver: "gelf"
         options:
           gelf-address: "udp://localhost:12201"
           tag: "oauth2-key"
           env: "dev"
+
+  networks:
+    light:
+      driver: bridge
