@@ -66,7 +66,7 @@ public class Oauth2CodePostHandler implements HttpHandler {
                 if(logger.isDebugEnabled()) logger.debug("User is authenticated " + userId);
                 // generate auth code
                 String code = Util.getUUID();
-                CacheStartupHookProvider.hz.getMap("codes").put(code, userId);
+                CacheStartupHookProvider.hz.getMap("codes").set(code, userId);
                 String redirectUrl = params.get("redirect_url");
                 if(redirectUrl == null) {
                     redirectUrl = (String)client.get("redirectUrl");
