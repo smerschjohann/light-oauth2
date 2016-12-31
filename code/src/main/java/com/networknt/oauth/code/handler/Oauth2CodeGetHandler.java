@@ -61,7 +61,7 @@ public class Oauth2CodeGetHandler implements HttpHandler {
                 final SecurityContext context = exchange.getSecurityContext();
                 String userId = context.getAuthenticatedAccount().getPrincipal().getName();
 
-                CacheStartupHookProvider.hz.getMap("code").put(code, userId);
+                CacheStartupHookProvider.hz.getMap("codes").set(code, userId);
                 String redirectUrl = params.get("redirect_url");
                 if(redirectUrl == null) {
                     redirectUrl = (String)client.get("redirectUrl");
