@@ -200,10 +200,10 @@ To add a new client.
 curl -H "Content-Type: application/json" -X POST -d '{"clientType":"mobile","clientName":"AccountViewer","clientDesc":"Retail Online Banking Account Viewer","scope":"act.r act.w","redirectUrl": "http://localhost:8080/authorization","ownerId":"admin"}' http://localhost:6884/oauth2/client
 ```
 
-And here is the result.
+And here is the result with client_id and client_secret.
 
 ```
-
+{"clientDesc":"Retail Online Banking Account Viewer","clientType":"mobile","redirectUrl":"http://localhost:8080/authorization","clientId":"e24e7110-c39f-49f1-85eb-8434cb577482","clientName":"AccountViewer","scope":"act.r act.w","clientSecret":"YDJLse8SQRapHyoMsdPUig","ownerId":"admin","createDt":"2016-12-31"}
 ```
 
 To query all clients.

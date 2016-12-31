@@ -2,6 +2,7 @@ package com.networknt.oauth.client.handler;
 
 import com.hazelcast.core.IMap;
 import com.networknt.body.BodyHandler;
+import com.networknt.config.Config;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
 import com.networknt.status.Status;
 import com.networknt.utility.Util;
@@ -33,6 +34,8 @@ public class Oauth2ClientPostHandler implements HttpHandler {
         IMap<String, Object> clients = CacheStartupHookProvider.hz.getMap("clients");
         if(clients.get(clientId) == null) {
             clients.set(clientId, client);
+            // send the client back with client_id and client_secret
+            exchange.getResponseSender().send(Config.getInstance().getMapper().writeValueAsString(client));
         } else {
             Status status = new Status(CLIENT_ID_EXISTS, clientId);
             exchange.setStatusCode(status.getStatusCode());
