@@ -1,4 +1,5 @@
-create table users (
+DROP TABLE users;
+CREATE TABLE users (
   user_id VARCHAR2(32) NOT NULL,
   user_type VARCHAR2(16) NOT NULL,  -- admin, customer, employee, partner
   first_name VARCHAR2(32) NOT NULL,
@@ -12,7 +13,8 @@ create table users (
 
 CREATE UNIQUE INDEX email_idx ON users(email);
 
-create table clients (
+DROP TABLE clients
+CREATE TABLE clients (
   client_id VARCHAR2(36) NOT NULL,
   client_type VARCHAR2(10) NOT NULL,  -- server, mobile, service, standalone, browser etc
   client_secret VARCHAR2(22) NOT NULL,
@@ -30,7 +32,8 @@ create table clients (
     REFERENCES users(user_id)
 );
 
-create table services (
+DROP TABLE services;
+CREATE TABLE services (
   service_id VARCHAR2(32) NOT NULL,
   service_type VARCHAR2(8) NOT NULL,  -- api, ms
   service_name VARCHAR2(32) NOT NULL,
