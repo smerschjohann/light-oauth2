@@ -1,4 +1,4 @@
-DROP TABLE users;
+DROP TABLE users CASCADE CONSTRAINTS;
 CREATE TABLE users (
   user_id VARCHAR2(32) NOT NULL,
   user_type VARCHAR2(16) NOT NULL,  -- admin, customer, employee, partner
@@ -13,7 +13,7 @@ CREATE TABLE users (
 
 CREATE UNIQUE INDEX email_idx ON users(email);
 
-DROP TABLE clients;
+DROP TABLE clients CASCADE CONSTRAINTS;
 CREATE TABLE clients (
   client_id VARCHAR2(36) NOT NULL,
   client_type VARCHAR2(10) NOT NULL,  -- server, mobile, service, standalone, browser etc
@@ -32,7 +32,7 @@ CREATE TABLE clients (
     REFERENCES users(user_id)
 );
 
-DROP TABLE services;
+DROP TABLE services CASCADE CONSTRAINTS;
 CREATE TABLE services (
   service_id VARCHAR2(32) NOT NULL,
   service_type VARCHAR2(8) NOT NULL,  -- api, ms

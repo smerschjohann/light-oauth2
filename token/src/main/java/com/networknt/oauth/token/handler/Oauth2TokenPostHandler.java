@@ -131,6 +131,7 @@ public class Oauth2TokenPostHandler implements HttpHandler {
 
     @SuppressWarnings("unchecked")
     private Map<String, Object> handleAuthorizationCode(HttpServerExchange exchange, String code) throws ApiException {
+        if(logger.isDebugEnabled()) logger.debug("code = " + code);
         // get Authorization header.
         String auth = exchange.getRequestHeaders().getFirst("Authorization");
         if(auth == null || auth.trim().length() == 0) {
@@ -154,7 +155,7 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                     if(client == null) {
                         throw new ApiException(new Status(CLIENT_NOT_FOUND, clientId));
                     } else {
-                        String secret = (String)client.get("client_secret");
+                        String secret = (String)client.get("clientSecret");
                         if(secret.equals(clientSecret)) {
                             String userId = (String)CacheStartupHookProvider.hz.getMap("codes").remove(code);
                             if(userId != null) {
