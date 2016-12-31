@@ -13,7 +13,7 @@ CREATE TABLE users (
 
 CREATE UNIQUE INDEX email_idx ON users(email);
 
-DROP TABLE clients
+DROP TABLE clients;
 CREATE TABLE clients (
   client_id VARCHAR2(36) NOT NULL,
   client_type VARCHAR2(10) NOT NULL,  -- server, mobile, service, standalone, browser etc
