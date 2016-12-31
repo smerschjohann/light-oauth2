@@ -1,6 +1,6 @@
   version: '2'
   services:
-    oracle:
+    oracledb:
       image: wnameless/oracle-xe-11g
       volumes:
         - ./db/oracle:/docker-entrypoint-initdb.d
@@ -15,7 +15,7 @@
       networks:
         - light
       depends_on:
-        - oracle
+        - oracledb
       #logging:
       #  driver: "gelf"
       #  options:
@@ -29,7 +29,7 @@
       networks:
         - light
       depends_on:
-        - oracle
+        - oracledb
       #logging:
       #  driver: "gelf"
       #  options:
@@ -43,7 +43,7 @@
       networks:
         - light
       depends_on:
-        - oracle
+        - oracledb
       #logging:
       #  driver: "gelf"
       #  options:
@@ -57,7 +57,7 @@
       networks:
         - light
       depends_on:
-        - oracle
+        - oracledb
       #logging:
       #  driver: "gelf"
       #  options:
@@ -71,7 +71,7 @@
       networks:
         - light
       depends_on:
-        - oracle
+        - oracledb
       #logging:
       #  driver: "gelf"
       #  options:
@@ -85,7 +85,7 @@
       networks:
         - light
       depends_on:
-        - oracle
+        - oracledb
       #logging:
       #  driver: "gelf"
       #  options:
