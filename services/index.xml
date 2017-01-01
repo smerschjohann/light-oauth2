@@ -1,58 +1,60 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Services-rsses on Light OAuth2 - OAuth2 Serivces based on Light Java</title>
+    <title>Services on Light OAuth2 - OAuth2 Serivces based on Light Java</title>
     <link>https://networknt.github.io/light-oauth2/services/index.xml</link>
-    <description>Recent content in Services-rsses on Light OAuth2 - OAuth2 Serivces based on Light Java</description>
+    <description>Recent content in Services on Light OAuth2 - OAuth2 Serivces based on Light Java</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Released under the MIT license</copyright>
-    <lastBuildDate>Sat, 31 Dec 2016 21:37:25 -0500</lastBuildDate>
+    <lastBuildDate>Sun, 01 Jan 2017 09:37:52 -0500</lastBuildDate>
     <atom:link href="https://networknt.github.io/light-oauth2/services/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Services</title>
+      <link>https://networknt.github.io/light-oauth2/services/</link>
+      <pubDate>Sun, 01 Jan 2017 09:37:52 -0500</pubDate>
+      
+      <guid>https://networknt.github.io/light-oauth2/services/</guid>
+      <description>&lt;p&gt;There are three editions of OAuth2 servers available and each edition has different set of services and endpoints. For
+Development edition, there is only one service to serve both code and token endpoints. And for Enterprise edition, there are six services with numeric endpoints. Provider edition is still in planning phase but it will have more features than Enterprise edition.&lt;/p&gt;
+
+&lt;p&gt;The following links documented services and endpoints served by each service for three editions.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;development/&#34;&gt;Development edition&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;enterprise/&#34;&gt;Enterprise edition&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;provider/&#34;&gt;Provider edition&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Provider Edition</title>
       <link>https://networknt.github.io/light-oauth2/services/provider/</link>
-      <pubDate>Sat, 31 Dec 2016 21:37:25 -0500</pubDate>
+      <pubDate>Sun, 01 Jan 2017 09:37:43 -0500</pubDate>
       
       <guid>https://networknt.github.io/light-oauth2/services/provider/</guid>
-      <description></description>
+      <description>&lt;p&gt;To be implemented.&lt;/p&gt;
+</description>
     </item>
     
     <item>
       <title>Enterprise Edition</title>
       <link>https://networknt.github.io/light-oauth2/services/enterprise/</link>
-      <pubDate>Sat, 31 Dec 2016 21:37:10 -0500</pubDate>
+      <pubDate>Sun, 01 Jan 2017 09:37:32 -0500</pubDate>
       
       <guid>https://networknt.github.io/light-oauth2/services/enterprise/</guid>
-      <description>
-
-&lt;h2 id=&#34;code&#34;&gt;Code&lt;/h2&gt;
-
-&lt;h2 id=&#34;token&#34;&gt;Token&lt;/h2&gt;
-
-&lt;h2 id=&#34;service&#34;&gt;Service&lt;/h2&gt;
-
-&lt;h2 id=&#34;client&#34;&gt;Client&lt;/h2&gt;
-
-&lt;h2 id=&#34;user&#34;&gt;User&lt;/h2&gt;
-
-&lt;h2 id=&#34;key&#34;&gt;Key&lt;/h2&gt;
-</description>
+      <description></description>
     </item>
     
     <item>
       <title>Development Edition</title>
       <link>https://networknt.github.io/light-oauth2/services/development/</link>
-      <pubDate>Sat, 31 Dec 2016 21:36:59 -0500</pubDate>
+      <pubDate>Sun, 01 Jan 2017 09:28:06 -0500</pubDate>
       
       <guid>https://networknt.github.io/light-oauth2/services/development/</guid>
-      <description>
-
-&lt;h2 id=&#34;code&#34;&gt;Code&lt;/h2&gt;
-
-&lt;h2 id=&#34;token&#34;&gt;Token&lt;/h2&gt;
-</description>
+      <description></description>
     </item>
     
   </channel>

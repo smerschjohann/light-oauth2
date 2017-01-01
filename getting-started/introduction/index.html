@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+  
+  
+  
+  
+   <html class="no-js"> 
+
+  <head lang="en-us">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=10" />
+    <title>OAuth2 Introduction - Light OAuth2 - OAuth2 Serivces based on Light Java</title>
+    <meta name="generator" content="Hugo 0.18.1" />
+
+    
+    <meta name="description" content="Light OAuth2 Docs">
+    
+    <link rel="canonical" href="https://networknt.github.io/light-oauth2/getting-started/introduction/">
+    
+    <meta name="author" content="Steve Hu">
+    
+
+    <meta property="og:url" content="https://networknt.github.io/light-oauth2/getting-started/introduction/">
+    <meta property="og:title" content="Light OAuth2 - OAuth2 Serivces based on Light Java">
+    <meta property="og:image" content="https://networknt.github.io/light-oauth2/images/logo.png">
+    <meta name="apple-mobile-web-app-title" content="Light OAuth2 - OAuth2 Serivces based on Light Java">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://networknt.github.io/light-oauth2/images/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="https://networknt.github.io/light-oauth2/images/favicon.ico">
+
+    <style>
+      @font-face {
+        font-family: 'Icon';
+        src: url('https://networknt.github.io/light-oauth2/fonts/icon.eot');
+        src: url('https://networknt.github.io/light-oauth2/fonts/icon.eot')
+               format('embedded-opentype'),
+             url('https://networknt.github.io/light-oauth2/fonts/icon.woff')
+               format('woff'),
+             url('https://networknt.github.io/light-oauth2/fonts/icon.ttf')
+               format('truetype'),
+             url('https://networknt.github.io/light-oauth2/fonts/icon.svg')
+               format('svg');
+        font-weight: normal;
+        font-style: normal;
+      }
+    </style>
+
+    <link rel="stylesheet" href="https://networknt.github.io/light-oauth2/stylesheets/application.css">
+    <link rel="stylesheet" href="https://networknt.github.io/light-oauth2/stylesheets/temporary.css">
+    <link rel="stylesheet" href="https://networknt.github.io/light-oauth2/stylesheets/palettes.css">
+    <link rel="stylesheet" href="https://networknt.github.io/light-oauth2/stylesheets/highlight/highlight.css">
+
+    
+    
+    
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ubuntu:400,700|Ubuntu&#43;Mono">
+    <style>
+      body, input {
+        font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
+      }
+      pre, code {
+        font-family: 'Ubuntu Mono', 'Courier New', 'Courier', monospace;
+      }
+    </style>
+
+    
+    <script src="https://networknt.github.io/light-oauth2/javascripts/modernizr.js"></script>
+
+    
+
+  </head>
+  <body class="palette-primary-red palette-accent-teal">
+
+
+
+	
+	
+
+
+<div class="backdrop">
+	<div class="backdrop-paper"></div>
+</div>
+
+<input class="toggle" type="checkbox" id="toggle-drawer">
+<input class="toggle" type="checkbox" id="toggle-search">
+<label class="toggle-button overlay" for="toggle-drawer"></label>
+
+<header class="header">
+	<nav aria-label="Header">
+  <div class="bar default">
+    <div class="button button-menu" role="button" aria-label="Menu">
+      <label class="toggle-button icon icon-menu" for="toggle-drawer">
+        <span></span>
+      </label>
+    </div>
+    <div class="stretch">
+      <div class="title">
+        OAuth2 Introduction
+      </div>
+    </div>
+
+    
+
+    
+    <div class="button button-github" role="button" aria-label="GitHub">
+      <a href="https://github.com/stevehu" title="@stevehu on GitHub" target="_blank" class="toggle-button icon icon-github"></a>
+    </div>
+    
+    
+        
+  </div>
+  <div class="bar search">
+    <div class="button button-close" role="button" aria-label="Close">
+      <label class="toggle-button icon icon-back" for="toggle-search"></label>
+    </div>
+    <div class="stretch">
+      <div class="field">
+        <input class="query" type="text" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck>
+      </div>
+    </div>
+    <div class="button button-reset" role="button" aria-label="Search">
+      <button class="toggle-button icon icon-close" id="reset-search"></button>
+    </div>
+  </div>
+</nav>
+</header>
+
+<main class="main">
+	<div class="drawer">
+		<nav aria-label="Navigation">
+  <a href="https://github.com/networknt/light-oauth2" class="project">
+    <div class="banner">
+      
+        <div class="logo">
+          <img src="https://networknt.github.io/light-oauth2/images/logo.png">
+        </div>
+      
+      <div class="name">
+        <strong>Light OAuth2 - OAuth2 Serivces based on Light Java <span class="version">1.0.0</span></strong>
+        
+          <br>
+          networknt/light-oauth2
+        
+      </div>
+    </div>
+  </a>
+
+  <div class="scrollable">
+    <div class="wrapper">
+      
+        <ul class="repo">
+          <li class="repo-download">
+            <a href="https://github.com/networknt/light-oauth2/archive/master.zip" target="_blank" title="Download" data-action="download">
+              <i class="icon icon-download"></i> Download
+            </a>
+          </li>
+          <li class="repo-stars">
+            <a href="https://github.com/networknt/light-oauth2/stargazers" target="_blank" title="Stargazers" data-action="star">
+              <i class="icon icon-star"></i> Stars
+              <span class="count">&ndash;</span>
+            </a>
+          </li>
+        </ul>
+        <hr>
+      
+
+      <div class="toc">
+        
+        <ul>
+          
+
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Introduction" href="https://networknt.github.io/light-oauth2/index.html">
+	
+	Introduction
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Getting started" href="https://networknt.github.io/light-oauth2/getting-started/">
+	
+	Getting started
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Architecture" href="https://networknt.github.io/light-oauth2/architecture/">
+	
+	Architecture
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Services" href="https://networknt.github.io/light-oauth2/services/">
+	
+	Services
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Tutorials" href="https://networknt.github.io/light-oauth2/tutorials/">
+	
+	Tutorials
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Examples" href="https://networknt.github.io/light-oauth2/example/">
+	
+	Examples
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Tools" href="https://networknt.github.io/light-oauth2/tools/">
+	
+	Tools
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Issues &amp; Help" href="https://github.com/networknt/light-oauth2/issues">
+	
+	Issues &amp; Help
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Roadmap" href="https://networknt.github.io/light-oauth2/roadmap/">
+	
+	Roadmap
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="License" href="https://www.apache.org/licenses/LICENSE-2.0">
+	
+	License
+</a>
+
+
+
+  
+</li>
+
+
+        </ul>
+        
+
+        
+        <hr>
+        <span class="section">The author</span>
+        
+        <ul>
+          
+
+          
+          <li>
+            <a href="https://github.com/stevehu" target="_blank" title="@stevehu on GitHub">
+              @stevehu on GitHub
+            </a>
+          </li>
+          
+
+          
+          <li>
+            <a href="mailto:stevehu@gmail.com" title="Email of stevehu@gmail.com">
+              Contact via email
+            </a>
+          </li>
+          
+        </ul>
+        
+      </div>
+    </div>
+  </div>
+</nav>
+
+	</div>
+
+	<article class="article">
+		<div class="wrapper">
+			<h1>OAuth2 Introduction </h1>
+
+			
+
+<p>OAuth 2 is an authorization framework that enables applications to obtain limited access
+to user&rsquo;s resources on an HTTP service - normally exposed as a REST API. It works by
+delegating user authentication to an authorization service which contains all sorts of login
+service providers like LDAP for employees and database for customers.</p>
+
+<p>OAuth 2 provides authorization flows for the following types of application to application
+communication:</p>
+
+<ul>
+<li>Web server to API</li>
+<li>Standalone application to API</li>
+<li>API to API</li>
+</ul>
+
+<p>This informational guide is geared towards application developers, and provides an
+overview of OAuth 2 roles, authorization grant types, use cases, and flows.</p>
+
+<h1 id="oauth-roles">OAuth Roles</h1>
+
+<p>OAuth defines four roles:</p>
+
+<ul>
+<li>Resource Owner</li>
+<li>Client</li>
+<li>Resource Server</li>
+<li>Authorization Server</li>
+</ul>
+
+<p>We will detail each role in the following subsections.</p>
+
+<h2 id="resource-owner-user">Resource Owner: User</h2>
+
+<p>The resource owner is the user who authorizes an application to access their resources.
+The application&rsquo;s access to the user&rsquo;s resource is limited to the &ldquo;scope&rdquo; of the
+authorization granted (e.g. read or write access).</p>
+
+<h2 id="resource-server-api">Resource Server: API</h2>
+
+<p>The resource server hosts the protected user resources.</p>
+
+<h2 id="authorization-server-api">Authorization Server: API</h2>
+
+<p>the authorization server verifies the identity of the user then issues access tokens to
+the application.</p>
+
+<h2 id="client-application">Client: Application</h2>
+
+<p>The client is the application that wants to access the user&rsquo;s resources. Before it may
+do so, it must be authorized by the user, and the authorization must be validated by
+the API.</p>
+
+<h1 id="abstract-protocol-flow">Abstract Protocol Flow</h1>
+
+<p>Now that you have an idea of what the OAuth roles are, let&rsquo;s look at a diagram of how
+they generally interact with each other:</p>
+
+<p><img src="https://assets.digitalocean.com/articles/oauth/abstract_flow.png" alt="Abstract Flow" /></p>
+
+<p>Here is a more detailed explanation of the steps in the diagram:</p>
+
+<ol>
+<li>The application requests authorization to access service resources from the user</li>
+<li>If the user authorized the request, the application receives an authorization grant</li>
+<li>The application requests an access token from the authorization server (API) by
+presenting authentication of its own identity, and the authorization grant</li>
+<li>If the application identity is authenticated and the authorization grant is valid,
+the authorization server issues an access token to the application.</li>
+<li>The application requests the resource from the resource server (API) and presents the access
+token for authentication.</li>
+<li>If the access token is valid, the resource server (API) serves the resource to the application.</li>
+</ol>
+
+<p>The actual flow of this process will differ depending on the authorization grant type in use,
+but this is the general idea. We will explore different grant types in a later section.</p>
+
+<h1 id="application-registration">Application Registration</h1>
+
+<p>Before using OAuth with your application, you must register your application with
+the service. This is done through a registration form in the &ldquo;developer&rdquo; or &ldquo;API&rdquo;
+portion of the service&rsquo;s website, where you will provide the following information
+(and probably details about your application):</p>
+
+<ul>
+<li>Application Name</li>
+<li>Application Website</li>
+<li>Redirect URI or Callback URL</li>
+<li>The redirect URI is where the service will redirect the user after they authorize (or deny) your application, and therefore the part of your application that will handle authorization codes or access tokens.</li>
+</ul>
+
+<h1 id="client-id-and-client-secret">Client ID and Client Secret</h1>
+
+<p>Once your application is registered, the service will issue &ldquo;client credentials&rdquo; in
+the form of a client identifier and a client secret. The Client ID is a publicly
+exposed string that is used by the service API to identify the application, and is
+also used to build authorization URLs that are presented to users. The Client Secret
+is used to authenticate the identity of the application to the service API when the
+application requests to access a user&rsquo;s resource, and must be kept private between
+the application and the API.</p>
+
+<h1 id="authorization-grant">Authorization Grant</h1>
+
+<p>In the Abstract Protocol Flow above, the first four steps cover obtaining an
+authorization grant and access token. The authorization grant type depends on the
+method used by the application to request authorization, and the grant types
+supported by the Authorization server. OAuth 2 defines four grant types, each of which is useful in
+different cases:</p>
+
+<ul>
+<li>Authorization Code: used with server-side Applications</li>
+<li>Implicit: used with Mobile Apps or Web Applications (applications that run on the user&rsquo;s device)</li>
+<li>Resource Owner Password Credentials: used with trusted Applications, such as those owned by the service itself</li>
+<li>Client Credentials: used with Applications API access</li>
+</ul>
+
+<p>Now we will describe grant types in more detail, their use cases and flows, in the following sections.</p>
+
+<h1 id="grant-type-authorization-code">Grant Type: Authorization Code</h1>
+
+<p>The authorization code grant type is the most commonly used because it is optimized
+for server-side applications, where source code is not publicly exposed, and Client
+Secret confidentiality can be maintained. This is a redirection-based flow, which
+means that the application must be capable of interacting with the user-agent
+(i.e. the user&rsquo;s web browser) and receiving API authorization codes that are routed
+through the user-agent.</p>
+
+<p>Now we will describe the authorization code flow:</p>
+
+<p><img src="https://assets.digitalocean.com/articles/oauth/auth_code_flow.png" alt="Auth Code Flow" /></p>
+
+<p>Step 1: Authorization Code Link</p>
+
+<p>First, the user is given an authorization code link that looks like the following:</p>
+
+<pre><code>http://localhost:8888/oauth2/code?response_type=code&amp;client_id=6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d&amp;redirect_uri=http://localhost:8080/authorization
+</code></pre>
+
+<p>Here is an explanation of the link components:</p>
+
+<ul>
+<li><a href="http://localhost:8888/oauth2/code:">http://localhost:8888/oauth2/code:</a> the authorization endpoint</li>
+<li>client_id=6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d: the application&rsquo;s client_id (how the API identifies
+the application)</li>
+<li>redirect_uri=<a href="http://localhost:8080/authorization:">http://localhost:8080/authorization:</a> where the service redirects the user-agent after
+an authorization code is granted</li>
+<li>response_type=code: specifies that your application is requesting an authorization code grant</li>
+</ul>
+
+<p>Step 2: User Authorizes Application</p>
+
+<p>When the user clicks the link, they must first log in to the authorization service, to authenticate
+their identity (unless they are already logged in).</p>
+
+<p>Step 3: Application Receives Authorization Code</p>
+
+<p>If the user is authenticated, the service redirects the user-agent to
+the application redirect URI, which was specified during the client registration,
+along with an authorization code. The redirect would look something like this:</p>
+
+<pre><code>http://localhost:8080/authorization?code=rlbQn-mUT4ep-GLyRHaFsg
+</code></pre>
+
+<p>Step 4: Application Requests Access Token</p>
+
+<p>The application requests an access token from the API, by passing the authorization
+code along with authentication details, including the client secret, to the API
+token endpoint. Here is an example POST request to token endpoint:</p>
+
+<pre><code>Url:
+http://localhost:8888/oauth2/token
+
+Header:
+Authorization Basic 6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d:sQesTWAnTwaw-Nn0oK35GA
+
+Body in x-www-form-urlencoded
+grant_type=authorization_code
+code=rlbQn-mUT4ep-GLyRHaFsg
+
+</code></pre>
+
+<p>Step 5: Application Receives Access Token</p>
+
+<p>If the authorization is valid, the Authorization server will send a response containing the
+access token (and optionally, a refresh token) to the application. The entire response
+will look something like this:</p>
+
+<pre><code>{
+  &quot;access_token&quot;: &quot;eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1cm46Y29tOm5ldHdvcmtudDpvYXV0aDI6djEiLCJhdWQiOiJ1cm46Y29tLm5ldHdvcmtudCIsImV4cCI6MTQ3NDU3MDc3NiwianRpIjoiaXNRLWFMWGhFR21kcDZ1MVFNQWNsdyIsImlhdCI6MTQ3NDU3MDE3NiwibmJmIjoxNDc0NTcwMDU2LCJ2ZXJzaW9uIjoiMS4wIiwidXNlcl9pZCI6InN0ZXZlaHUiLCJ1c2VyX3R5cGUiOiJFTVBMT1lFRSIsImNsaWVudF9pZCI6IjZlOWQxZGIzLTJmZWItNGMxZi1hNWFkLTllOTNhZThjYTU5ZCIsInNjb3BlIjpbImFjY291bnQuciIsImFjY291bnQudyJdfQ.W8tUY-jsrwH5Z_4WkKRPGhO3H-GGFXMa3a_ng3CIzEkKdRcQpG_7x3T8e7qsMmMvo69zus4lo96k3Qb3nN29aMeYH7g1AoXAawNWLpahNQ9U1EIf_cHDY23qGCU0GudAyITBVqJJVei2LmlZTSnvPYbn2TpXjAC3tODNlWVLSmfn7rXDSEosllDyvrJrWOUV8-VOpBTgzjTLB8axwzoIZjmV6QoOHC9R4g27AbEDXNDNSPl4aEFh5rShkeF7Gd0h9XuA_PTY5WcFbhSZw7aXk1-tJQnLGMgznZwegcGjD_u7s9cWvuojjXTS-V7XUIokk88hIDprfKCmwlAO2yoeFA&quot;,
+  &quot;token_type&quot;: &quot;bearer&quot;,
+  &quot;expires_in&quot;: 600
+}
+</code></pre>
+
+<p>Now the application is authorized! It may use the token to access the user&rsquo;s resource
+via the service API, limited to the scope of access, until the token expires. If a
+refresh token was issued, it may be used to request new access tokens if the original
+token has expired.</p>
+
+<h1 id="grant-type-client-credentials">Grant Type: Client Credentials</h1>
+
+<p>The client credentials grant type provides an application a way to access its own
+service by passing client credentials through the header and specify grant_type in body
+to &ldquo;client_credentials&rdquo;.</p>
+
+<p>The application requests an access token by sending its credentials, its client_id
+and client_secret to the authorization server. An example POST request might look
+like the following:</p>
+
+<pre><code>Url:
+http://localhost:8888/oauth2/token
+
+Header:
+Authorization Basic 6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d:sQesTWAnTwaw-Nn0oK35GA
+
+Body in x-www-form-urlencoded
+grant_type=client_credentials
+
+</code></pre>
+
+<p>If the client credentials is correct, the authorization server returns an access token
+to the application. Now the application is authorized to use its own resource!</p>
+
+<pre><code>{
+  &quot;access_token&quot;: &quot;eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1cm46Y29tOm5ldHdvcmtudDpvYXV0aDI6djEiLCJhdWQiOiJ1cm46Y29tLm5ldHdvcmtudCIsImV4cCI6MTQ3NDU3MDk3MywianRpIjoicVNxbnozaTJ3NWE4SVh4YURNNnBKUSIsImlhdCI6MTQ3NDU3MDM3MywibmJmIjoxNDc0NTcwMjUzLCJ2ZXJzaW9uIjoiMS4wIiwiY2xpZW50X2lkIjoiNmU5ZDFkYjMtMmZlYi00YzFmLWE1YWQtOWU5M2FlOGNhNTlkIiwic2NvcGUiOlsiYWNjb3VudC5yIiwiYWNjb3VudC53Il19.Dl6pMiQ6NQf4DKSA2Hz2qlrIAvJDnTfXPsvCa2EUq3QOASXN_tPsttW2BB33rIsa9UE1meP-ipI6mubtM18LyUex50OoegQVZsde4vTRd0oldTxWV8euqmCGZcrauvw_E4-CG00lDbuXYXX2_CpZO6GLlkXeG07IMEAjBVG__sXvybmMTKx32dT1OtrI32ePJZe9Nazt-TMCIqAVa_E6zeEAiatX6mgDXM62xX_AKLnXQ04TpeTD4TXkV-JUQ6ZMtdfCIgAR0tMB6fKLDfHiOb2vMEz3q1COVIsS3ce7rRjaQKEYq6Zrao91ft1Y0fYbRL-jRhXRfVPbUUdxxhbjrg&quot;,
+  &quot;token_type&quot;: &quot;bearer&quot;,
+  &quot;expires_in&quot;: 600
+}
+</code></pre>
+
+<h1 id="example-access-token-usage">Example Access Token Usage</h1>
+
+<p>Once the application has an access token, it may use the token to access the user&rsquo;s
+resource via the API, limited to the scope of access, until the token expires.</p>
+
+<p>Here is an example of an API request, using curl. Note that it includes the access
+token:</p>
+
+<pre><code>curl -X POST -H &quot;Authorization: Bearer ACCESS_TOKEN&quot; &quot;http://localhost:8080/customer/111&quot; 
+</code></pre>
+
+<p>Assuming the access token is valid, the API will process the request according to its
+API specifications. If the access token is expired or otherwise invalid, the API will
+return an 401 error.</p>
+
+<h1 id="refresh-token-flow">Refresh Token Flow</h1>
+
+<p>After an access token expires, using it to make a request from the API will result in
+an &ldquo;Invalid Token Error&rdquo;. At this point, if a refresh token was included when the
+original access token was issued, it can be used to request a fresh access token from
+the authorization server.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>You should now have a good idea of how OAuth 2 works, and when a particular authorization
+flow should be used.</p>
+
+<p>If you want to learn more about OAuth 2, check out these valuable resources:</p>
+
+<p><a href="http://tools.ietf.org/html/rfc6749">OAuth2 RFC</a></p>
+
+<p><a href="https://tools.ietf.org/html/rfc7519">JWT RFC</a></p>
+
+
+			<aside class="copyright" role="note">
+				
+				&copy; 2017 Released under the MIT license &ndash;
+				
+				Documentation built with
+				<a href="https://www.gohugo.io" target="_blank">Hugo</a>
+				using the
+				<a href="http://github.com/digitalcraftsman/hugo-material-docs" target="_blank">Material</a> theme.
+			</aside>
+
+			<footer class="footer">
+				
+
+<nav class="pagination" aria-label="Footer">
+  <div class="previous">
+  
+      <a href="https://networknt.github.io/light-oauth2/tutorials/development/" title="development">
+        <span class="direction">
+          Previous
+        </span>
+        <div class="page">
+          <div class="button button-previous" role="button" aria-label="Previous">
+            <i class="icon icon-back"></i>
+          </div>
+          <div class="stretch">
+            <div class="title">
+              development
+            </div>
+          </div>
+        </div>
+      </a>
+  
+  </div>
+
+  <div class="next">
+  
+      <a href="https://networknt.github.io/light-oauth2/services/" title="Services">
+        <span class="direction">
+          Next
+        </span>
+        <div class="page">
+          <div class="stretch">
+            <div class="title">
+              Services
+            </div>
+          </div>
+          <div class="button button-next" role="button" aria-label="Next">
+            <i class="icon icon-forward"></i>
+          </div>
+        </div>
+      </a>
+  
+  </div>
+</nav>
+
+
+
+
+
+			</footer>
+		</div>
+	</article>
+
+	<div class="results" role="status" aria-live="polite">
+		<div class="scrollable">
+			<div class="wrapper">
+				<div class="meta"></div>
+				<div class="list"></div>
+			</div>
+		</div>
+	</div>
+</main>
+
+    <script>
+    
+      var base_url = 'https:\/\/networknt.github.io\/light-oauth2\/';
+      var repo_id  = 'networknt\/light-oauth2';
+    
+    </script>
+
+    <script src="https://networknt.github.io/light-oauth2/javascripts/application.js"></script>
+    
+
+    <script>
+      /* Add headers to scrollspy */
+      var headers   = document.getElementsByTagName("h2");
+      var scrollspy = document.getElementById('scrollspy');
+
+      if(scrollspy) {
+        if(headers.length > 0) {
+          for(var i = 0; i < headers.length; i++) {
+            var li = document.createElement("li");
+            li.setAttribute("class", "anchor");
+
+            var a  = document.createElement("a");
+            a.setAttribute("href", "#" + headers[i].id);
+            a.setAttribute("title", headers[i].innerHTML);
+            a.innerHTML = headers[i].innerHTML;
+
+            li.appendChild(a)
+            scrollspy.appendChild(li);
+          }
+        } else {
+          scrollspy.parentElement.removeChild(scrollspy)
+        }
+
+
+        /* Add permanent link next to the headers */
+        var headers = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+
+        for(var i = 0; i < headers.length; i++) {
+            var a = document.createElement("a");
+            a.setAttribute("class", "headerlink");
+            a.setAttribute("href", "#" + headers[i].id);
+            a.setAttribute("title", "Permanent link")
+            a.innerHTML = "#";
+            headers[i].appendChild(a);
+        }
+      }
+    </script>
+
+    
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>
+

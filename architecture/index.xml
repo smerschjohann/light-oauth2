@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Architecture-rsses on Light OAuth2 - OAuth2 Serivces based on Light Java</title>
+    <title>Architectures on Light OAuth2 - OAuth2 Serivces based on Light Java</title>
     <link>https://networknt.github.io/light-oauth2/architecture/index.xml</link>
-    <description>Recent content in Architecture-rsses on Light OAuth2 - OAuth2 Serivces based on Light Java</description>
+    <description>Recent content in Architectures on Light OAuth2 - OAuth2 Serivces based on Light Java</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Released under the MIT license</copyright>
@@ -20,13 +20,41 @@
 
 &lt;h2 id=&#34;microservices&#34;&gt;Microservices&lt;/h2&gt;
 
+&lt;p&gt;All three editions are built on top of Light-Java framework as microservices.&lt;/p&gt;
+
+&lt;p&gt;Development edition has only one service with two endpoints for code and token.&lt;/p&gt;
+
+&lt;p&gt;Enterprise edition has six microservices and each serivce has several endpoints to support user login,
+access token retrieval, user registration, service registration, client registration and public
+key certificate distribution. It can support millions users and thousands of clients
+and services with scopes. It should be easily handle thousands of concurrent users per
+instance and each service can be scaled individually if necessary.&lt;/p&gt;
+
 &lt;h2 id=&#34;in-memory-data-grid&#34;&gt;In-Memory Data Grid&lt;/h2&gt;
+
+&lt;p&gt;Hazelcast is used as Data Grid across multiple services and majority of operations
+won&amp;rsquo;t hit database server for best performance.&lt;/p&gt;
 
 &lt;h2 id=&#34;built-in-security&#34;&gt;Built-in Security&lt;/h2&gt;
 
+&lt;p&gt;Except code, token and key services, other services are protected by OAuth2 itself and additional security
+as well. These sevices can be deployed at different locations within your network for maximum security and
+flexibility.&lt;/p&gt;
+
+&lt;h2 id=&#34;multiple-database-support&#34;&gt;Multiple Database Support&lt;/h2&gt;
+
+&lt;p&gt;Currently, Oralce, MySQL and Postgres are supported, but other databases(sql or nosql) can be easily supported
+by implementing a MapStore of Hazelcast and create a initial db script.&lt;/p&gt;
+
 &lt;h2 id=&#34;easy-to-customize-and-integrate&#34;&gt;Easy to customize and integrate&lt;/h2&gt;
 
+&lt;p&gt;Each service can be easily customized and won&amp;rsquo;t impact other services. Also, it is very easy to extend in order
+to integrate with other existing services within your organization.&lt;/p&gt;
+
 &lt;h2 id=&#34;three-editions-to-choose-from&#34;&gt;Three Editions to choose from&lt;/h2&gt;
+
+&lt;p&gt;Given your development phase and production requirement, you can choose development edition,
+enterprise edition and provider edition for your deployment.&lt;/p&gt;
 </description>
     </item>
     

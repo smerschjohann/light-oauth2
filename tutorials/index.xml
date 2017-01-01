@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tutorials on Light OAuth2 - OAuth2 Serivces based on Light Java</title>
+    <link>https://networknt.github.io/light-oauth2/tutorials/index.xml</link>
+    <description>Recent content in Tutorials on Light OAuth2 - OAuth2 Serivces based on Light Java</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Released under the MIT license</copyright>
+    <lastBuildDate>Sun, 01 Jan 2017 15:14:28 -0500</lastBuildDate>
+    <atom:link href="https://networknt.github.io/light-oauth2/tutorials/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Tutorials</title>
+      <link>https://networknt.github.io/light-oauth2/tutorials/</link>
+      <pubDate>Sun, 01 Jan 2017 15:14:28 -0500</pubDate>
+      
+      <guid>https://networknt.github.io/light-oauth2/tutorials/</guid>
+      <description>&lt;p&gt;There are three editions of OAuth2 servers available and each edition has different set of services and endpoints. For
+Development edition, there is only one service to serve both code and token endpoints. And for Enterprise edition, there are six services with numeric endpoints. Provider edition is still in planning phase but it will have more features than Enterprise edition.&lt;/p&gt;
+
+&lt;p&gt;The following links documented services and endpoints served by each service for three editions.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;development/&#34;&gt;Development edition&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;enterprise/&#34;&gt;Enterprise edition&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;provider/&#34;&gt;Provider edition&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>provider</title>
+      <link>https://networknt.github.io/light-oauth2/tutorials/provider/</link>
+      <pubDate>Sun, 01 Jan 2017 15:14:20 -0500</pubDate>
+      
+      <guid>https://networknt.github.io/light-oauth2/tutorials/provider/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Enterprise Edition Tutorial</title>
+      <link>https://networknt.github.io/light-oauth2/tutorials/enterprise/</link>
+      <pubDate>Sun, 01 Jan 2017 15:14:13 -0500</pubDate>
+      
+      <guid>https://networknt.github.io/light-oauth2/tutorials/enterprise/</guid>
+      <description>
+
+&lt;p&gt;Note: the following steps use Oracle database as an example. MySQL and Postgres should be the same.&lt;/p&gt;
+
+&lt;h1 id=&#34;start-services&#34;&gt;Start Services&lt;/h1&gt;
+
+&lt;p&gt;To start services and test them in development mode.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;git clone git@github.com:networknt/light-oauth2.git
+cd light-oauth2
+git checkout oracle
+mvn clean install -DskipTests
+docker-compose up
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It will take about 30 seconds to have all services and database up and running.&lt;/p&gt;
+
+&lt;p&gt;If you have modified source code, please follow the steps to restart services.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker-compose down
+mvn clean install
+./cleanup.sh
+docker-compose up
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;test-services&#34;&gt;Test Services&lt;/h1&gt;
+
+&lt;p&gt;By default, the security is partially disabled on these services so that users
+can easily test these services to learn how to use them.&lt;/p&gt;
+
+&lt;h3 id=&#34;code&#34;&gt;Code&lt;/h3&gt;
+
+&lt;p&gt;This is the service that takes user&amp;rsquo;s credentials and redirect back authorization
+code to webserver.&lt;/p&gt;
+
+&lt;p&gt;There are two endpoints: /oauth2/code@get and /oauth2/code@post&lt;/p&gt;
+
+&lt;p&gt;The GET endpoint uses Basic Authorization and POST endpoint uses Form Authorization.&lt;/p&gt;
+
+&lt;p&gt;In most of the cases, you should use GET endpoint as it provides popup window on
+the browser to ask username and password.&lt;/p&gt;
+
+&lt;p&gt;POST endpoint is usually used with existing web server that provides login form and
+post the user credentials to this endpoint to get authorization code indirectly. It
+requires customization most of the time.&lt;/p&gt;
+
+&lt;p&gt;There is only one admin user after the system is installed and the default password
+is &amp;ldquo;123456&amp;rdquo;. The password needs to be reset immediately with User Service for
+production.&lt;/p&gt;
+
+&lt;p&gt;To get authorization code put the following url into your browser.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http://localhost:6881/oauth2/code?response_type=code&amp;amp;client_id=f7d42348-c647-4efb-a52d-4c5787421e72&amp;amp;redirect_uri=http://localhost:8080/authorization
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If this is the first time on this browser, you will have a popup window for user
+credentials. Now let&amp;rsquo;s use admin/123456 to login given you haven&amp;rsquo;t reset the password
+yet for admin user.&lt;/p&gt;
+
+&lt;p&gt;Once authentication is completed, an authorization code will be redirect to your
+browser. Something like the following.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http://localhost:8080/authorization?code=pVk10fdsTiiJ1HdUlV4y1g
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;token&#34;&gt;Token&lt;/h3&gt;
+
+&lt;p&gt;This service has only one endpoint to get access token. It supports authorization
+code grant type and client credentials grant type.&lt;/p&gt;
+
+&lt;p&gt;Authorization Grant with authorization code redirected in the previous step. Please
+replace code with the newly retrieved one as it is only valid for 10 minutes.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl -H &amp;quot;Authorization: Basic f7d42348-c647-4efb-a52d-4c5787421e72:f6h1FTI8Q3-7UScPZDzfXA&amp;quot; -H &amp;quot;Content-Type: application/x-www-form-urlencoded&amp;quot; -X POST -d &amp;quot;grant_type=authorization_code&amp;amp;code=c0iAfPAeTk2BpiPWj-CYPQ&amp;quot; http://localhost:6882/oauth2/token
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The above command will have the following output.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{&amp;quot;access_token&amp;quot;:&amp;quot;eyJraWQiOiIxMDAiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1cm46Y29tOm5ldHdvcmtudDpvYXV0aDI6djEiLCJhdWQiOiJ1cm46Y29tLm5ldHdvcmtudCIsImV4cCI6MTQ4MzIwOTQ4NiwianRpIjoib0dtdXEzSl85d0tlOUVIT2RWM21PUSIsImlhdCI6MTQ4MzIwODg4NiwibmJmIjoxNDgzMjA4NzY2LCJ2ZXJzaW9uIjoiMS4wIiwidXNlcl9pZCI6ImFkbWluIiwidXNlcl90eXBlIjoiYWRtaW4iLCJjbGllbnRfaWQiOiJmN2Q0MjM0OC1jNjQ3LTRlZmItYTUyZC00YzU3ODc0MjFlNzIiLCJzY29wZSI6WyJwZXRzdG9yZS5yIiwicGV0c3RvcmUudyJdfQ.gQ5HI2drObxorsQvz86RYT5tgk7QCnEBm9zNod7SbC--v8s4OfFIM4FQbxGqlMzbU3_dDXiyMSGzOFD_ShZ5se9W2FLxLjbMmBJwQG89peymcdY2mTgQoKJMYxL602a7cloyuoDZ_l-OQSj6RMdgRw4FKmMdOqMKWauoh58faZqvHgGxk43hlKW4bBy4vqg2IhNsUm_vIf-SVAUAMqp0Birt94FfjM3QSCQfwHXfK1nCWjFvfRIoN6w7XrPDQtnZq_8Mhdv8dNwowDLoYayKoUpr7i84gFA11-J1gocJOALj1kYody6kU5CfMwGOSX90PUEmdVy_3WnyEAp3blC-Iw&amp;quot;,&amp;quot;token_type&amp;quot;:&amp;quot;bearer&amp;quot;,&amp;quot;expires_in&amp;quot;:600} 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Client Credentials grant doesn&amp;rsquo;t need authorization code but only client_id and
+client_secret. Here is the curl command line to get access token.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl -H &amp;quot;Authorization: Basic f7d42348-c647-4efb-a52d-4c5787421e72:f6h1FTI8Q3-7UScPZDzfXA&amp;quot; -H &amp;quot;Content-Type: application/x-www-form-urlencoded&amp;quot; -X POST -d &amp;quot;grant_type=client_credentials&amp;quot; http://localhost:6882/oauth2/token
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The above command will have the following output.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{&amp;quot;access_token&amp;quot;:&amp;quot;eyJraWQiOiIxMDAiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1cm46Y29tOm5ldHdvcmtudDpvYXV0aDI6djEiLCJhdWQiOiJ1cm46Y29tLm5ldHdvcmtudCIsImV4cCI6MTQ4MzIwOTc1NywianRpIjoiOVhWdGV2dXZ2cjMwQ0lnZVFuUTFUUSIsImlhdCI6MTQ4MzIwOTE1NywibmJmIjoxNDgzMjA5MDM3LCJ2ZXJzaW9uIjoiMS4wIiwiY2xpZW50X2lkIjoiZjdkNDIzNDgtYzY0Ny00ZWZiLWE1MmQtNGM1Nzg3NDIxZTcyIiwic2NvcGUiOlsicGV0c3RvcmUuciIsInBldHN0b3JlLnciXX0.C8oHgjKpaKWAYJvSqZ4_VT2sw8XXpABFq-aXgNUN2mCEKZJN7AkA6qio0fK4ZCTn5lT9bLou6SOEDV-uXvcU1_XlvKTTnbMO2g-s_7-O-xXxSCAXiLZ-5C7ieGt7enQrxrESUEsgr0Kow4a34GjxAod5j0vcKzhZ6vrcQcuCecPKaeovV0nkBZH2cGPhaLvK346RA9VjxITcR1DgzPWIO3AYJGaIrF8-mCA6Ad8LNi8mB0T5pHIST5fpVTsDYF3KjQJKYiwEhVMbfErBrsmiUUHJ7fYNi5ntLvT-61rupqrQeudl54gg4onct6rT9A2HmuV0iucECkwm9urJ2QxO-A&amp;quot;,&amp;quot;token_type&amp;quot;:&amp;quot;bearer&amp;quot;,&amp;quot;expires_in&amp;quot;:600}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you are interested, you can compare the claims of above tokens at &lt;a href=&#34;https://jwt.io/&#34;&gt;https://jwt.io/&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;service&#34;&gt;Service&lt;/h3&gt;
+
+&lt;p&gt;OAuth2 is used to protect services and each service must register itself with scope in
+order to have fine-grained access control. This microservice provides endpoint to add,
+update, remove and query services.&lt;/p&gt;
+
+&lt;p&gt;To add a new service.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl -H &amp;quot;Content-Type: application/json&amp;quot; -X POST -d &#39;{&amp;quot;serviceId&amp;quot;:&amp;quot;AACT0003&amp;quot;,&amp;quot;serviceType&amp;quot;:&amp;quot;ms&amp;quot;,&amp;quot;serviceName&amp;quot;:&amp;quot;Retail Account&amp;quot;,&amp;quot;serviceDesc&amp;quot;:&amp;quot;Microservices for Retail Account&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;act.r act.w&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;}&#39; http://localhost:6883/oauth2/service
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To query all services.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl http://localhost:6883/oauth2/service
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And here is the result.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[{&amp;quot;serviceType&amp;quot;:&amp;quot;ms&amp;quot;,&amp;quot;serviceDesc&amp;quot;:&amp;quot;A microservice that serves account information&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;a.r b.r&amp;quot;,&amp;quot;serviceId&amp;quot;:&amp;quot;AACT0001&amp;quot;,&amp;quot;serviceName&amp;quot;:&amp;quot;Account Service&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;,&amp;quot;updateDt&amp;quot;:null,&amp;quot;createDt&amp;quot;:&amp;quot;2016-12-31&amp;quot;},{&amp;quot;serviceType&amp;quot;:&amp;quot;ms&amp;quot;,&amp;quot;serviceDesc&amp;quot;:&amp;quot;Microservices for Retail Account&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;act.r act.w&amp;quot;,&amp;quot;serviceId&amp;quot;:&amp;quot;AACT0003&amp;quot;,&amp;quot;serviceName&amp;quot;:&amp;quot;Retail Account&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;,&amp;quot;updateDt&amp;quot;:null,&amp;quot;createDt&amp;quot;:&amp;quot;2016-12-31&amp;quot;}]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To query a service with service id.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl http://localhost:6883/oauth2/service/AACT0003
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And here is the result.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{&amp;quot;serviceType&amp;quot;:&amp;quot;ms&amp;quot;,&amp;quot;serviceDesc&amp;quot;:&amp;quot;Microservices for Retail Account&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;act.r act.w&amp;quot;,&amp;quot;serviceId&amp;quot;:&amp;quot;AACT0003&amp;quot;,&amp;quot;serviceName&amp;quot;:&amp;quot;Retail Account&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To update above service type to &amp;ldquo;api&amp;rdquo;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl -H &amp;quot;Content-Type: application/json&amp;quot; -X PUT -d &#39;{&amp;quot;serviceType&amp;quot;:&amp;quot;api&amp;quot;,&amp;quot;serviceDesc&amp;quot;:&amp;quot;Microservices for Retail Account&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;act.r act.w&amp;quot;,&amp;quot;serviceId&amp;quot;:&amp;quot;AACT0003&amp;quot;,&amp;quot;serviceName&amp;quot;:&amp;quot;Retail Account&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;}&#39; http://localhost:6883/oauth2/service
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To delete above service with service id.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl -X DELETE http://localhost:6883/oauth2/service/AACT0003
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;client&#34;&gt;Client&lt;/h3&gt;
+
+&lt;p&gt;Every client that accesses service(s) must register itself in order to get
+access token during runtime. An entity might be a client and service at the
+same time and in this case, it must register twice as client and service.&lt;/p&gt;
+
+&lt;p&gt;To add a new client.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl -H &amp;quot;Content-Type: application/json&amp;quot; -X POST -d &#39;{&amp;quot;clientType&amp;quot;:&amp;quot;mobile&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;AccountViewer&amp;quot;,&amp;quot;clientDesc&amp;quot;:&amp;quot;Retail Online Banking Account Viewer&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;act.r act.w&amp;quot;,&amp;quot;redirectUrl&amp;quot;: &amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;}&#39; http://localhost:6884/oauth2/client
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And here is the result with client_id and client_secret.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{&amp;quot;clientDesc&amp;quot;:&amp;quot;Retail Online Banking Account Viewer&amp;quot;,&amp;quot;clientType&amp;quot;:&amp;quot;mobile&amp;quot;,&amp;quot;redirectUrl&amp;quot;:&amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;clientId&amp;quot;:&amp;quot;e24e7110-c39f-49f1-85eb-8434cb577482&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;AccountViewer&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;act.r act.w&amp;quot;,&amp;quot;clientSecret&amp;quot;:&amp;quot;YDJLse8SQRapHyoMsdPUig&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;,&amp;quot;createDt&amp;quot;:&amp;quot;2016-12-31&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To query all clients.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl http://localhost:6884/oauth2/client
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And here is the result.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[{&amp;quot;clientDesc&amp;quot;:&amp;quot;PetStore Web Server that calls PetStore API&amp;quot;,&amp;quot;clientId&amp;quot;:&amp;quot;f7d42348-c647-4efb-a52d-4c5787421e72&amp;quot;,&amp;quot;clientType&amp;quot;:&amp;quot;server&amp;quot;,&amp;quot;redirectUrl&amp;quot;:&amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;PetStore Web Server&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;petstore.r petstore.w&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;,&amp;quot;updateDt&amp;quot;:null,&amp;quot;createDt&amp;quot;:&amp;quot;2016-12-31&amp;quot;,&amp;quot;authenticateClass&amp;quot;:null},{&amp;quot;clientDesc&amp;quot;:&amp;quot;Retail Online Banking Account Viewer&amp;quot;,&amp;quot;clientId&amp;quot;:&amp;quot;9ef89c7b-f17b-4a64-a24b-ce539ed80641&amp;quot;,&amp;quot;clientType&amp;quot;:&amp;quot;mobile&amp;quot;,&amp;quot;redirectUrl&amp;quot;:&amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;AccountViewer&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;act.r act.w&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;,&amp;quot;updateDt&amp;quot;:null,&amp;quot;createDt&amp;quot;:&amp;quot;2016-12-31&amp;quot;,&amp;quot;authenticateClass&amp;quot;:null}]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To query a client by id.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl http://localhost:6884/oauth2/client/f7d42348-c647-4efb-a52d-4c5787421e72
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And here is the result.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{&amp;quot;clientDesc&amp;quot;:&amp;quot;PetStore Web Server that calls PetStore API&amp;quot;,&amp;quot;clientId&amp;quot;:&amp;quot;f7d42348-c647-4efb-a52d-4c5787421e72&amp;quot;,&amp;quot;clientType&amp;quot;:&amp;quot;server&amp;quot;,&amp;quot;redirectUrl&amp;quot;:&amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;PetStore Web Server&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;petstore.r petstore.w&amp;quot;,&amp;quot;clientSecret&amp;quot;:&amp;quot;f6h1FTI8Q3-7UScPZDzfXA&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;,&amp;quot;updateDt&amp;quot;:null,&amp;quot;createDt&amp;quot;:&amp;quot;2016-12-31&amp;quot;,&amp;quot;authenticateClass&amp;quot;:null}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To update a client with a shorter clientDesc.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl -H &amp;quot;Content-Type: application/json&amp;quot; -X PUT -d &#39;{&amp;quot;clientDesc&amp;quot;:&amp;quot;PetStore Web Server&amp;quot;,&amp;quot;clientId&amp;quot;:&amp;quot;f7d42348-c647-4efb-a52d-4c5787421e72&amp;quot;,&amp;quot;clientType&amp;quot;:&amp;quot;server&amp;quot;,&amp;quot;redirectUrl&amp;quot;:&amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;PetStore Web Server&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;petstore.r petstore.w&amp;quot;,&amp;quot;clientSecret&amp;quot;:&amp;quot;f6h1FTI8Q3-7UScPZDzfXA&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;,&amp;quot;updateDt&amp;quot;:null,&amp;quot;createDt&amp;quot;:&amp;quot;2016-12-31&amp;quot;,&amp;quot;authenticateClass&amp;quot;:null}&#39; http://localhost:6884/oauth2/client
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To delete a client with client id.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl -X DELETE http://localhost:6884/oauth2/client/9ef89c7b-f17b-4a64-a24b-ce539ed80641
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;user&#34;&gt;User&lt;/h3&gt;
+
+&lt;p&gt;The OAuth2 services can be integrated with existing Active Directory, LDAP or customer
+database for authentication. If there is no existing authentication service, you can
+register users into database.&lt;/p&gt;
+
+&lt;p&gt;To add a new user.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl -H &amp;quot;Content-Type: application/json&amp;quot; -X POST -d &#39;{&amp;quot;userId&amp;quot;:&amp;quot;stevehu&amp;quot;,&amp;quot;userType&amp;quot;:&amp;quot;employee&amp;quot;,&amp;quot;firstName&amp;quot;:&amp;quot;Steve&amp;quot;,&amp;quot;lastName&amp;quot;:&amp;quot;Hu&amp;quot;,&amp;quot;email&amp;quot;:&amp;quot;stevehu@gmail.com&amp;quot;,&amp;quot;password&amp;quot;:&amp;quot;123456&amp;quot;,&amp;quot;passwordConfirm&amp;quot;:&amp;quot;123456&amp;quot;}&#39; http://localhost:6885/oauth2/user
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To query a user.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl http://localhost:6885/oauth2/user/stevehu
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And here is the result.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{&amp;quot;firstName&amp;quot;:&amp;quot;Steve&amp;quot;,&amp;quot;lastName&amp;quot;:&amp;quot;Hu&amp;quot;,&amp;quot;userType&amp;quot;:&amp;quot;employee&amp;quot;,&amp;quot;userId&amp;quot;:&amp;quot;stevehu&amp;quot;,&amp;quot;email&amp;quot;:&amp;quot;stevehu@gmail.com&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To update the user type to partner.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl -H &amp;quot;Content-Type: application/json&amp;quot; -X PUT -d &#39;{&amp;quot;firstName&amp;quot;:&amp;quot;Steve&amp;quot;,&amp;quot;lastName&amp;quot;:&amp;quot;Hu&amp;quot;,&amp;quot;userType&amp;quot;:&amp;quot;partner&amp;quot;,&amp;quot;userId&amp;quot;:&amp;quot;stevehu&amp;quot;,&amp;quot;email&amp;quot;:&amp;quot;stevehu@gmail.com&amp;quot;}&#39; http://localhost:6885/oauth2/user
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To reset the password.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl -H &amp;quot;Content-Type: application/json&amp;quot; -X POST -d &#39;{&amp;quot;password&amp;quot;:&amp;quot;123456&amp;quot;,&amp;quot;newPassword&amp;quot;:&amp;quot;stevehu&amp;quot;,&amp;quot;newPasswordConfirm&amp;quot;:&amp;quot;stevehu&amp;quot;}&#39; http://localhost:6885/oauth2/password/stevehu
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To remove a user.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl -X DELETE http://localhost:6885/oauth2/user/stevehu
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;key&#34;&gt;Key&lt;/h3&gt;
+
+&lt;p&gt;Light-Java and Light-OAuth2 support distributed security verification and this
+requires the JWT public key certificate to be distributed to all services. By
+default, all services built on top of Light-Java will include a set of
+certificates. But how to distributed new certificates to thousands of running
+services if certificates are renewed? There is no way we can copy certificates
+to all the running containers as they are dynamic and new containers can be
+started anytime by container orchestration tool.&lt;/p&gt;
+
+&lt;p&gt;The traditional push approach is not working and a new way of pull certificates
+from OAuth2 key service is implemented in Light-Java and Light-OAuth2.&lt;/p&gt;
+
+&lt;p&gt;This feature is tightly integrated with Light-Java and it should work seamlessly.&lt;/p&gt;
+
+&lt;p&gt;The first step to get certificate is to encode client_id:client_secret pair for
+basic authentication.&lt;/p&gt;
+
+&lt;p&gt;Here is the client_id:client_secret&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;f7d42348-c647-4efb-a52d-4c5787421e72:f6h1FTI8Q3-7UScPZDzfXA
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Go to &lt;a href=&#34;https://www.base64encode.org/&#34;&gt;https://www.base64encode.org/&lt;/a&gt; to encode it to&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ZjdkNDIzNDgtYzY0Ny00ZWZiLWE1MmQtNGM1Nzg3NDIxZTcyOmY2aDFGVEk4UTMtN1VTY1BaRHpmWEE=
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To get certificate by a key id.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl -H &amp;quot;Authorization: Basic ZjdkNDIzNDgtYzY0Ny00ZWZiLWE1MmQtNGM1Nzg3NDIxZTcyOmY2aDFGVEk4UTMtN1VTY1BaRHpmWEE=&amp;quot; http://localhost:6886/oauth2/key/101
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And here is the result.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;-----BEGIN CERTIFICATE-----
+MIIDkzCCAnugAwIBAgIEUBGbJDANBgkqhkiG9w0BAQsFADB6MQswCQYDVQQGEwJDQTEQMA4GA1UE
+CBMHT250YXJpbzEQMA4GA1UEBxMHVG9yb250bzEmMCQGA1UEChMdTmV0d29yayBOZXcgVGVjaG5v
+bG9naWVzIEluYy4xDDAKBgNVBAsTA0FQSTERMA8GA1UEAxMIU3RldmUgSHUwHhcNMTYwOTIyMjI1
+OTIxWhcNMjYwODAxMjI1OTIxWjB6MQswCQYDVQQGEwJDQTEQMA4GA1UECBMHT250YXJpbzEQMA4G
+A1UEBxMHVG9yb250bzEmMCQGA1UEChMdTmV0d29yayBOZXcgVGVjaG5vbG9naWVzIEluYy4xDDAK
+BgNVBAsTA0FQSTERMA8GA1UEAxMIU3RldmUgSHUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+AoIBAQCqYfarFwug2DwpG/mmcW77OluaHVNsKEVJ/BptLp5suJAH/Z70SS5pwM4x2QwMOVO2ke8U
+rsAws8allxcuKXrbpVt4evpO1Ly2sFwqB1bjN3+VMp6wcT+tSjzYdVGFpQAYHpeA+OLuoHtQyfpB
+0KCveTEe3KAG33zXDNfGKTGmupZ3ZfmBLINoey/X13rY71ITt67AY78VHUKb+D53MBahCcjJ9YpJ
+UHG+Sd3d4oeXiQcqJCBCVpD97awWARf8WYRIgU1xfCe06wQ3CzH3+GyfozLeu76Ni5PwE1tm7Dhg
+EDSSZo5khmzVzo4G0T2sOeshePc5weZBNRHdHlJA0L0fAgMBAAGjITAfMB0GA1UdDgQWBBT9rnek
+spnrFus5wTszjdzYgKll9TANBgkqhkiG9w0BAQsFAAOCAQEAT8udTfUGBgeWbN6ZAXRI64VsSJj5
+1sNUN1GPDADLxZF6jArKU7LjBNXn9bG5VjJqlx8hQ1SNvi/t7FqBRCUt/3MxDmGZrVZqLY1kZ2e7
+x+5RykbspA8neEUtU8sOr/NP3O5jBjU77EVec9hNNT5zwKLevZNL/Q5mfHoc4GrIAolQvi/5fEqC
+8OMdOIWS6sERgjaeI4tXxQtHDcMo5PeLW0/7t5sgEsadZ+pkdeEMVTmLfgf97bpNNI7KF5uEbYnQ
+NpwCT+NNC5ACmJmKidrfW23kml1C7vr7YzTevw9QuH/hN8l/Rh0fr+iPEVpgN6Zv00ymoKGmjuuW
+owVmdKg/0w==
+-----END CERTIFICATE-----
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>development</title>
+      <link>https://networknt.github.io/light-oauth2/tutorials/development/</link>
+      <pubDate>Sun, 01 Jan 2017 15:14:05 -0500</pubDate>
+      
+      <guid>https://networknt.github.io/light-oauth2/tutorials/development/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

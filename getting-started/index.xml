@@ -1,14 +1,285 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Getting-started-rsses on Light OAuth2 - OAuth2 Serivces based on Light Java</title>
+    <title>Getting-starteds on Light OAuth2 - OAuth2 Serivces based on Light Java</title>
     <link>https://networknt.github.io/light-oauth2/getting-started/index.xml</link>
-    <description>Recent content in Getting-started-rsses on Light OAuth2 - OAuth2 Serivces based on Light Java</description>
+    <description>Recent content in Getting-starteds on Light OAuth2 - OAuth2 Serivces based on Light Java</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Released under the MIT license</copyright>
-    <lastBuildDate>Sat, 31 Dec 2016 21:20:22 -0500</lastBuildDate>
+    <lastBuildDate>Sun, 01 Jan 2017 10:12:55 -0500</lastBuildDate>
     <atom:link href="https://networknt.github.io/light-oauth2/getting-started/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>OAuth2 Introduction</title>
+      <link>https://networknt.github.io/light-oauth2/getting-started/introduction/</link>
+      <pubDate>Sun, 01 Jan 2017 10:12:55 -0500</pubDate>
+      
+      <guid>https://networknt.github.io/light-oauth2/getting-started/introduction/</guid>
+      <description>
+
+&lt;p&gt;OAuth 2 is an authorization framework that enables applications to obtain limited access
+to user&amp;rsquo;s resources on an HTTP service - normally exposed as a REST API. It works by
+delegating user authentication to an authorization service which contains all sorts of login
+service providers like LDAP for employees and database for customers.&lt;/p&gt;
+
+&lt;p&gt;OAuth 2 provides authorization flows for the following types of application to application
+communication:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Web server to API&lt;/li&gt;
+&lt;li&gt;Standalone application to API&lt;/li&gt;
+&lt;li&gt;API to API&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This informational guide is geared towards application developers, and provides an
+overview of OAuth 2 roles, authorization grant types, use cases, and flows.&lt;/p&gt;
+
+&lt;h1 id=&#34;oauth-roles&#34;&gt;OAuth Roles&lt;/h1&gt;
+
+&lt;p&gt;OAuth defines four roles:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Resource Owner&lt;/li&gt;
+&lt;li&gt;Client&lt;/li&gt;
+&lt;li&gt;Resource Server&lt;/li&gt;
+&lt;li&gt;Authorization Server&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;We will detail each role in the following subsections.&lt;/p&gt;
+
+&lt;h2 id=&#34;resource-owner-user&#34;&gt;Resource Owner: User&lt;/h2&gt;
+
+&lt;p&gt;The resource owner is the user who authorizes an application to access their resources.
+The application&amp;rsquo;s access to the user&amp;rsquo;s resource is limited to the &amp;ldquo;scope&amp;rdquo; of the
+authorization granted (e.g. read or write access).&lt;/p&gt;
+
+&lt;h2 id=&#34;resource-server-api&#34;&gt;Resource Server: API&lt;/h2&gt;
+
+&lt;p&gt;The resource server hosts the protected user resources.&lt;/p&gt;
+
+&lt;h2 id=&#34;authorization-server-api&#34;&gt;Authorization Server: API&lt;/h2&gt;
+
+&lt;p&gt;the authorization server verifies the identity of the user then issues access tokens to
+the application.&lt;/p&gt;
+
+&lt;h2 id=&#34;client-application&#34;&gt;Client: Application&lt;/h2&gt;
+
+&lt;p&gt;The client is the application that wants to access the user&amp;rsquo;s resources. Before it may
+do so, it must be authorized by the user, and the authorization must be validated by
+the API.&lt;/p&gt;
+
+&lt;h1 id=&#34;abstract-protocol-flow&#34;&gt;Abstract Protocol Flow&lt;/h1&gt;
+
+&lt;p&gt;Now that you have an idea of what the OAuth roles are, let&amp;rsquo;s look at a diagram of how
+they generally interact with each other:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://assets.digitalocean.com/articles/oauth/abstract_flow.png&#34; alt=&#34;Abstract Flow&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a more detailed explanation of the steps in the diagram:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;The application requests authorization to access service resources from the user&lt;/li&gt;
+&lt;li&gt;If the user authorized the request, the application receives an authorization grant&lt;/li&gt;
+&lt;li&gt;The application requests an access token from the authorization server (API) by
+presenting authentication of its own identity, and the authorization grant&lt;/li&gt;
+&lt;li&gt;If the application identity is authenticated and the authorization grant is valid,
+the authorization server issues an access token to the application.&lt;/li&gt;
+&lt;li&gt;The application requests the resource from the resource server (API) and presents the access
+token for authentication.&lt;/li&gt;
+&lt;li&gt;If the access token is valid, the resource server (API) serves the resource to the application.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The actual flow of this process will differ depending on the authorization grant type in use,
+but this is the general idea. We will explore different grant types in a later section.&lt;/p&gt;
+
+&lt;h1 id=&#34;application-registration&#34;&gt;Application Registration&lt;/h1&gt;
+
+&lt;p&gt;Before using OAuth with your application, you must register your application with
+the service. This is done through a registration form in the &amp;ldquo;developer&amp;rdquo; or &amp;ldquo;API&amp;rdquo;
+portion of the service&amp;rsquo;s website, where you will provide the following information
+(and probably details about your application):&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Application Name&lt;/li&gt;
+&lt;li&gt;Application Website&lt;/li&gt;
+&lt;li&gt;Redirect URI or Callback URL&lt;/li&gt;
+&lt;li&gt;The redirect URI is where the service will redirect the user after they authorize (or deny) your application, and therefore the part of your application that will handle authorization codes or access tokens.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;client-id-and-client-secret&#34;&gt;Client ID and Client Secret&lt;/h1&gt;
+
+&lt;p&gt;Once your application is registered, the service will issue &amp;ldquo;client credentials&amp;rdquo; in
+the form of a client identifier and a client secret. The Client ID is a publicly
+exposed string that is used by the service API to identify the application, and is
+also used to build authorization URLs that are presented to users. The Client Secret
+is used to authenticate the identity of the application to the service API when the
+application requests to access a user&amp;rsquo;s resource, and must be kept private between
+the application and the API.&lt;/p&gt;
+
+&lt;h1 id=&#34;authorization-grant&#34;&gt;Authorization Grant&lt;/h1&gt;
+
+&lt;p&gt;In the Abstract Protocol Flow above, the first four steps cover obtaining an
+authorization grant and access token. The authorization grant type depends on the
+method used by the application to request authorization, and the grant types
+supported by the Authorization server. OAuth 2 defines four grant types, each of which is useful in
+different cases:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Authorization Code: used with server-side Applications&lt;/li&gt;
+&lt;li&gt;Implicit: used with Mobile Apps or Web Applications (applications that run on the user&amp;rsquo;s device)&lt;/li&gt;
+&lt;li&gt;Resource Owner Password Credentials: used with trusted Applications, such as those owned by the service itself&lt;/li&gt;
+&lt;li&gt;Client Credentials: used with Applications API access&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Now we will describe grant types in more detail, their use cases and flows, in the following sections.&lt;/p&gt;
+
+&lt;h1 id=&#34;grant-type-authorization-code&#34;&gt;Grant Type: Authorization Code&lt;/h1&gt;
+
+&lt;p&gt;The authorization code grant type is the most commonly used because it is optimized
+for server-side applications, where source code is not publicly exposed, and Client
+Secret confidentiality can be maintained. This is a redirection-based flow, which
+means that the application must be capable of interacting with the user-agent
+(i.e. the user&amp;rsquo;s web browser) and receiving API authorization codes that are routed
+through the user-agent.&lt;/p&gt;
+
+&lt;p&gt;Now we will describe the authorization code flow:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://assets.digitalocean.com/articles/oauth/auth_code_flow.png&#34; alt=&#34;Auth Code Flow&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Step 1: Authorization Code Link&lt;/p&gt;
+
+&lt;p&gt;First, the user is given an authorization code link that looks like the following:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http://localhost:8888/oauth2/code?response_type=code&amp;amp;client_id=6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d&amp;amp;redirect_uri=http://localhost:8080/authorization
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here is an explanation of the link components:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:8888/oauth2/code:&#34;&gt;http://localhost:8888/oauth2/code:&lt;/a&gt; the authorization endpoint&lt;/li&gt;
+&lt;li&gt;client_id=6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d: the application&amp;rsquo;s client_id (how the API identifies
+the application)&lt;/li&gt;
+&lt;li&gt;redirect_uri=&lt;a href=&#34;http://localhost:8080/authorization:&#34;&gt;http://localhost:8080/authorization:&lt;/a&gt; where the service redirects the user-agent after
+an authorization code is granted&lt;/li&gt;
+&lt;li&gt;response_type=code: specifies that your application is requesting an authorization code grant&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Step 2: User Authorizes Application&lt;/p&gt;
+
+&lt;p&gt;When the user clicks the link, they must first log in to the authorization service, to authenticate
+their identity (unless they are already logged in).&lt;/p&gt;
+
+&lt;p&gt;Step 3: Application Receives Authorization Code&lt;/p&gt;
+
+&lt;p&gt;If the user is authenticated, the service redirects the user-agent to
+the application redirect URI, which was specified during the client registration,
+along with an authorization code. The redirect would look something like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http://localhost:8080/authorization?code=rlbQn-mUT4ep-GLyRHaFsg
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Step 4: Application Requests Access Token&lt;/p&gt;
+
+&lt;p&gt;The application requests an access token from the API, by passing the authorization
+code along with authentication details, including the client secret, to the API
+token endpoint. Here is an example POST request to token endpoint:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Url:
+http://localhost:8888/oauth2/token
+
+Header:
+Authorization Basic 6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d:sQesTWAnTwaw-Nn0oK35GA
+
+Body in x-www-form-urlencoded
+grant_type=authorization_code
+code=rlbQn-mUT4ep-GLyRHaFsg
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Step 5: Application Receives Access Token&lt;/p&gt;
+
+&lt;p&gt;If the authorization is valid, the Authorization server will send a response containing the
+access token (and optionally, a refresh token) to the application. The entire response
+will look something like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  &amp;quot;access_token&amp;quot;: &amp;quot;eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1cm46Y29tOm5ldHdvcmtudDpvYXV0aDI6djEiLCJhdWQiOiJ1cm46Y29tLm5ldHdvcmtudCIsImV4cCI6MTQ3NDU3MDc3NiwianRpIjoiaXNRLWFMWGhFR21kcDZ1MVFNQWNsdyIsImlhdCI6MTQ3NDU3MDE3NiwibmJmIjoxNDc0NTcwMDU2LCJ2ZXJzaW9uIjoiMS4wIiwidXNlcl9pZCI6InN0ZXZlaHUiLCJ1c2VyX3R5cGUiOiJFTVBMT1lFRSIsImNsaWVudF9pZCI6IjZlOWQxZGIzLTJmZWItNGMxZi1hNWFkLTllOTNhZThjYTU5ZCIsInNjb3BlIjpbImFjY291bnQuciIsImFjY291bnQudyJdfQ.W8tUY-jsrwH5Z_4WkKRPGhO3H-GGFXMa3a_ng3CIzEkKdRcQpG_7x3T8e7qsMmMvo69zus4lo96k3Qb3nN29aMeYH7g1AoXAawNWLpahNQ9U1EIf_cHDY23qGCU0GudAyITBVqJJVei2LmlZTSnvPYbn2TpXjAC3tODNlWVLSmfn7rXDSEosllDyvrJrWOUV8-VOpBTgzjTLB8axwzoIZjmV6QoOHC9R4g27AbEDXNDNSPl4aEFh5rShkeF7Gd0h9XuA_PTY5WcFbhSZw7aXk1-tJQnLGMgznZwegcGjD_u7s9cWvuojjXTS-V7XUIokk88hIDprfKCmwlAO2yoeFA&amp;quot;,
+  &amp;quot;token_type&amp;quot;: &amp;quot;bearer&amp;quot;,
+  &amp;quot;expires_in&amp;quot;: 600
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now the application is authorized! It may use the token to access the user&amp;rsquo;s resource
+via the service API, limited to the scope of access, until the token expires. If a
+refresh token was issued, it may be used to request new access tokens if the original
+token has expired.&lt;/p&gt;
+
+&lt;h1 id=&#34;grant-type-client-credentials&#34;&gt;Grant Type: Client Credentials&lt;/h1&gt;
+
+&lt;p&gt;The client credentials grant type provides an application a way to access its own
+service by passing client credentials through the header and specify grant_type in body
+to &amp;ldquo;client_credentials&amp;rdquo;.&lt;/p&gt;
+
+&lt;p&gt;The application requests an access token by sending its credentials, its client_id
+and client_secret to the authorization server. An example POST request might look
+like the following:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Url:
+http://localhost:8888/oauth2/token
+
+Header:
+Authorization Basic 6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d:sQesTWAnTwaw-Nn0oK35GA
+
+Body in x-www-form-urlencoded
+grant_type=client_credentials
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If the client credentials is correct, the authorization server returns an access token
+to the application. Now the application is authorized to use its own resource!&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  &amp;quot;access_token&amp;quot;: &amp;quot;eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1cm46Y29tOm5ldHdvcmtudDpvYXV0aDI6djEiLCJhdWQiOiJ1cm46Y29tLm5ldHdvcmtudCIsImV4cCI6MTQ3NDU3MDk3MywianRpIjoicVNxbnozaTJ3NWE4SVh4YURNNnBKUSIsImlhdCI6MTQ3NDU3MDM3MywibmJmIjoxNDc0NTcwMjUzLCJ2ZXJzaW9uIjoiMS4wIiwiY2xpZW50X2lkIjoiNmU5ZDFkYjMtMmZlYi00YzFmLWE1YWQtOWU5M2FlOGNhNTlkIiwic2NvcGUiOlsiYWNjb3VudC5yIiwiYWNjb3VudC53Il19.Dl6pMiQ6NQf4DKSA2Hz2qlrIAvJDnTfXPsvCa2EUq3QOASXN_tPsttW2BB33rIsa9UE1meP-ipI6mubtM18LyUex50OoegQVZsde4vTRd0oldTxWV8euqmCGZcrauvw_E4-CG00lDbuXYXX2_CpZO6GLlkXeG07IMEAjBVG__sXvybmMTKx32dT1OtrI32ePJZe9Nazt-TMCIqAVa_E6zeEAiatX6mgDXM62xX_AKLnXQ04TpeTD4TXkV-JUQ6ZMtdfCIgAR0tMB6fKLDfHiOb2vMEz3q1COVIsS3ce7rRjaQKEYq6Zrao91ft1Y0fYbRL-jRhXRfVPbUUdxxhbjrg&amp;quot;,
+  &amp;quot;token_type&amp;quot;: &amp;quot;bearer&amp;quot;,
+  &amp;quot;expires_in&amp;quot;: 600
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;example-access-token-usage&#34;&gt;Example Access Token Usage&lt;/h1&gt;
+
+&lt;p&gt;Once the application has an access token, it may use the token to access the user&amp;rsquo;s
+resource via the API, limited to the scope of access, until the token expires.&lt;/p&gt;
+
+&lt;p&gt;Here is an example of an API request, using curl. Note that it includes the access
+token:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl -X POST -H &amp;quot;Authorization: Bearer ACCESS_TOKEN&amp;quot; &amp;quot;http://localhost:8080/customer/111&amp;quot; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Assuming the access token is valid, the API will process the request according to its
+API specifications. If the access token is expired or otherwise invalid, the API will
+return an 401 error.&lt;/p&gt;
+
+&lt;h1 id=&#34;refresh-token-flow&#34;&gt;Refresh Token Flow&lt;/h1&gt;
+
+&lt;p&gt;After an access token expires, using it to make a request from the API will result in
+an &amp;ldquo;Invalid Token Error&amp;rdquo;. At this point, if a refresh token was included when the
+original access token was issued, it can be used to request a fresh access token from
+the authorization server.&lt;/p&gt;
+
+&lt;h1 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;You should now have a good idea of how OAuth 2 works, and when a particular authorization
+flow should be used.&lt;/p&gt;
+
+&lt;p&gt;If you want to learn more about OAuth 2, check out these valuable resources:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://tools.ietf.org/html/rfc6749&#34;&gt;OAuth2 RFC&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc7519&#34;&gt;JWT RFC&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Getting Started</title>
@@ -18,7 +289,65 @@
       <guid>https://networknt.github.io/light-oauth2/getting-started/</guid>
       <description>
 
+&lt;h2 id=&#34;oauth2-introduction&#34;&gt;OAuth2 Introduction&lt;/h2&gt;
+
+&lt;p&gt;If you are new to OAuth2, please read this &lt;a href=&#34;introduction/&#34;&gt;introduction&lt;/a&gt; document to get familiar with the concept.&lt;/p&gt;
+
 &lt;h2 id=&#34;select-the-right-edition&#34;&gt;Select the Right Edition&lt;/h2&gt;
+
+&lt;p&gt;There are three editions of OAuth2 server and they should be used in different situations.&lt;/p&gt;
+
+&lt;h3 id=&#34;developerment-edition&#34;&gt;Developerment Edition&lt;/h3&gt;
+
+&lt;p&gt;This is the simplest OAuth2 server designed for development as it doesn&amp;rsquo;t have any dependency.
+Client and User info is retrieved from configuration files which can be externalized
+and modified.&lt;/p&gt;
+
+&lt;p&gt;This server has two endpoints:&lt;/p&gt;
+
+&lt;p&gt;/oauth2/code&lt;/p&gt;
+
+&lt;p&gt;/oauth2/token&lt;/p&gt;
+
+&lt;p&gt;The code endpoint is to authenticate user and provide authorization code redirect to
+the user-agent. It can handle 60K requests per second user login to get auth code on
+a core i7 laptop.&lt;/p&gt;
+
+&lt;p&gt;The token endpoint is to issue access token and other tokens. It can generate 700
+private key signed JWT tokens per second on a core i7 laptop.&lt;/p&gt;
+
+&lt;p&gt;As client and user info are in JSON config files, it can only manage up to hundreds
+of clients and users for development purpose.&lt;/p&gt;
+
+&lt;p&gt;Codebase can be accessed from dev branch and it is functional.&lt;/p&gt;
+
+&lt;h3 id=&#34;enterprise-edition&#34;&gt;Enterprise Edition&lt;/h3&gt;
+
+&lt;p&gt;A microservices and database based OAuth2 server that have 6 services and numeric endpoints to
+support user login, access token, user registration, service registration, client
+registration and public key certificate distribution. It can support millions users
+and thousands of clients and services with scopes. It should be easily handle
+thousands of concurrent users per instance and each microservice can be scaled individually.&lt;/p&gt;
+
+&lt;p&gt;Enterprise edition is designed for production use and Specifications can be found at &lt;a href=&#34;https://github.com/networknt/swagger&#34;&gt;https://github.com/networknt/swagger&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Three databases are supported:&lt;/p&gt;
+
+&lt;p&gt;Oracle - Codebase can be acccessed from oracle branch.&lt;/p&gt;
+
+&lt;p&gt;MySQL - Codebase can be accessed from mysql branch&lt;/p&gt;
+
+&lt;p&gt;Postgres - Codebase can be accessed from postgres branch&lt;/p&gt;
+
+&lt;h3 id=&#34;provider-edition&#34;&gt;Provider Edition&lt;/h3&gt;
+
+&lt;p&gt;This is a microservices based OAuth2 server that built on top of light-eventuate
+with event sourcing and CQRS. It is designed for OAuth2 service providers who want
+ultimate scalability, maximum throughput and minimum latency.&lt;/p&gt;
+
+&lt;p&gt;Codebase can be accessed from kafka branch and it is in planning phase.&lt;/p&gt;
+
+&lt;p&gt;Provider edition is used by service providers and it is yet to be implemented.&lt;/p&gt;
 </description>
     </item>
     

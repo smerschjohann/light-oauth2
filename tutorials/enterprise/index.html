@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+  
+  
+  
+  
+   <html class="no-js"> 
+
+  <head lang="en-us">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=10" />
+    <title>Enterprise Edition Tutorial - Light OAuth2 - OAuth2 Serivces based on Light Java</title>
+    <meta name="generator" content="Hugo 0.18.1" />
+
+    
+    <meta name="description" content="Light OAuth2 Docs">
+    
+    <link rel="canonical" href="https://networknt.github.io/light-oauth2/tutorials/enterprise/">
+    
+    <meta name="author" content="Steve Hu">
+    
+
+    <meta property="og:url" content="https://networknt.github.io/light-oauth2/tutorials/enterprise/">
+    <meta property="og:title" content="Light OAuth2 - OAuth2 Serivces based on Light Java">
+    <meta property="og:image" content="https://networknt.github.io/light-oauth2/images/logo.png">
+    <meta name="apple-mobile-web-app-title" content="Light OAuth2 - OAuth2 Serivces based on Light Java">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://networknt.github.io/light-oauth2/images/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="https://networknt.github.io/light-oauth2/images/favicon.ico">
+
+    <style>
+      @font-face {
+        font-family: 'Icon';
+        src: url('https://networknt.github.io/light-oauth2/fonts/icon.eot');
+        src: url('https://networknt.github.io/light-oauth2/fonts/icon.eot')
+               format('embedded-opentype'),
+             url('https://networknt.github.io/light-oauth2/fonts/icon.woff')
+               format('woff'),
+             url('https://networknt.github.io/light-oauth2/fonts/icon.ttf')
+               format('truetype'),
+             url('https://networknt.github.io/light-oauth2/fonts/icon.svg')
+               format('svg');
+        font-weight: normal;
+        font-style: normal;
+      }
+    </style>
+
+    <link rel="stylesheet" href="https://networknt.github.io/light-oauth2/stylesheets/application.css">
+    <link rel="stylesheet" href="https://networknt.github.io/light-oauth2/stylesheets/temporary.css">
+    <link rel="stylesheet" href="https://networknt.github.io/light-oauth2/stylesheets/palettes.css">
+    <link rel="stylesheet" href="https://networknt.github.io/light-oauth2/stylesheets/highlight/highlight.css">
+
+    
+    
+    
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ubuntu:400,700|Ubuntu&#43;Mono">
+    <style>
+      body, input {
+        font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
+      }
+      pre, code {
+        font-family: 'Ubuntu Mono', 'Courier New', 'Courier', monospace;
+      }
+    </style>
+
+    
+    <script src="https://networknt.github.io/light-oauth2/javascripts/modernizr.js"></script>
+
+    
+
+  </head>
+  <body class="palette-primary-red palette-accent-teal">
+
+
+
+	
+	
+
+
+<div class="backdrop">
+	<div class="backdrop-paper"></div>
+</div>
+
+<input class="toggle" type="checkbox" id="toggle-drawer">
+<input class="toggle" type="checkbox" id="toggle-search">
+<label class="toggle-button overlay" for="toggle-drawer"></label>
+
+<header class="header">
+	<nav aria-label="Header">
+  <div class="bar default">
+    <div class="button button-menu" role="button" aria-label="Menu">
+      <label class="toggle-button icon icon-menu" for="toggle-drawer">
+        <span></span>
+      </label>
+    </div>
+    <div class="stretch">
+      <div class="title">
+        Enterprise Edition Tutorial
+      </div>
+    </div>
+
+    
+
+    
+    <div class="button button-github" role="button" aria-label="GitHub">
+      <a href="https://github.com/stevehu" title="@stevehu on GitHub" target="_blank" class="toggle-button icon icon-github"></a>
+    </div>
+    
+    
+        
+  </div>
+  <div class="bar search">
+    <div class="button button-close" role="button" aria-label="Close">
+      <label class="toggle-button icon icon-back" for="toggle-search"></label>
+    </div>
+    <div class="stretch">
+      <div class="field">
+        <input class="query" type="text" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck>
+      </div>
+    </div>
+    <div class="button button-reset" role="button" aria-label="Search">
+      <button class="toggle-button icon icon-close" id="reset-search"></button>
+    </div>
+  </div>
+</nav>
+</header>
+
+<main class="main">
+	<div class="drawer">
+		<nav aria-label="Navigation">
+  <a href="https://github.com/networknt/light-oauth2" class="project">
+    <div class="banner">
+      
+        <div class="logo">
+          <img src="https://networknt.github.io/light-oauth2/images/logo.png">
+        </div>
+      
+      <div class="name">
+        <strong>Light OAuth2 - OAuth2 Serivces based on Light Java <span class="version">1.0.0</span></strong>
+        
+          <br>
+          networknt/light-oauth2
+        
+      </div>
+    </div>
+  </a>
+
+  <div class="scrollable">
+    <div class="wrapper">
+      
+        <ul class="repo">
+          <li class="repo-download">
+            <a href="https://github.com/networknt/light-oauth2/archive/master.zip" target="_blank" title="Download" data-action="download">
+              <i class="icon icon-download"></i> Download
+            </a>
+          </li>
+          <li class="repo-stars">
+            <a href="https://github.com/networknt/light-oauth2/stargazers" target="_blank" title="Stargazers" data-action="star">
+              <i class="icon icon-star"></i> Stars
+              <span class="count">&ndash;</span>
+            </a>
+          </li>
+        </ul>
+        <hr>
+      
+
+      <div class="toc">
+        
+        <ul>
+          
+
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Introduction" href="https://networknt.github.io/light-oauth2/index.html">
+	
+	Introduction
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Getting started" href="https://networknt.github.io/light-oauth2/getting-started/">
+	
+	Getting started
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Architecture" href="https://networknt.github.io/light-oauth2/architecture/">
+	
+	Architecture
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Services" href="https://networknt.github.io/light-oauth2/services/">
+	
+	Services
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Tutorials" href="https://networknt.github.io/light-oauth2/tutorials/">
+	
+	Tutorials
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Examples" href="https://networknt.github.io/light-oauth2/example/">
+	
+	Examples
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Tools" href="https://networknt.github.io/light-oauth2/tools/">
+	
+	Tools
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Issues &amp; Help" href="https://github.com/networknt/light-oauth2/issues">
+	
+	Issues &amp; Help
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="Roadmap" href="https://networknt.github.io/light-oauth2/roadmap/">
+	
+	Roadmap
+</a>
+
+
+
+  
+</li>
+
+
+
+<li>
+  
+    
+
+
+
+<a  title="License" href="https://www.apache.org/licenses/LICENSE-2.0">
+	
+	License
+</a>
+
+
+
+  
+</li>
+
+
+        </ul>
+        
+
+        
+        <hr>
+        <span class="section">The author</span>
+        
+        <ul>
+          
+
+          
+          <li>
+            <a href="https://github.com/stevehu" target="_blank" title="@stevehu on GitHub">
+              @stevehu on GitHub
+            </a>
+          </li>
+          
+
+          
+          <li>
+            <a href="mailto:stevehu@gmail.com" title="Email of stevehu@gmail.com">
+              Contact via email
+            </a>
+          </li>
+          
+        </ul>
+        
+      </div>
+    </div>
+  </div>
+</nav>
+
+	</div>
+
+	<article class="article">
+		<div class="wrapper">
+			<h1>Enterprise Edition Tutorial </h1>
+
+			
+
+<p>Note: the following steps use Oracle database as an example. MySQL and Postgres should be the same.</p>
+
+<h1 id="start-services">Start Services</h1>
+
+<p>To start services and test them in development mode.</p>
+
+<pre><code>git clone git@github.com:networknt/light-oauth2.git
+cd light-oauth2
+git checkout oracle
+mvn clean install -DskipTests
+docker-compose up
+</code></pre>
+
+<p>It will take about 30 seconds to have all services and database up and running.</p>
+
+<p>If you have modified source code, please follow the steps to restart services.</p>
+
+<pre><code>docker-compose down
+mvn clean install
+./cleanup.sh
+docker-compose up
+</code></pre>
+
+<h1 id="test-services">Test Services</h1>
+
+<p>By default, the security is partially disabled on these services so that users
+can easily test these services to learn how to use them.</p>
+
+<h3 id="code">Code</h3>
+
+<p>This is the service that takes user&rsquo;s credentials and redirect back authorization
+code to webserver.</p>
+
+<p>There are two endpoints: /oauth2/code@get and /oauth2/code@post</p>
+
+<p>The GET endpoint uses Basic Authorization and POST endpoint uses Form Authorization.</p>
+
+<p>In most of the cases, you should use GET endpoint as it provides popup window on
+the browser to ask username and password.</p>
+
+<p>POST endpoint is usually used with existing web server that provides login form and
+post the user credentials to this endpoint to get authorization code indirectly. It
+requires customization most of the time.</p>
+
+<p>There is only one admin user after the system is installed and the default password
+is &ldquo;123456&rdquo;. The password needs to be reset immediately with User Service for
+production.</p>
+
+<p>To get authorization code put the following url into your browser.</p>
+
+<pre><code>http://localhost:6881/oauth2/code?response_type=code&amp;client_id=f7d42348-c647-4efb-a52d-4c5787421e72&amp;redirect_uri=http://localhost:8080/authorization
+</code></pre>
+
+<p>If this is the first time on this browser, you will have a popup window for user
+credentials. Now let&rsquo;s use admin/123456 to login given you haven&rsquo;t reset the password
+yet for admin user.</p>
+
+<p>Once authentication is completed, an authorization code will be redirect to your
+browser. Something like the following.</p>
+
+<pre><code>http://localhost:8080/authorization?code=pVk10fdsTiiJ1HdUlV4y1g
+</code></pre>
+
+<h3 id="token">Token</h3>
+
+<p>This service has only one endpoint to get access token. It supports authorization
+code grant type and client credentials grant type.</p>
+
+<p>Authorization Grant with authorization code redirected in the previous step. Please
+replace code with the newly retrieved one as it is only valid for 10 minutes.</p>
+
+<pre><code>curl -H &quot;Authorization: Basic f7d42348-c647-4efb-a52d-4c5787421e72:f6h1FTI8Q3-7UScPZDzfXA&quot; -H &quot;Content-Type: application/x-www-form-urlencoded&quot; -X POST -d &quot;grant_type=authorization_code&amp;code=c0iAfPAeTk2BpiPWj-CYPQ&quot; http://localhost:6882/oauth2/token
+</code></pre>
+
+<p>The above command will have the following output.</p>
+
+<pre><code>{&quot;access_token&quot;:&quot;eyJraWQiOiIxMDAiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1cm46Y29tOm5ldHdvcmtudDpvYXV0aDI6djEiLCJhdWQiOiJ1cm46Y29tLm5ldHdvcmtudCIsImV4cCI6MTQ4MzIwOTQ4NiwianRpIjoib0dtdXEzSl85d0tlOUVIT2RWM21PUSIsImlhdCI6MTQ4MzIwODg4NiwibmJmIjoxNDgzMjA4NzY2LCJ2ZXJzaW9uIjoiMS4wIiwidXNlcl9pZCI6ImFkbWluIiwidXNlcl90eXBlIjoiYWRtaW4iLCJjbGllbnRfaWQiOiJmN2Q0MjM0OC1jNjQ3LTRlZmItYTUyZC00YzU3ODc0MjFlNzIiLCJzY29wZSI6WyJwZXRzdG9yZS5yIiwicGV0c3RvcmUudyJdfQ.gQ5HI2drObxorsQvz86RYT5tgk7QCnEBm9zNod7SbC--v8s4OfFIM4FQbxGqlMzbU3_dDXiyMSGzOFD_ShZ5se9W2FLxLjbMmBJwQG89peymcdY2mTgQoKJMYxL602a7cloyuoDZ_l-OQSj6RMdgRw4FKmMdOqMKWauoh58faZqvHgGxk43hlKW4bBy4vqg2IhNsUm_vIf-SVAUAMqp0Birt94FfjM3QSCQfwHXfK1nCWjFvfRIoN6w7XrPDQtnZq_8Mhdv8dNwowDLoYayKoUpr7i84gFA11-J1gocJOALj1kYody6kU5CfMwGOSX90PUEmdVy_3WnyEAp3blC-Iw&quot;,&quot;token_type&quot;:&quot;bearer&quot;,&quot;expires_in&quot;:600} 
+</code></pre>
+
+<p>Client Credentials grant doesn&rsquo;t need authorization code but only client_id and
+client_secret. Here is the curl command line to get access token.</p>
+
+<pre><code>curl -H &quot;Authorization: Basic f7d42348-c647-4efb-a52d-4c5787421e72:f6h1FTI8Q3-7UScPZDzfXA&quot; -H &quot;Content-Type: application/x-www-form-urlencoded&quot; -X POST -d &quot;grant_type=client_credentials&quot; http://localhost:6882/oauth2/token
+</code></pre>
+
+<p>The above command will have the following output.</p>
+
+<pre><code>{&quot;access_token&quot;:&quot;eyJraWQiOiIxMDAiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1cm46Y29tOm5ldHdvcmtudDpvYXV0aDI6djEiLCJhdWQiOiJ1cm46Y29tLm5ldHdvcmtudCIsImV4cCI6MTQ4MzIwOTc1NywianRpIjoiOVhWdGV2dXZ2cjMwQ0lnZVFuUTFUUSIsImlhdCI6MTQ4MzIwOTE1NywibmJmIjoxNDgzMjA5MDM3LCJ2ZXJzaW9uIjoiMS4wIiwiY2xpZW50X2lkIjoiZjdkNDIzNDgtYzY0Ny00ZWZiLWE1MmQtNGM1Nzg3NDIxZTcyIiwic2NvcGUiOlsicGV0c3RvcmUuciIsInBldHN0b3JlLnciXX0.C8oHgjKpaKWAYJvSqZ4_VT2sw8XXpABFq-aXgNUN2mCEKZJN7AkA6qio0fK4ZCTn5lT9bLou6SOEDV-uXvcU1_XlvKTTnbMO2g-s_7-O-xXxSCAXiLZ-5C7ieGt7enQrxrESUEsgr0Kow4a34GjxAod5j0vcKzhZ6vrcQcuCecPKaeovV0nkBZH2cGPhaLvK346RA9VjxITcR1DgzPWIO3AYJGaIrF8-mCA6Ad8LNi8mB0T5pHIST5fpVTsDYF3KjQJKYiwEhVMbfErBrsmiUUHJ7fYNi5ntLvT-61rupqrQeudl54gg4onct6rT9A2HmuV0iucECkwm9urJ2QxO-A&quot;,&quot;token_type&quot;:&quot;bearer&quot;,&quot;expires_in&quot;:600}
+</code></pre>
+
+<p>If you are interested, you can compare the claims of above tokens at <a href="https://jwt.io/">https://jwt.io/</a></p>
+
+<h3 id="service">Service</h3>
+
+<p>OAuth2 is used to protect services and each service must register itself with scope in
+order to have fine-grained access control. This microservice provides endpoint to add,
+update, remove and query services.</p>
+
+<p>To add a new service.</p>
+
+<pre><code>curl -H &quot;Content-Type: application/json&quot; -X POST -d '{&quot;serviceId&quot;:&quot;AACT0003&quot;,&quot;serviceType&quot;:&quot;ms&quot;,&quot;serviceName&quot;:&quot;Retail Account&quot;,&quot;serviceDesc&quot;:&quot;Microservices for Retail Account&quot;,&quot;scope&quot;:&quot;act.r act.w&quot;,&quot;ownerId&quot;:&quot;admin&quot;}' http://localhost:6883/oauth2/service
+</code></pre>
+
+<p>To query all services.</p>
+
+<pre><code>curl http://localhost:6883/oauth2/service
+
+</code></pre>
+
+<p>And here is the result.</p>
+
+<pre><code>[{&quot;serviceType&quot;:&quot;ms&quot;,&quot;serviceDesc&quot;:&quot;A microservice that serves account information&quot;,&quot;scope&quot;:&quot;a.r b.r&quot;,&quot;serviceId&quot;:&quot;AACT0001&quot;,&quot;serviceName&quot;:&quot;Account Service&quot;,&quot;ownerId&quot;:&quot;admin&quot;,&quot;updateDt&quot;:null,&quot;createDt&quot;:&quot;2016-12-31&quot;},{&quot;serviceType&quot;:&quot;ms&quot;,&quot;serviceDesc&quot;:&quot;Microservices for Retail Account&quot;,&quot;scope&quot;:&quot;act.r act.w&quot;,&quot;serviceId&quot;:&quot;AACT0003&quot;,&quot;serviceName&quot;:&quot;Retail Account&quot;,&quot;ownerId&quot;:&quot;admin&quot;,&quot;updateDt&quot;:null,&quot;createDt&quot;:&quot;2016-12-31&quot;}]
+</code></pre>
+
+<p>To query a service with service id.</p>
+
+<pre><code>curl http://localhost:6883/oauth2/service/AACT0003
+
+</code></pre>
+
+<p>And here is the result.</p>
+
+<pre><code>{&quot;serviceType&quot;:&quot;ms&quot;,&quot;serviceDesc&quot;:&quot;Microservices for Retail Account&quot;,&quot;scope&quot;:&quot;act.r act.w&quot;,&quot;serviceId&quot;:&quot;AACT0003&quot;,&quot;serviceName&quot;:&quot;Retail Account&quot;,&quot;ownerId&quot;:&quot;admin&quot;}
+</code></pre>
+
+<p>To update above service type to &ldquo;api&rdquo;.</p>
+
+<pre><code>curl -H &quot;Content-Type: application/json&quot; -X PUT -d '{&quot;serviceType&quot;:&quot;api&quot;,&quot;serviceDesc&quot;:&quot;Microservices for Retail Account&quot;,&quot;scope&quot;:&quot;act.r act.w&quot;,&quot;serviceId&quot;:&quot;AACT0003&quot;,&quot;serviceName&quot;:&quot;Retail Account&quot;,&quot;ownerId&quot;:&quot;admin&quot;}' http://localhost:6883/oauth2/service
+</code></pre>
+
+<p>To delete above service with service id.</p>
+
+<pre><code>curl -X DELETE http://localhost:6883/oauth2/service/AACT0003
+
+</code></pre>
+
+<h3 id="client">Client</h3>
+
+<p>Every client that accesses service(s) must register itself in order to get
+access token during runtime. An entity might be a client and service at the
+same time and in this case, it must register twice as client and service.</p>
+
+<p>To add a new client.</p>
+
+<pre><code>curl -H &quot;Content-Type: application/json&quot; -X POST -d '{&quot;clientType&quot;:&quot;mobile&quot;,&quot;clientName&quot;:&quot;AccountViewer&quot;,&quot;clientDesc&quot;:&quot;Retail Online Banking Account Viewer&quot;,&quot;scope&quot;:&quot;act.r act.w&quot;,&quot;redirectUrl&quot;: &quot;http://localhost:8080/authorization&quot;,&quot;ownerId&quot;:&quot;admin&quot;}' http://localhost:6884/oauth2/client
+</code></pre>
+
+<p>And here is the result with client_id and client_secret.</p>
+
+<pre><code>{&quot;clientDesc&quot;:&quot;Retail Online Banking Account Viewer&quot;,&quot;clientType&quot;:&quot;mobile&quot;,&quot;redirectUrl&quot;:&quot;http://localhost:8080/authorization&quot;,&quot;clientId&quot;:&quot;e24e7110-c39f-49f1-85eb-8434cb577482&quot;,&quot;clientName&quot;:&quot;AccountViewer&quot;,&quot;scope&quot;:&quot;act.r act.w&quot;,&quot;clientSecret&quot;:&quot;YDJLse8SQRapHyoMsdPUig&quot;,&quot;ownerId&quot;:&quot;admin&quot;,&quot;createDt&quot;:&quot;2016-12-31&quot;}
+</code></pre>
+
+<p>To query all clients.</p>
+
+<pre><code>curl http://localhost:6884/oauth2/client
+
+</code></pre>
+
+<p>And here is the result.</p>
+
+<pre><code>[{&quot;clientDesc&quot;:&quot;PetStore Web Server that calls PetStore API&quot;,&quot;clientId&quot;:&quot;f7d42348-c647-4efb-a52d-4c5787421e72&quot;,&quot;clientType&quot;:&quot;server&quot;,&quot;redirectUrl&quot;:&quot;http://localhost:8080/authorization&quot;,&quot;clientName&quot;:&quot;PetStore Web Server&quot;,&quot;scope&quot;:&quot;petstore.r petstore.w&quot;,&quot;ownerId&quot;:&quot;admin&quot;,&quot;updateDt&quot;:null,&quot;createDt&quot;:&quot;2016-12-31&quot;,&quot;authenticateClass&quot;:null},{&quot;clientDesc&quot;:&quot;Retail Online Banking Account Viewer&quot;,&quot;clientId&quot;:&quot;9ef89c7b-f17b-4a64-a24b-ce539ed80641&quot;,&quot;clientType&quot;:&quot;mobile&quot;,&quot;redirectUrl&quot;:&quot;http://localhost:8080/authorization&quot;,&quot;clientName&quot;:&quot;AccountViewer&quot;,&quot;scope&quot;:&quot;act.r act.w&quot;,&quot;ownerId&quot;:&quot;admin&quot;,&quot;updateDt&quot;:null,&quot;createDt&quot;:&quot;2016-12-31&quot;,&quot;authenticateClass&quot;:null}]
+</code></pre>
+
+<p>To query a client by id.</p>
+
+<pre><code>curl http://localhost:6884/oauth2/client/f7d42348-c647-4efb-a52d-4c5787421e72
+</code></pre>
+
+<p>And here is the result.</p>
+
+<pre><code>{&quot;clientDesc&quot;:&quot;PetStore Web Server that calls PetStore API&quot;,&quot;clientId&quot;:&quot;f7d42348-c647-4efb-a52d-4c5787421e72&quot;,&quot;clientType&quot;:&quot;server&quot;,&quot;redirectUrl&quot;:&quot;http://localhost:8080/authorization&quot;,&quot;clientName&quot;:&quot;PetStore Web Server&quot;,&quot;scope&quot;:&quot;petstore.r petstore.w&quot;,&quot;clientSecret&quot;:&quot;f6h1FTI8Q3-7UScPZDzfXA&quot;,&quot;ownerId&quot;:&quot;admin&quot;,&quot;updateDt&quot;:null,&quot;createDt&quot;:&quot;2016-12-31&quot;,&quot;authenticateClass&quot;:null}
+</code></pre>
+
+<p>To update a client with a shorter clientDesc.</p>
+
+<pre><code>curl -H &quot;Content-Type: application/json&quot; -X PUT -d '{&quot;clientDesc&quot;:&quot;PetStore Web Server&quot;,&quot;clientId&quot;:&quot;f7d42348-c647-4efb-a52d-4c5787421e72&quot;,&quot;clientType&quot;:&quot;server&quot;,&quot;redirectUrl&quot;:&quot;http://localhost:8080/authorization&quot;,&quot;clientName&quot;:&quot;PetStore Web Server&quot;,&quot;scope&quot;:&quot;petstore.r petstore.w&quot;,&quot;clientSecret&quot;:&quot;f6h1FTI8Q3-7UScPZDzfXA&quot;,&quot;ownerId&quot;:&quot;admin&quot;,&quot;updateDt&quot;:null,&quot;createDt&quot;:&quot;2016-12-31&quot;,&quot;authenticateClass&quot;:null}' http://localhost:6884/oauth2/client
+</code></pre>
+
+<p>To delete a client with client id.</p>
+
+<pre><code>curl -X DELETE http://localhost:6884/oauth2/client/9ef89c7b-f17b-4a64-a24b-ce539ed80641
+
+</code></pre>
+
+<h3 id="user">User</h3>
+
+<p>The OAuth2 services can be integrated with existing Active Directory, LDAP or customer
+database for authentication. If there is no existing authentication service, you can
+register users into database.</p>
+
+<p>To add a new user.</p>
+
+<pre><code>curl -H &quot;Content-Type: application/json&quot; -X POST -d '{&quot;userId&quot;:&quot;stevehu&quot;,&quot;userType&quot;:&quot;employee&quot;,&quot;firstName&quot;:&quot;Steve&quot;,&quot;lastName&quot;:&quot;Hu&quot;,&quot;email&quot;:&quot;stevehu@gmail.com&quot;,&quot;password&quot;:&quot;123456&quot;,&quot;passwordConfirm&quot;:&quot;123456&quot;}' http://localhost:6885/oauth2/user
+</code></pre>
+
+<p>To query a user.</p>
+
+<pre><code>curl http://localhost:6885/oauth2/user/stevehu
+
+</code></pre>
+
+<p>And here is the result.</p>
+
+<pre><code>{&quot;firstName&quot;:&quot;Steve&quot;,&quot;lastName&quot;:&quot;Hu&quot;,&quot;userType&quot;:&quot;employee&quot;,&quot;userId&quot;:&quot;stevehu&quot;,&quot;email&quot;:&quot;stevehu@gmail.com&quot;}
+</code></pre>
+
+<p>To update the user type to partner.</p>
+
+<pre><code>curl -H &quot;Content-Type: application/json&quot; -X PUT -d '{&quot;firstName&quot;:&quot;Steve&quot;,&quot;lastName&quot;:&quot;Hu&quot;,&quot;userType&quot;:&quot;partner&quot;,&quot;userId&quot;:&quot;stevehu&quot;,&quot;email&quot;:&quot;stevehu@gmail.com&quot;}' http://localhost:6885/oauth2/user
+</code></pre>
+
+<p>To reset the password.</p>
+
+<pre><code>curl -H &quot;Content-Type: application/json&quot; -X POST -d '{&quot;password&quot;:&quot;123456&quot;,&quot;newPassword&quot;:&quot;stevehu&quot;,&quot;newPasswordConfirm&quot;:&quot;stevehu&quot;}' http://localhost:6885/oauth2/password/stevehu
+</code></pre>
+
+<p>To remove a user.</p>
+
+<pre><code>curl -X DELETE http://localhost:6885/oauth2/user/stevehu
+
+</code></pre>
+
+<h3 id="key">Key</h3>
+
+<p>Light-Java and Light-OAuth2 support distributed security verification and this
+requires the JWT public key certificate to be distributed to all services. By
+default, all services built on top of Light-Java will include a set of
+certificates. But how to distributed new certificates to thousands of running
+services if certificates are renewed? There is no way we can copy certificates
+to all the running containers as they are dynamic and new containers can be
+started anytime by container orchestration tool.</p>
+
+<p>The traditional push approach is not working and a new way of pull certificates
+from OAuth2 key service is implemented in Light-Java and Light-OAuth2.</p>
+
+<p>This feature is tightly integrated with Light-Java and it should work seamlessly.</p>
+
+<p>The first step to get certificate is to encode client_id:client_secret pair for
+basic authentication.</p>
+
+<p>Here is the client_id:client_secret</p>
+
+<pre><code>f7d42348-c647-4efb-a52d-4c5787421e72:f6h1FTI8Q3-7UScPZDzfXA
+</code></pre>
+
+<p>Go to <a href="https://www.base64encode.org/">https://www.base64encode.org/</a> to encode it to</p>
+
+<pre><code>ZjdkNDIzNDgtYzY0Ny00ZWZiLWE1MmQtNGM1Nzg3NDIxZTcyOmY2aDFGVEk4UTMtN1VTY1BaRHpmWEE=
+</code></pre>
+
+<p>To get certificate by a key id.</p>
+
+<pre><code>curl -H &quot;Authorization: Basic ZjdkNDIzNDgtYzY0Ny00ZWZiLWE1MmQtNGM1Nzg3NDIxZTcyOmY2aDFGVEk4UTMtN1VTY1BaRHpmWEE=&quot; http://localhost:6886/oauth2/key/101
+</code></pre>
+
+<p>And here is the result.</p>
+
+<pre><code>-----BEGIN CERTIFICATE-----
+MIIDkzCCAnugAwIBAgIEUBGbJDANBgkqhkiG9w0BAQsFADB6MQswCQYDVQQGEwJDQTEQMA4GA1UE
+CBMHT250YXJpbzEQMA4GA1UEBxMHVG9yb250bzEmMCQGA1UEChMdTmV0d29yayBOZXcgVGVjaG5v
+bG9naWVzIEluYy4xDDAKBgNVBAsTA0FQSTERMA8GA1UEAxMIU3RldmUgSHUwHhcNMTYwOTIyMjI1
+OTIxWhcNMjYwODAxMjI1OTIxWjB6MQswCQYDVQQGEwJDQTEQMA4GA1UECBMHT250YXJpbzEQMA4G
+A1UEBxMHVG9yb250bzEmMCQGA1UEChMdTmV0d29yayBOZXcgVGVjaG5vbG9naWVzIEluYy4xDDAK
+BgNVBAsTA0FQSTERMA8GA1UEAxMIU3RldmUgSHUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+AoIBAQCqYfarFwug2DwpG/mmcW77OluaHVNsKEVJ/BptLp5suJAH/Z70SS5pwM4x2QwMOVO2ke8U
+rsAws8allxcuKXrbpVt4evpO1Ly2sFwqB1bjN3+VMp6wcT+tSjzYdVGFpQAYHpeA+OLuoHtQyfpB
+0KCveTEe3KAG33zXDNfGKTGmupZ3ZfmBLINoey/X13rY71ITt67AY78VHUKb+D53MBahCcjJ9YpJ
+UHG+Sd3d4oeXiQcqJCBCVpD97awWARf8WYRIgU1xfCe06wQ3CzH3+GyfozLeu76Ni5PwE1tm7Dhg
+EDSSZo5khmzVzo4G0T2sOeshePc5weZBNRHdHlJA0L0fAgMBAAGjITAfMB0GA1UdDgQWBBT9rnek
+spnrFus5wTszjdzYgKll9TANBgkqhkiG9w0BAQsFAAOCAQEAT8udTfUGBgeWbN6ZAXRI64VsSJj5
+1sNUN1GPDADLxZF6jArKU7LjBNXn9bG5VjJqlx8hQ1SNvi/t7FqBRCUt/3MxDmGZrVZqLY1kZ2e7
+x+5RykbspA8neEUtU8sOr/NP3O5jBjU77EVec9hNNT5zwKLevZNL/Q5mfHoc4GrIAolQvi/5fEqC
+8OMdOIWS6sERgjaeI4tXxQtHDcMo5PeLW0/7t5sgEsadZ+pkdeEMVTmLfgf97bpNNI7KF5uEbYnQ
+NpwCT+NNC5ACmJmKidrfW23kml1C7vr7YzTevw9QuH/hN8l/Rh0fr+iPEVpgN6Zv00ymoKGmjuuW
+owVmdKg/0w==
+-----END CERTIFICATE-----
+</code></pre>
+
+
+			<aside class="copyright" role="note">
+				
+				&copy; 2017 Released under the MIT license &ndash;
+				
+				Documentation built with
+				<a href="https://www.gohugo.io" target="_blank">Hugo</a>
+				using the
+				<a href="http://github.com/digitalcraftsman/hugo-material-docs" target="_blank">Material</a> theme.
+			</aside>
+
+			<footer class="footer">
+				
+
+<nav class="pagination" aria-label="Footer">
+  <div class="previous">
+  
+      <a href="https://networknt.github.io/light-oauth2/tutorials/provider/" title="provider">
+        <span class="direction">
+          Previous
+        </span>
+        <div class="page">
+          <div class="button button-previous" role="button" aria-label="Previous">
+            <i class="icon icon-back"></i>
+          </div>
+          <div class="stretch">
+            <div class="title">
+              provider
+            </div>
+          </div>
+        </div>
+      </a>
+  
+  </div>
+
+  <div class="next">
+  
+      <a href="https://networknt.github.io/light-oauth2/tutorials/development/" title="development">
+        <span class="direction">
+          Next
+        </span>
+        <div class="page">
+          <div class="stretch">
+            <div class="title">
+              development
+            </div>
+          </div>
+          <div class="button button-next" role="button" aria-label="Next">
+            <i class="icon icon-forward"></i>
+          </div>
+        </div>
+      </a>
+  
+  </div>
+</nav>
+
+
+
+
+
+			</footer>
+		</div>
+	</article>
+
+	<div class="results" role="status" aria-live="polite">
+		<div class="scrollable">
+			<div class="wrapper">
+				<div class="meta"></div>
+				<div class="list"></div>
+			</div>
+		</div>
+	</div>
+</main>
+
+    <script>
+    
+      var base_url = 'https:\/\/networknt.github.io\/light-oauth2\/';
+      var repo_id  = 'networknt\/light-oauth2';
+    
+    </script>
+
+    <script src="https://networknt.github.io/light-oauth2/javascripts/application.js"></script>
+    
+
+    <script>
+      /* Add headers to scrollspy */
+      var headers   = document.getElementsByTagName("h2");
+      var scrollspy = document.getElementById('scrollspy');
+
+      if(scrollspy) {
+        if(headers.length > 0) {
+          for(var i = 0; i < headers.length; i++) {
+            var li = document.createElement("li");
+            li.setAttribute("class", "anchor");
+
+            var a  = document.createElement("a");
+            a.setAttribute("href", "#" + headers[i].id);
+            a.setAttribute("title", headers[i].innerHTML);
+            a.innerHTML = headers[i].innerHTML;
+
+            li.appendChild(a)
+            scrollspy.appendChild(li);
+          }
+        } else {
+          scrollspy.parentElement.removeChild(scrollspy)
+        }
+
+
+        /* Add permanent link next to the headers */
+        var headers = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+
+        for(var i = 0; i < headers.length; i++) {
+            var a = document.createElement("a");
+            a.setAttribute("class", "headerlink");
+            a.setAttribute("href", "#" + headers[i].id);
+            a.setAttribute("title", "Permanent link")
+            a.innerHTML = "#";
+            headers[i].appendChild(a);
+        }
+      }
+    </script>
+
+    
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>
+
