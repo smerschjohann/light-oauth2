@@ -1,8 +1,10 @@
 package com.networknt.oauth.service.handler;
 
 import com.networknt.client.Client;
+import com.networknt.config.Config;
 import com.networknt.exception.ApiException;
 import com.networknt.exception.ClientException;
+import com.networknt.status.Status;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -43,4 +45,29 @@ public class Oauth2ServicePostHandlerTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void testOwnerIdNotFound() throws ClientException, ApiException, UnsupportedEncodingException {
+        String service = "{\"serviceId\":\"AACT0004\",\"serviceType\":\"ms\",\"serviceName\":\"Retail Account\",\"serviceDesc\":\"Microservices for Retail Account\",\"scope\":\"act.r act.w\",\"ownerId\":\"fake\"}";
+
+        CloseableHttpClient client = Client.getInstance().getSyncClient();
+        HttpPost httpPost = new HttpPost("http://localhost:6883/oauth2/service");
+        httpPost.setHeader("Content-type", "application/json");
+        httpPost.setEntity(new StringEntity(service));
+        try {
+            CloseableHttpResponse response = client.execute(httpPost);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertEquals(404, statusCode);
+            if(statusCode == 404) {
+                Status status = Config.getInstance().getMapper().readValue(body, Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR12013", status.getCode());
+                Assert.assertEquals("USER_NOT_FOUND", status.getMessage()); // response_type missing
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

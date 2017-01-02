@@ -1,8 +1,10 @@
 package com.networknt.oauth.client.handler;
 
 import com.networknt.client.Client;
+import com.networknt.config.Config;
 import com.networknt.exception.ApiException;
 import com.networknt.exception.ClientException;
+import com.networknt.status.Status;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -35,13 +37,39 @@ public class Oauth2ClientPostHandlerTest {
 
         try {
             CloseableHttpResponse response = client.execute(httpPost);
-            //logger.debug("StatusCode = " + response.getStatusLine().getStatusCode());
-            //Assert.assertEquals(200, response.getStatusLine().getStatusCode());
+            int statusCode = response.getStatusLine().getStatusCode();
             String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
-            logger.debug("Response body = " + body);
-            Assert.assertNotNull(body);
+            Assert.assertEquals(200, statusCode);
+            if(statusCode == 200) {
+                Assert.assertNotNull(body);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void testOwnerNotFound() throws ClientException, ApiException, UnsupportedEncodingException {
+        String c = "{\"clientType\":\"mobile\",\"clientName\":\"AccountViewer\",\"clientDesc\":\"Retail Online Banking Account Viewer\",\"scope\":\"act.r act.w\",\"redirectUrl\": \"http://localhost:8080/authorization\",\"ownerId\":\"fake\"}";
+        CloseableHttpClient client = Client.getInstance().getSyncClient();
+        HttpPost httpPost = new HttpPost("http://localhost:6884/oauth2/client");
+        httpPost.setHeader("Content-type", "application/json");
+        httpPost.setEntity(new StringEntity(c));
+
+        try {
+            CloseableHttpResponse response = client.execute(httpPost);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertEquals(404, statusCode);
+            if(statusCode == 404) {
+                Status status = Config.getInstance().getMapper().readValue(body, Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR12013", status.getCode());
+                Assert.assertEquals("USER_NOT_FOUND", status.getMessage()); // response_type missing
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
