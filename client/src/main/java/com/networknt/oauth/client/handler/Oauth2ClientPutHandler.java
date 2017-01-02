@@ -14,6 +14,8 @@ import java.util.Map;
 public class Oauth2ClientPutHandler implements HttpHandler {
     static Logger logger = LoggerFactory.getLogger(Oauth2ClientPutHandler.class);
     static final String CLIENT_NOT_FOUND = "ERR12014";
+    static final String USER_NOT_FOUND = "ERR12013";
+
     @SuppressWarnings("unchecked")
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
@@ -26,6 +28,16 @@ public class Oauth2ClientPutHandler implements HttpHandler {
             exchange.setStatusCode(status.getStatusCode());
             exchange.getResponseSender().send(status.toString());
         } else {
+            // make sure the owner_id exists in users map.
+            String ownerId = (String)client.get("ownerId");
+            if(ownerId != null) {
+                IMap<String, Object> users = CacheStartupHookProvider.hz.getMap("users");
+                if(!users.containsKey(ownerId)) {
+                    Status status = new Status(USER_NOT_FOUND, ownerId);
+                    exchange.setStatusCode(status.getStatusCode());
+                    exchange.getResponseSender().send(status.toString());
+                }
+            }
             clients.set(clientId, client);
         }
     }

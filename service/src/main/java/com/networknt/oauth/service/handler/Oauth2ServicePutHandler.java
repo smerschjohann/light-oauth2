@@ -14,6 +14,8 @@ import java.util.Map;
 public class Oauth2ServicePutHandler implements HttpHandler {
     static Logger logger = LoggerFactory.getLogger(Oauth2ServicePostHandler.class);
     static final String SERVICE_NOT_FOUND = "ERR12015";
+    static final String USER_NOT_FOUND = "ERR12013";
+
     @SuppressWarnings("unchecked")
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
@@ -26,8 +28,17 @@ public class Oauth2ServicePutHandler implements HttpHandler {
             exchange.setStatusCode(status.getStatusCode());
             exchange.getResponseSender().send(status.toString());
         } else {
+            // make sure the owner_id exists in users map.
+            String ownerId = (String)service.get("ownerId");
+            if(ownerId != null) {
+                IMap<String, Object> users = CacheStartupHookProvider.hz.getMap("users");
+                if(!users.containsKey(ownerId)) {
+                    Status status = new Status(USER_NOT_FOUND, ownerId);
+                    exchange.setStatusCode(status.getStatusCode());
+                    exchange.getResponseSender().send(status.toString());
+                }
+            }
             services.set(serviceId, service);
         }
-
     }
 }

@@ -19,6 +19,8 @@ public class Oauth2ClientPostHandler implements HttpHandler {
 
     static Logger logger = LoggerFactory.getLogger(Oauth2ClientPostHandler.class);
     static final String CLIENT_ID_EXISTS = "ERR12019";
+    static final String USER_NOT_FOUND = "ERR12013";
+
     @SuppressWarnings("unchecked")
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
@@ -33,6 +35,16 @@ public class Oauth2ClientPostHandler implements HttpHandler {
 
         IMap<String, Object> clients = CacheStartupHookProvider.hz.getMap("clients");
         if(clients.get(clientId) == null) {
+            // make sure the owner_id exists in users map.
+            String ownerId = (String)client.get("ownerId");
+            if(ownerId != null) {
+                IMap<String, Object> users = CacheStartupHookProvider.hz.getMap("users");
+                if(!users.containsKey(ownerId)) {
+                    Status status = new Status(USER_NOT_FOUND, ownerId);
+                    exchange.setStatusCode(status.getStatusCode());
+                    exchange.getResponseSender().send(status.toString());
+                }
+            }
             clients.set(clientId, client);
             // send the client back with client_id and client_secret
             exchange.getResponseSender().send(Config.getInstance().getMapper().writeValueAsString(client));
