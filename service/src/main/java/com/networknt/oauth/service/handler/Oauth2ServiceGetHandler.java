@@ -29,6 +29,7 @@ public class Oauth2ServiceGetHandler implements HttpHandler {
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         List<Map<String, Object>> result = new ArrayList<>();
         try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
+            // TODO refactor with map instead of db.
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Map<String, Object> service = new HashMap<>();

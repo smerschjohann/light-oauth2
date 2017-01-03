@@ -28,7 +28,7 @@ public class User implements IdentifiedDataSerializable {
     
     PARTNER("partner");
 
-    private String value;
+    private final String value;
 
     UserTypeEnum(String value) {
       this.value = value;

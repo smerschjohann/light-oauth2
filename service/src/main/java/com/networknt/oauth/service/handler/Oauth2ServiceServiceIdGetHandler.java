@@ -3,6 +3,7 @@ package com.networknt.oauth.service.handler;
 import com.hazelcast.core.IMap;
 import com.networknt.config.Config;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
+import com.networknt.oauth.cache.model.Service;
 import com.networknt.status.Status;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -20,8 +21,8 @@ public class Oauth2ServiceServiceIdGetHandler implements HttpHandler {
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         String serviceId = exchange.getQueryParameters().get("serviceId").getFirst();
 
-        IMap<String, Object> services = CacheStartupHookProvider.hz.getMap("services");
-        Map<String, Object> service = (Map<String, Object>)services.get(serviceId);
+        IMap<String, Service> services = CacheStartupHookProvider.hz.getMap("services");
+        Service service = services.get(serviceId);
 
         if(service == null) {
             Status status = new Status(SERVICE_NOT_FOUND, serviceId);

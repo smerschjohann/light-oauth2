@@ -1,9 +1,12 @@
 package com.networknt.oauth.code.handler;
 
+import com.hazelcast.core.IMap;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
+import com.networknt.oauth.cache.model.Client;
 import com.networknt.oauth.code.auth.Authentication;
 import com.networknt.status.Status;
 import com.networknt.utility.Util;
+import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
@@ -47,12 +50,14 @@ public class Oauth2CodePostHandler implements HttpHandler {
             exchange.getResponseSender().send(status.toString());
         } else {
             // check if the client_id is valid
-            Map<String, Object> client = (Map<String, Object>) CacheStartupHookProvider.hz.getMap("clients").get(clientId);
+            IMap<String, Client> clients = CacheStartupHookProvider.hz.getMap("clients");
+            Client client = clients.get(clientId);
             if(client == null) {
                 Status status = new Status(CLIENT_NOT_FOUND, clientId);
                 exchange.setStatusCode(status.getStatusCode());
                 exchange.getResponseSender().send(status.toString());
             } else {
+                /*
                 String clazz = (String)client.get("authenticateClass");
                 if(clazz == null) clazz = DEFAULT_AUTHENTICATE_CLASS;
                 Authentication auth = (Authentication)Class.forName(clazz).getConstructor().newInstance();
@@ -63,13 +68,15 @@ public class Oauth2CodePostHandler implements HttpHandler {
                     exchange.getResponseSender().send(status.toString());
                     return;
                 }
-                if(logger.isDebugEnabled()) logger.debug("User is authenticated " + userId);
+                */
+                final SecurityContext context = exchange.getSecurityContext();
+                String userId = context.getAuthenticatedAccount().getPrincipal().getName();
                 // generate auth code
                 String code = Util.getUUID();
                 CacheStartupHookProvider.hz.getMap("codes").set(code, userId);
                 String redirectUrl = params.get("redirect_url");
                 if(redirectUrl == null) {
-                    redirectUrl = (String)client.get("redirectUrl");
+                    redirectUrl = client.getRedirectUrl();
                 }
                 redirectUrl = redirectUrl + "?code=" + code;
                 if(logger.isDebugEnabled()) logger.debug("redirectUrl = " + redirectUrl);

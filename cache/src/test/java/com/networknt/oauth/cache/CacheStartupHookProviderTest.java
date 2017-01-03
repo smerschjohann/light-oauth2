@@ -3,6 +3,8 @@ package com.networknt.oauth.cache;
 import com.hazelcast.core.IMap;
 import com.hazelcast.query.Predicate;
 import com.hazelcast.query.SqlPredicate;
+import com.networknt.oauth.cache.model.Client;
+import com.networknt.oauth.cache.model.Service;
 import com.networknt.oauth.cache.model.User;
 import com.networknt.service.SingletonServiceFactory;
 import org.h2.tools.RunScript;
@@ -58,12 +60,13 @@ public class CacheStartupHookProviderTest {
         CacheStartupHookProvider start = new CacheStartupHookProvider();
         start.onStartup();
 
-        final IMap<String, Object> clients = CacheStartupHookProvider.hz.getMap("clients");
+        final IMap<String, Client> clients = CacheStartupHookProvider.hz.getMap("clients");
 
-        Map<String, Object> client = (Map<String, Object>)clients.get("f7d42348-c647-4efb-a52d-4c5787421e72");
+        Client client = clients.get("f7d42348-c647-4efb-a52d-4c5787421e72");
         System.out.println("client = " + client);
 
-        client.put("clientType", "mobile");
+        client.setClientType(Client.ClientTypeEnum.fromValue("mobile"));
+
         clients.put("f7d42348-c647-4efb-a52d-4c5787421e72", client);
         System.out.println("clients size = " + clients.size());
 
@@ -81,12 +84,13 @@ public class CacheStartupHookProviderTest {
         CacheStartupHookProvider start = new CacheStartupHookProvider();
         start.onStartup();
 
-        final IMap<String, Object> services = CacheStartupHookProvider.hz.getMap("services");
+        final IMap<String, Service> services = CacheStartupHookProvider.hz.getMap("services");
 
-        Map<String, Object> service = (Map<String, Object>)services.get("AACT0001");
+        Service service = services.get("AACT0001");
         System.out.println("service = " + service);
 
-        service.put("serviceType", "api");
+        service.setServiceType(Service.ServiceTypeEnum.fromValue("api"));
+
         services.replace("AACT0001", service);
 
         System.out.println("services size = " + services.size());

@@ -2,7 +2,10 @@ package com.networknt.oauth.service.handler;
 
 import com.hazelcast.core.IMap;
 import com.networknt.body.BodyHandler;
+import com.networknt.config.Config;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
+import com.networknt.oauth.cache.model.Client;
+import com.networknt.oauth.cache.model.Service;
 import com.networknt.oauth.cache.model.User;
 import com.networknt.status.Status;
 import io.undertow.server.HttpHandler;
@@ -20,13 +23,14 @@ public class Oauth2ServicePostHandler implements HttpHandler {
     @SuppressWarnings("unchecked")
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-        Map<String, Object> service = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);
-        String serviceId = (String)service.get("serviceId");
+        Map<String, Object> body = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);
+        Service service = Config.getInstance().getMapper().convertValue(body, Service.class);
 
-        IMap<String, Object> services = CacheStartupHookProvider.hz.getMap("services");
+        String serviceId = service.getServiceId();
+        IMap<String, Service> services = CacheStartupHookProvider.hz.getMap("services");
         if(services.get(serviceId) == null) {
             // make sure the owner_id exists in users map.
-            String ownerId = (String)service.get("ownerId");
+            String ownerId = service.getOwnerId();
             if(ownerId != null) {
                 IMap<String, User> users = CacheStartupHookProvider.hz.getMap("users");
                 if(!users.containsKey(ownerId)) {

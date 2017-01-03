@@ -4,6 +4,7 @@ import com.hazelcast.core.IMap;
 import com.networknt.body.BodyHandler;
 import com.networknt.config.Config;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
+import com.networknt.oauth.cache.model.Client;
 import com.networknt.oauth.cache.model.User;
 import com.networknt.status.Status;
 import com.networknt.utility.Util;
@@ -25,19 +26,20 @@ public class Oauth2ClientPostHandler implements HttpHandler {
     @SuppressWarnings("unchecked")
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-        Map<String, Object> client = (Map<String, Object>)exchange.getAttachment(BodyHandler.REQUEST_BODY);
+        Map<String, Object> body = (Map<String, Object>)exchange.getAttachment(BodyHandler.REQUEST_BODY);
+        Client client = Config.getInstance().getMapper().convertValue(body, Client.class);
 
         // generate client_id and client_secret here.
         String clientId = UUID.randomUUID().toString();
-        client.put("clientId", clientId);
+        client.setClientId(clientId);
         String clientSecret = Util.getUUID();
-        client.put("clientSecret", clientSecret);
-        client.put("createDt", new Date(System.currentTimeMillis()));
+        client.setClientSecret(clientSecret);
+        client.setCreateDt(new Date(System.currentTimeMillis()));
 
-        IMap<String, Object> clients = CacheStartupHookProvider.hz.getMap("clients");
+        IMap<String, Client> clients = CacheStartupHookProvider.hz.getMap("clients");
         if(clients.get(clientId) == null) {
             // make sure the owner_id exists in users map.
-            String ownerId = (String)client.get("ownerId");
+            String ownerId = client.getOwnerId();
             if(ownerId != null) {
                 IMap<String, User> users = CacheStartupHookProvider.hz.getMap("users");
                 if(!users.containsKey(ownerId)) {

@@ -2,7 +2,9 @@ package com.networknt.oauth.client.handler;
 
 import com.hazelcast.core.IMap;
 import com.networknt.body.BodyHandler;
+import com.networknt.config.Config;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
+import com.networknt.oauth.cache.model.Client;
 import com.networknt.oauth.cache.model.User;
 import com.networknt.status.Status;
 import io.undertow.server.HttpHandler;
@@ -20,17 +22,19 @@ public class Oauth2ClientPutHandler implements HttpHandler {
     @SuppressWarnings("unchecked")
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-        Map<String, Object> client = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);
-        String clientId = (String)client.get("clientId");
+        Map<String, Object> body = (Map)exchange.getAttachment(BodyHandler.REQUEST_BODY);
+        Client client = Config.getInstance().getMapper().convertValue(body, Client.class);
 
-        IMap<String, Object> clients = CacheStartupHookProvider.hz.getMap("clients");
+        String clientId = client.getClientId();
+
+        IMap<String, Client> clients = CacheStartupHookProvider.hz.getMap("clients");
         if(clients.get(clientId) == null) {
             Status status = new Status(CLIENT_NOT_FOUND, clientId);
             exchange.setStatusCode(status.getStatusCode());
             exchange.getResponseSender().send(status.toString());
         } else {
             // make sure the owner_id exists in users map.
-            String ownerId = (String)client.get("ownerId");
+            String ownerId = client.getOwnerId();
             if(ownerId != null) {
                 IMap<String, User> users = CacheStartupHookProvider.hz.getMap("users");
                 if(!users.containsKey(ownerId)) {

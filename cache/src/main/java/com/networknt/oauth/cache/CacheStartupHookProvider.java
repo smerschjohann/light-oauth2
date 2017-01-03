@@ -3,6 +3,8 @@ package com.networknt.oauth.cache;
 import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.networknt.oauth.cache.model.ClientDataSerializableFactory;
+import com.networknt.oauth.cache.model.ServiceDataSerializableFactory;
 import com.networknt.oauth.cache.model.UserDataSerializableFactory;
 import com.networknt.server.StartupHookProvider;
 
@@ -19,6 +21,8 @@ public class CacheStartupHookProvider implements StartupHookProvider {
 
         // data serializer factory
         config.getSerializationConfig().addDataSerializableFactory(1, new UserDataSerializableFactory());
+        config.getSerializationConfig().addDataSerializableFactory(2, new ClientDataSerializableFactory());
+        config.getSerializationConfig().addDataSerializableFactory(3, new ServiceDataSerializableFactory());
 
         // service map with near cache.
         MapConfig serviceConfig = new MapConfig();

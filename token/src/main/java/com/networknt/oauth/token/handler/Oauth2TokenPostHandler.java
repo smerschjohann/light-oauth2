@@ -2,9 +2,12 @@ package com.networknt.oauth.token.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hazelcast.core.IMap;
 import com.networknt.config.Config;
 import com.networknt.exception.ApiException;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
+import com.networknt.oauth.cache.model.Client;
+import com.networknt.oauth.cache.model.User;
 import com.networknt.security.JwtHelper;
 import com.networknt.status.Status;
 import io.undertow.server.HttpHandler;
@@ -96,13 +99,15 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                 if(pos != -1) {
                     clientId = credentials.substring(0, pos);
                     clientSecret = credentials.substring(pos + 1);
-                    Map<String, Object> client = (Map<String, Object>) CacheStartupHookProvider.hz.getMap("clients").get(clientId);
+
+                    IMap<String, Client> clients = CacheStartupHookProvider.hz.getMap("clients");
+                    Client client = clients.get(clientId);
                     if(client == null) {
                         throw new ApiException(new Status(CLIENT_NOT_FOUND, clientId));
                     } else {
-                        String secret = (String)client.get("clientSecret");
+                        String secret = client.getClientSecret();
                         if(secret.equals(clientSecret)) {
-                            String scope = (String)client.get("scope");
+                            String scope = client.getScope();
                             String jwt;
                             try {
                                 jwt = JwtHelper.getJwt(mockCcClaims(clientId, scope));
@@ -151,19 +156,21 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                     clientId = credentials.substring(0, pos);
                     clientSecret = credentials.substring(pos + 1);
 
-                    Map<String, Object> client = (Map<String, Object>)CacheStartupHookProvider.hz.getMap("clients").get(clientId);
+                    IMap<String, Client> clients = CacheStartupHookProvider.hz.getMap("clients");
+                    Client client = clients.get(clientId);
                     if(client == null) {
                         throw new ApiException(new Status(CLIENT_NOT_FOUND, clientId));
                     } else {
-                        String secret = (String)client.get("clientSecret");
+                        String secret = client.getClientSecret();
                         if(secret.equals(clientSecret)) {
                             String userId = (String)CacheStartupHookProvider.hz.getMap("codes").remove(code);
                             if(userId != null) {
-                                Map<String, Object> user = (Map<String, Object>)CacheStartupHookProvider.hz.getMap("users").get(userId);
-                                String scope = (String)client.get("scope");
+                                IMap<String, User> users = CacheStartupHookProvider.hz.getMap("users");
+                                User user = users.get(userId);
+                                String scope = client.getScope();
                                 String jwt;
                                 try {
-                                    jwt = JwtHelper.getJwt(mockAcClaims(clientId, scope, userId, (String)user.get("userType")));
+                                    jwt = JwtHelper.getJwt(mockAcClaims(clientId, scope, userId, user.getUserType().toString()));
                                 } catch (Exception e) {
                                     throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
                                 }

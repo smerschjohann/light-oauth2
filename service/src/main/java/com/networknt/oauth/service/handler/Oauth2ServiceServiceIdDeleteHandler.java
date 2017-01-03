@@ -2,6 +2,7 @@ package com.networknt.oauth.service.handler;
 
 import com.hazelcast.core.IMap;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
+import com.networknt.oauth.cache.model.Service;
 import com.networknt.status.Status;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -14,7 +15,7 @@ public class Oauth2ServiceServiceIdDeleteHandler implements HttpHandler {
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         String serviceId = exchange.getQueryParameters().get("serviceId").getFirst();
-        IMap<String, Object> services = CacheStartupHookProvider.hz.getMap("services");
+        IMap<String, Service> services = CacheStartupHookProvider.hz.getMap("services");
         if(services.get(serviceId) == null) {
             Status status = new Status(SERVICE_NOT_FOUND, serviceId);
             exchange.setStatusCode(status.getStatusCode());

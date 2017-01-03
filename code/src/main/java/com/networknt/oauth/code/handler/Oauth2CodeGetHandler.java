@@ -1,6 +1,8 @@
 package com.networknt.oauth.code.handler;
 
+import com.hazelcast.core.IMap;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
+import com.networknt.oauth.cache.model.Client;
 import com.networknt.status.Status;
 import com.networknt.utility.Util;
 import io.undertow.security.api.SecurityContext;
@@ -51,7 +53,8 @@ public class Oauth2CodeGetHandler implements HttpHandler {
             exchange.getResponseSender().send(status.toString());
         } else {
             // check if the client_id is valid
-            Map<String, Object> client = (Map<String, Object>) CacheStartupHookProvider.hz.getMap("clients").get(clientId);
+            IMap<String, Client> clients = CacheStartupHookProvider.hz.getMap("clients");
+            Client client = clients.get(clientId);
             if(client == null) {
                 Status status = new Status(CLIENT_NOT_FOUND, clientId);
                 exchange.setStatusCode(status.getStatusCode());
@@ -64,7 +67,7 @@ public class Oauth2CodeGetHandler implements HttpHandler {
                 CacheStartupHookProvider.hz.getMap("codes").set(code, userId);
                 String redirectUrl = params.get("redirect_url");
                 if(redirectUrl == null) {
-                    redirectUrl = (String)client.get("redirectUrl");
+                    redirectUrl = client.getRedirectUrl();
                 }
                 redirectUrl = redirectUrl + "?code=" + code;
                 if(logger.isDebugEnabled()) logger.debug("redirectUrl = " + redirectUrl);

@@ -1,6 +1,8 @@
 package com.networknt.oauth.cache;
 
 import com.hazelcast.core.MapStore;
+import com.networknt.oauth.cache.model.Client;
+import com.networknt.oauth.cache.model.Service;
 import com.networknt.service.SingletonServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,13 +16,15 @@ import java.util.Map;
 /**
  * Created by stevehu on 2016-12-27.
  */
-public class ServiceMapStore implements MapStore<String, Map<String, Object>> {
-    static final Logger logger = LoggerFactory.getLogger(ServiceMapStore.class);
-    static final DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    static final String insert = "INSERT INTO services (service_id, service_type, service_name, service_desc, scope, owner_id, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    static final String delete = "DELETE FROM services WHERE service_id = ?";
-    static final String select = "SELECT * FROM services WHERE service_id = ?";
-    static final String update = "UPDATE services SET service_type = ?, service_name=?, service_desc=?, scope=?, owner_id=?, update_dt=? WHERE service_id=?";
+public class ServiceMapStore implements MapStore<String, Service> {
+    private static final Logger logger = LoggerFactory.getLogger(ServiceMapStore.class);
+    private static final DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
+    private static final String insert = "INSERT INTO services (service_id, service_type, service_name, service_desc, scope, owner_id, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String delete = "DELETE FROM services WHERE service_id = ?";
+    private static final String select = "SELECT * FROM services WHERE service_id = ?";
+    private static final String update = "UPDATE services SET service_type = ?, service_name=?, service_desc=?, scope=?, owner_id=?, update_dt=? WHERE service_id=?";
+    private static final String loadall = "SELECT service_id FROM services";
+
     @Override
     public synchronized void delete(String key) {
         if(logger.isDebugEnabled()) logger.debug("Delete:" + key);
@@ -33,16 +37,16 @@ public class ServiceMapStore implements MapStore<String, Map<String, Object>> {
         }
     }
     @Override
-    public synchronized void store(String key, Map<String, Object> value) {
+    public synchronized void store(String key, Service service) {
         if(logger.isDebugEnabled()) logger.debug("Store:"  + key);
         if(load(key) == null) {
             try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(insert)) {
-                stmt.setString(1, (String)value.get("serviceId"));
-                stmt.setString(2, (String)value.get("serviceType"));
-                stmt.setString(3, (String)value.get("serviceName"));
-                stmt.setString(4, (String)value.get("serviceDesc"));
-                stmt.setString(5, (String)value.get("scope"));
-                stmt.setString(6, (String)value.get("ownerId"));
+                stmt.setString(1, service.getServiceId());
+                stmt.setString(2, service.getServiceType().toString());
+                stmt.setString(3, service.getServiceName());
+                stmt.setString(4, service.getServiceDesc());
+                stmt.setString(5, service.getScope());
+                stmt.setString(6, service.getOwnerId());
                 stmt.setDate(7, new Date(System.currentTimeMillis()));
                 stmt.executeUpdate();
             } catch (SQLException e) {
@@ -51,13 +55,13 @@ public class ServiceMapStore implements MapStore<String, Map<String, Object>> {
             }
         } else {
             try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(update)) {
-                stmt.setString(1, (String)value.get("serviceType"));
-                stmt.setString(2, (String)value.get("serviceName"));
-                stmt.setString(3, (String)value.get("serviceDesc"));
-                stmt.setString(4, (String)value.get("scope"));
-                stmt.setString(5, (String)value.get("ownerId"));
+                stmt.setString(1, service.getServiceType().toString());
+                stmt.setString(2, service.getServiceName());
+                stmt.setString(3, service.getServiceDesc());
+                stmt.setString(4, service.getScope());
+                stmt.setString(5, service.getOwnerId());
                 stmt.setDate(6, new Date(System.currentTimeMillis()));
-                stmt.setString(7, (String)value.get("serviceId"));
+                stmt.setString(7, service.getServiceId());
                 stmt.executeUpdate();
             } catch (SQLException e) {
                 logger.error("Exception:", e);
@@ -66,8 +70,8 @@ public class ServiceMapStore implements MapStore<String, Map<String, Object>> {
         }
     }
     @Override
-    public synchronized void storeAll(Map<String, Map<String, Object>> map) {
-        for (Map.Entry<String, Map<String, Object>> entry : map.entrySet())
+    public synchronized void storeAll(Map<String, Service> map) {
+        for (Map.Entry<String, Service> entry : map.entrySet())
             store(entry.getKey(), entry.getValue());
     }
     @Override
@@ -75,38 +79,45 @@ public class ServiceMapStore implements MapStore<String, Map<String, Object>> {
         keys.forEach(this::delete);
     }
     @Override
-    public synchronized Map<String, Object> load(String key) {
+    public synchronized Service load(String key) {
         if(logger.isDebugEnabled()) logger.debug("Load:"  + key);
-        Map<String, Object> result = null;
+        Service service = null;
         try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(select)) {
             stmt.setString(1, key);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    result = new HashMap<>();
-                    result.put("serviceId", key);
-                    result.put("serviceType", rs.getString("service_type"));
-                    result.put("serviceName", rs.getString("service_name"));
-                    result.put("serviceDesc", rs.getString("service_desc"));
-                    result.put("scope", rs.getString("scope"));
-                    result.put("ownerId", rs.getString("owner_id"));
-                    result.put("createDt", rs.getDate("create_dt"));
-                    result.put("updateDt", rs.getDate("update_dt"));
+                    service = new Service();
+                    service.setServiceId(key);
+                    service.setServiceType(Service.ServiceTypeEnum.fromValue(rs.getString("service_type")));
+                    service.setServiceName(rs.getString("service_name"));
+                    service.setServiceDesc(rs.getString("service_desc"));
+                    service.setScope(rs.getString("scope"));
+                    service.setOwnerId(rs.getString("owner_id"));
+                    service.setCreateDt(rs.getDate("create_dt"));
+                    service.setUpdateDt(rs.getDate("update_dt"));
                 }
             }
         } catch (SQLException e) {
             logger.error("Exception:", e);
             throw new RuntimeException(e);
         }
-        return result;
+        return service;
     }
     @Override
-    public synchronized Map<String, Map<String, Object>> loadAll(Collection<String> keys) {
-        Map<String, Map<String, Object>> result = new HashMap<>();
+    public synchronized Map<String, Service> loadAll(Collection<String> keys) {
+        Map<String, Service> result = new HashMap<>();
         for (String key : keys) result.put(key, load(key));
         return result;
     }
     @Override
     public Iterable<String> loadAllKeys() {
+        if(logger.isDebugEnabled()) logger.debug("loadAllKeys is called");
+        try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(loadall)) {
+            new StatementIterable<String>(stmt);
+        } catch (SQLException e) {
+            logger.error("Exception:", e);
+            throw new RuntimeException(e);
+        }
         return null;
     }
 

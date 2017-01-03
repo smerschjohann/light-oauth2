@@ -1,8 +1,10 @@
 package com.networknt.oauth.key.handler;
 
+import com.hazelcast.core.IMap;
 import com.networknt.config.Config;
 import com.networknt.exception.ApiException;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
+import com.networknt.oauth.cache.model.Client;
 import com.networknt.status.Status;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -104,11 +106,12 @@ public class Oauth2KeyKeyIdGetHandler implements HttpHandler {
                     String clientId = plainChallenge.substring(0, colonPos);
                     String clientSecret = plainChallenge.substring(colonPos + 1);
                     // match with db/cached user credentials.
-                    Map<String, Object> client = (Map<String, Object>) CacheStartupHookProvider.hz.getMap("clients").get(clientId);
+                    IMap<String, Client> clients = CacheStartupHookProvider.hz.getMap("clients");
+                    Client client = clients.get(clientId);
                     if(client == null) {
                         throw new ApiException(new Status(CLIENT_NOT_FOUND, clientId));
                     }
-                    if(!clientSecret.equals(client.get("clientSecret"))) {
+                    if(!clientSecret.equals(client.getClientSecret())) {
                         throw new ApiException(new Status(UNAUTHORIZED_CLIENT));
                     }
                     result = clientId;

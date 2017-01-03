@@ -25,6 +25,8 @@ public class Oauth2ClientGetHandler implements HttpHandler {
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         List<Map<String, Object>> result = new ArrayList<>();
+        // TODO refactor from map instead of db.
+
         try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
