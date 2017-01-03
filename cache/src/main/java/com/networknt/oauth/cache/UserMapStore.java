@@ -1,6 +1,7 @@
 package com.networknt.oauth.cache;
 
 import com.hazelcast.core.MapStore;
+import com.networknt.oauth.cache.model.User;
 import com.networknt.service.SingletonServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,13 +15,15 @@ import java.util.Map;
 /**
  * Created by stevehu on 2016-12-27.
  */
-public class UserMapStore implements MapStore<String, Map<String, Object>> {
+public class UserMapStore implements MapStore<String, User> {
     static final Logger logger = LoggerFactory.getLogger(ServiceMapStore.class);
     static final DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    static final String insert = "INSERT INTO users (user_id, user_type, first_name, last_name, email, password, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    static final String delete = "DELETE FROM users WHERE user_id = ?";
-    static final String select = "SELECT * FROM users WHERE user_id = ?";
-    static final String update = "UPDATE users SET user_type=?, first_name=?, last_name=?, email=?, password=?, update_dt=? WHERE user_id = ?";
+    private static final String insert = "INSERT INTO users (user_id, user_type, first_name, last_name, email, password, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String delete = "DELETE FROM users WHERE user_id = ?";
+    private static final String select = "SELECT * FROM users WHERE user_id = ?";
+    private static final String update = "UPDATE users SET user_type=?, first_name=?, last_name=?, email=?, password=?, update_dt=? WHERE user_id = ?";
+    private static final String loadall = "SELECT user_id FROM users";
+
     @Override
     public synchronized void delete(String key) {
         if(logger.isDebugEnabled()) logger.debug("Delete:" + key);
@@ -33,16 +36,16 @@ public class UserMapStore implements MapStore<String, Map<String, Object>> {
         }
     }
     @Override
-    public synchronized void store(String key, Map<String, Object> value) {
+    public synchronized void store(String key, User user) {
         if(logger.isDebugEnabled()) logger.debug("Store:"  + key);
         if(load(key) == null) {
             try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(insert)) {
-                stmt.setString(1, (String)value.get("userId"));
-                stmt.setString(2, (String)value.get("userType"));
-                stmt.setString(3, (String)value.get("firstName"));
-                stmt.setString(4, (String)value.get("lastName"));
-                stmt.setString(5, (String)value.get("email"));
-                stmt.setString(6, (String)value.get("password"));
+                stmt.setString(1, user.getUserId());
+                stmt.setString(2, user.getUserType().toString());
+                stmt.setString(3, user.getFirstName());
+                stmt.setString(4, user.getLastName());
+                stmt.setString(5, user.getEmail());
+                stmt.setString(6, user.getPassword());
                 stmt.setDate(7, new Date(System.currentTimeMillis()));
                 stmt.executeUpdate();
             } catch (SQLException e) {
@@ -51,13 +54,13 @@ public class UserMapStore implements MapStore<String, Map<String, Object>> {
             }
         } else {
             try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(update)) {
-                stmt.setString(1, (String)value.get("userType"));
-                stmt.setString(2, (String)value.get("firstName"));
-                stmt.setString(3, (String)value.get("lastName"));
-                stmt.setString(4, (String)value.get("email"));
-                stmt.setString(5, (String)value.get("password"));
+                stmt.setString(1, user.getUserType().toString());
+                stmt.setString(2, user.getFirstName());
+                stmt.setString(3, user.getLastName());
+                stmt.setString(4, user.getEmail());
+                stmt.setString(5, user.getPassword());
                 stmt.setDate(6, new Date(System.currentTimeMillis()));
-                stmt.setString(7, (String)value.get("userId"));
+                stmt.setString(7, user.getUserId());
                 stmt.executeUpdate();
             } catch (SQLException e) {
                 logger.error("Exception:", e);
@@ -66,8 +69,8 @@ public class UserMapStore implements MapStore<String, Map<String, Object>> {
         }
     }
     @Override
-    public synchronized void storeAll(Map<String, Map<String, Object>> map) {
-        for (Map.Entry<String, Map<String, Object>> entry : map.entrySet())
+    public synchronized void storeAll(Map<String, User> map) {
+        for (Map.Entry<String, User> entry : map.entrySet())
             store(entry.getKey(), entry.getValue());
     }
     @Override
@@ -75,38 +78,45 @@ public class UserMapStore implements MapStore<String, Map<String, Object>> {
         keys.forEach(this::delete);
     }
     @Override
-    public synchronized Map<String, Object> load(String key) {
+    public synchronized User load(String key) {
         if(logger.isDebugEnabled()) logger.debug("Load:"  + key);
-        Map<String, Object> result = null;
+        User user = null;
         try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(select)) {
             stmt.setString(1, key);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    result = new HashMap<>();
-                    result.put("userId", key);
-                    result.put("userType", rs.getString("user_type"));
-                    result.put("firstName", rs.getString("first_name"));
-                    result.put("lastName", rs.getString("last_name"));
-                    result.put("email", rs.getString("email"));
-                    result.put("password", rs.getString("password"));
-                    result.put("createDt", rs.getDate("create_dt"));
-                    result.put("updateDt", rs.getDate("update_dt"));
+                    user = new User();
+                    user.setUserId(key);
+                    user.setUserType(User.UserTypeEnum.fromValue(rs.getString("user_type")));
+                    user.setFirstName(rs.getString("first_name"));
+                    user.setLastName(rs.getString("last_name"));
+                    user.setEmail(rs.getString("email"));
+                    user.setPassword(rs.getString("password"));
+                    user.setCreateDt(rs.getDate("create_dt"));
+                    user.setUpdateDt(rs.getDate("update_dt"));
                 }
             }
         } catch (SQLException e) {
             logger.error("Exception:", e);
             throw new RuntimeException(e);
         }
-        return result;
+        return user;
     }
     @Override
-    public synchronized Map<String, Map<String, Object>> loadAll(Collection<String> keys) {
-        Map<String, Map<String, Object>> result = new HashMap<>();
+    public synchronized Map<String, User> loadAll(Collection<String> keys) {
+        Map<String, User> result = new HashMap<>();
         for (String key : keys) result.put(key, load(key));
         return result;
     }
     @Override
     public Iterable<String> loadAllKeys() {
+        if(logger.isDebugEnabled()) logger.debug("loadAllKeys is called");
+        try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(loadall)) {
+            new StatementIterable<String>(stmt);
+        } catch (SQLException e) {
+            logger.error("Exception:", e);
+            throw new RuntimeException(e);
+        }
         return null;
     }
 }

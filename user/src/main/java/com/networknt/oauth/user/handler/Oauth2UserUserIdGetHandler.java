@@ -3,6 +3,7 @@ package com.networknt.oauth.user.handler;
 import com.hazelcast.core.IMap;
 import com.networknt.config.Config;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
+import com.networknt.oauth.cache.model.User;
 import com.networknt.status.Status;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -20,8 +21,8 @@ public class Oauth2UserUserIdGetHandler implements HttpHandler {
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         String userId = exchange.getQueryParameters().get("userId").getFirst();
 
-        IMap<String, Object> users = CacheStartupHookProvider.hz.getMap("users");
-        Map<String, Object> user = (Map<String, Object>)users.get(userId);
+        IMap<String, User> users = CacheStartupHookProvider.hz.getMap("users");
+        User user = users.get(userId);
 
         if(user == null) {
             Status status = new Status(USER_NOT_FOUND, userId);
@@ -30,7 +31,7 @@ public class Oauth2UserUserIdGetHandler implements HttpHandler {
             return;
         }
         // remove password here
-        user.remove("password");
+        user.setPassword(null);
         exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
         exchange.getResponseSender().send(Config.getInstance().getMapper().writeValueAsString(user));
     }

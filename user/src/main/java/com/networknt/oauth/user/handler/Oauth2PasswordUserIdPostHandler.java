@@ -3,6 +3,7 @@ package com.networknt.oauth.user.handler;
 import com.hazelcast.core.IMap;
 import com.networknt.body.BodyHandler;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
+import com.networknt.oauth.cache.model.User;
 import com.networknt.status.Status;
 import com.networknt.utility.HashUtil;
 import io.undertow.server.HttpHandler;
@@ -27,14 +28,14 @@ public class Oauth2PasswordUserIdPostHandler implements HttpHandler {
         String newPassword = (String)body.get("newPassword");
         String newPasswordConfirm = (String)body.get("newPasswordConfirm");
 
-        IMap<String, Object> users = CacheStartupHookProvider.hz.getMap("users");
-        Map<String, Object> user = (Map<String, Object>)users.get(userId);
+        IMap<String, User> users = CacheStartupHookProvider.hz.getMap("users");
+        User user = users.get(userId);
         if(user == null) {
             Status status = new Status(USER_NOT_FOUND, userId);
             exchange.setStatusCode(status.getStatusCode());
             exchange.getResponseSender().send(status.toString());
         } else {
-            if(!HashUtil.validatePassword(password, (String)user.get("password"))) {
+            if(!HashUtil.validatePassword(password, user.getPassword())) {
                 Status status = new Status(INCORRECT_PASSWORD);
                 exchange.setStatusCode(status.getStatusCode());
                 exchange.getResponseSender().send(status.toString());
@@ -42,7 +43,7 @@ public class Oauth2PasswordUserIdPostHandler implements HttpHandler {
             }
             if(newPassword.equals(newPasswordConfirm)) {
                 String hashedPass = HashUtil.generateStorngPasswordHash(newPassword);
-                user.put("password", hashedPass);
+                user.setPassword(hashedPass);
                 users.set(userId, user);
             } else {
                 Status status = new Status(PASSWORD_PASSWORDCONFIRM_NOT_MATCH, newPassword, newPasswordConfirm);

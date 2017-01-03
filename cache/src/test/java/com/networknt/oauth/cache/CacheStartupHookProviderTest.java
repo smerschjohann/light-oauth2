@@ -1,6 +1,9 @@
 package com.networknt.oauth.cache;
 
 import com.hazelcast.core.IMap;
+import com.hazelcast.query.Predicate;
+import com.hazelcast.query.SqlPredicate;
+import com.networknt.oauth.cache.model.User;
 import com.networknt.service.SingletonServiceFactory;
 import org.h2.tools.RunScript;
 import org.junit.AfterClass;
@@ -14,6 +17,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -102,15 +106,23 @@ public class CacheStartupHookProviderTest {
         CacheStartupHookProvider start = new CacheStartupHookProvider();
         start.onStartup();
 
-        final IMap<String, Object> users = CacheStartupHookProvider.hz.getMap("users");
+        final IMap<String, User> users = CacheStartupHookProvider.hz.getMap("users");
 
-        Map<String, Object> user = (Map<String, Object>)users.get("admin");
+        User user = (User)users.get("admin");
         System.out.println("user = " + user);
 
-        user.put("userType", "customer");
+        user.setUserType(User.UserTypeEnum.fromValue("customer"));
+
         users.put("admin", user);
 
         System.out.println("users size = " + users.size());
+
+        // query email as it is indexed.
+        String email = "adm%";
+        Predicate predicate = new SqlPredicate(String.format("email like %s", email));
+        Set<User> uSet = (Set<User>) users.values(predicate);
+
+        System.out.println("uSet = " + uSet);
 
         users.delete("admin");
 

@@ -1,11 +1,9 @@
 package com.networknt.oauth.cache;
 
-import com.hazelcast.config.Config;
-import com.hazelcast.config.InMemoryFormat;
-import com.hazelcast.config.MapConfig;
-import com.hazelcast.config.NearCacheConfig;
+import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.networknt.oauth.cache.model.UserDataSerializableFactory;
 import com.networknt.server.StartupHookProvider;
 
 /**
@@ -18,6 +16,9 @@ public class CacheStartupHookProvider implements StartupHookProvider {
         Config config = new Config();
         config.getNetworkConfig().setPort( 5900 )
                 .setPortAutoIncrement( true );
+
+        // data serializer factory
+        config.getSerializationConfig().addDataSerializableFactory(1, new UserDataSerializableFactory());
 
         // service map with near cache.
         MapConfig serviceConfig = new MapConfig();
@@ -64,11 +65,10 @@ public class CacheStartupHookProvider implements StartupHookProvider {
         MapConfig userConfig = new MapConfig();
         userConfig.setName("users");
         userConfig.setBackupCount(1);
-        userConfig.getMaxSizeConfig().setSize(100000);
-        userConfig.setTimeToLiveSeconds(60 * 60 * 1000); // 1 hour TTL
         userConfig.getMapStoreConfig()
                 .setEnabled(true)
                 .setClassName("com.networknt.oauth.cache.UserMapStore");
+        userConfig.addMapIndexConfig(new MapIndexConfig("email", true));
 
         config.addMapConfig(userConfig);
 

@@ -1,6 +1,7 @@
 package com.networknt.oauth.code.handler;
 
 import com.hazelcast.core.IMap;
+import com.networknt.oauth.cache.model.User;
 import com.networknt.utility.HashUtil;
 import io.undertow.security.idm.Account;
 import io.undertow.security.idm.Credential;
@@ -22,9 +23,9 @@ import java.util.Set;
 public class MapIdentityManager implements IdentityManager {
     final Logger logger = LoggerFactory.getLogger(MapIdentityManager.class);
 
-    private final IMap<String, Object> users;
+    private final IMap<String, User> users;
 
-    public MapIdentityManager(final IMap<String, Object> users) {
+    public MapIdentityManager(final IMap<String, User> users) {
         this.users = users;
     }
     @Override
@@ -52,8 +53,8 @@ public class MapIdentityManager implements IdentityManager {
         boolean match = false;
         if (credential instanceof PasswordCredential) {
             char[] password = ((PasswordCredential) credential).getPassword();
-            Map<String, Object> map = (Map<String, Object>)users.get(account.getPrincipal().getName());
-            String expectedPassword = ((String)map.get("password"));
+            User user = users.get(account.getPrincipal().getName());
+            String expectedPassword = user.getPassword();
             try {
                 match = HashUtil.validatePassword(String.valueOf(password), expectedPassword);
             } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {

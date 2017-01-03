@@ -3,6 +3,7 @@ package com.networknt.oauth.client.handler;
 import com.hazelcast.core.IMap;
 import com.networknt.body.BodyHandler;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
+import com.networknt.oauth.cache.model.User;
 import com.networknt.status.Status;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -31,7 +32,7 @@ public class Oauth2ClientPutHandler implements HttpHandler {
             // make sure the owner_id exists in users map.
             String ownerId = (String)client.get("ownerId");
             if(ownerId != null) {
-                IMap<String, Object> users = CacheStartupHookProvider.hz.getMap("users");
+                IMap<String, User> users = CacheStartupHookProvider.hz.getMap("users");
                 if(!users.containsKey(ownerId)) {
                     Status status = new Status(USER_NOT_FOUND, ownerId);
                     exchange.setStatusCode(status.getStatusCode());

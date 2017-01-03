@@ -2,6 +2,7 @@ package com.networknt.oauth.code;
 
 import com.hazelcast.core.IMap;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
+import com.networknt.oauth.cache.model.User;
 import com.networknt.oauth.code.handler.MapIdentityManager;
 import com.networknt.oauth.code.handler.Oauth2CodeGetHandler;
 import com.networknt.oauth.code.handler.Oauth2CodePostHandler;
@@ -30,7 +31,7 @@ import java.util.List;
 public class PathHandlerProvider implements HandlerProvider {
     @Override
     public HttpHandler getHandler() {
-        IMap<String, Object> users = CacheStartupHookProvider.hz.getMap("users");
+        IMap<String, User> users = CacheStartupHookProvider.hz.getMap("users");
         final IdentityManager identityManager = new MapIdentityManager(users);
 
         HttpHandler handler = Handlers.routing()
