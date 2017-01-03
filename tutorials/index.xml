@@ -84,7 +84,8 @@ code to webserver.&lt;/p&gt;
 &lt;p&gt;The GET endpoint uses Basic Authorization and POST endpoint uses Form Authorization.&lt;/p&gt;
 
 &lt;p&gt;In most of the cases, you should use GET endpoint as it provides popup window on
-the browser to ask username and password.&lt;/p&gt;
+the browser to ask username and password. And there is no need to create a login page
+and error page.&lt;/p&gt;
 
 &lt;p&gt;POST endpoint is usually used with existing web server that provides login form and
 post the user credentials to this endpoint to get authorization code indirectly. It
@@ -96,7 +97,7 @@ production.&lt;/p&gt;
 
 &lt;p&gt;To get authorization code put the following url into your browser.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;http://localhost:6881/oauth2/code?response_type=code&amp;amp;client_id=f7d42348-c647-4efb-a52d-4c5787421e72&amp;amp;redirect_uri=http://localhost:8080/authorization
+&lt;pre&gt;&lt;code&gt;http://localhost:6881/oauth2/code?response_type=code&amp;amp;client_id=f7d42348-c647-4efb-a52d-4c5787421e72&amp;amp;redirect_url=http://localhost:8080/authorization
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;If this is the first time on this browser, you will have a popup window for user
@@ -108,6 +109,18 @@ browser. Something like the following.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;http://localhost:8080/authorization?code=pVk10fdsTiiJ1HdUlV4y1g
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you want to call the get endpoint from your command line or script, you can put
+the user credentials into the header in above command. Just make sure you have
+a server listening to the redirect url you have specified.&lt;/p&gt;
+
+&lt;p&gt;Here is a sample curl command.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl -H &amp;quot;Authorization: Basic admin:123456&amp;quot; http://localhost:6881/oauth2/code?response_type=code&amp;amp;client_id=f7d42348-c647-4efb-a52d-4c5787421e72&amp;amp;redirect_url=http://localhost:8080/authorization
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you want to try the above command line, you have to make sure that redirect_url is alive. Otherwise,
+you have an error that doesn&amp;rsquo;t make any sense.&lt;/p&gt;
 
 &lt;h3 id=&#34;token&#34;&gt;Token&lt;/h3&gt;
 
