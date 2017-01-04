@@ -23,13 +23,11 @@ import java.util.Map;
  * Created by stevehu on 2017-01-03.
  */
 public class Oauth2UserGetHandler implements HttpHandler {
-    static final String USER_NOT_FOUND = "ERR12013";
     static Logger logger = LoggerFactory.getLogger(Oauth2UserGetHandler.class);
 
     @SuppressWarnings("unchecked")
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-
         IMap<String, User> users = CacheStartupHookProvider.hz.getMap("users");
         Deque<String> userIdDeque = exchange.getQueryParameters().get("userId");
         String userId = userIdDeque == null? "%" : userIdDeque.getFirst() + "%";
