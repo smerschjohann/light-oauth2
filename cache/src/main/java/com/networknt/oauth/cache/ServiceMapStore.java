@@ -9,9 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.Date;
+import java.util.*;
 
 /**
  * Created by stevehu on 2016-12-27.
@@ -112,13 +111,18 @@ public class ServiceMapStore implements MapStore<String, Service> {
     @Override
     public Iterable<String> loadAllKeys() {
         if(logger.isDebugEnabled()) logger.debug("loadAllKeys is called");
+        List<String> keys = new ArrayList<>();
         try (Connection connection = ds.getConnection(); PreparedStatement stmt = connection.prepareStatement(loadall)) {
-            new StatementIterable<String>(stmt);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    keys.add(rs.getString("service_id"));
+                }
+            }
         } catch (SQLException e) {
             logger.error("Exception:", e);
             throw new RuntimeException(e);
         }
-        return null;
+        return keys;
     }
 
 }
