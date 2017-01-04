@@ -6,10 +6,10 @@
         {
           "com.zaxxer.hikari.HikariDataSource":
           {
-            "DriverClassName": "oracle.jdbc.pool.OracleDataSource",
-            "jdbcUrl": "jdbc:oracle:thin:@oracledb:1521:XE",
-            "username": "SYSTEM",
-            "password": "oracle"
+            "jdbcUrl": "jdbc:postgresql://postgresdb:5432/oauth2",
+            "username": "postgres",
+            "password": "my-secret-pw",
+            "maximumPoolSize": 15
           }
         }
       ]

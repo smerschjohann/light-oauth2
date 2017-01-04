@@ -4,6 +4,7 @@ import com.networknt.client.Client;
 import com.networknt.exception.ApiException;
 import com.networknt.exception.ClientException;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
+import com.networknt.oauth.cache.model.User;
 import com.networknt.utility.HashUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -80,8 +81,9 @@ public class Oauth2PasswordUserIdPostHandlerTest {
             Assert.assertEquals(200, response.getStatusLine().getStatusCode());
             String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
             logger.debug("Response body = " + body);
-            Map<String, Object> user = (Map<String, Object>) CacheStartupHookProvider.hz.getMap("users").get("admin");
-            boolean match = HashUtil.validatePassword("stevehu", (String)user.get("password"));
+            Map<String, User> users = CacheStartupHookProvider.hz.getMap("users");
+            User user = users.get("admin");
+            boolean match = HashUtil.validatePassword("stevehu", user.getPassword());
             Assert.assertTrue(match);
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,21 +1,21 @@
   version: '2'
   services:
-    oracledb:
-      image: wnameless/oracle-xe-11g
+    mysqldb:
+      image: mysql:5.7.16
       volumes:
-        - ./db/oracle:/docker-entrypoint-initdb.d
-      ports:
-        - "1521:1521"
-      networks:
-        - light
+        - ./db/mysql:/docker-entrypoint-initdb.d
+      environment:
+        MYSQL_ROOT_PASSWORD: my-secret-pw
     oauth2-code:
       build: code/
       ports:
         - "6881:6881"
-      networks:
-        - light
+      volumes:
+        - ./db/mysql/config:/config
       depends_on:
-        - oracledb
+        - mysqldb
+      links:
+        - mysqldb
       #logging:
       #  driver: "gelf"
       #  options:
@@ -26,10 +26,12 @@
       build: token/
       ports:
         - "6882:6882"
-      networks:
-        - light
+      volumes:
+        - ./db/mysql/config:/config
       depends_on:
-        - oracledb
+        - mysqldb
+      links:
+        - mysqldb
       #logging:
       #  driver: "gelf"
       #  options:
@@ -40,10 +42,12 @@
       build: service/
       ports:
         - "6883:6883"
-      networks:
-        - light
+      volumes:
+        - ./db/mysql/config:/config
       depends_on:
-        - oracledb
+        - mysqldb
+      links:
+        - mysqldb
       #logging:
       #  driver: "gelf"
       #  options:
@@ -54,10 +58,12 @@
       build: client/
       ports:
         - "6884:6884"
-      networks:
-        - light
+      volumes:
+        - ./db/mysql/config:/config
       depends_on:
-        - oracledb
+        - mysqldb
+      links:
+        - mysqldb
       #logging:
       #  driver: "gelf"
       #  options:
@@ -68,10 +74,12 @@
       build: user/
       ports:
         - "6885:6885"
-      networks:
-        - light
+      volumes:
+        - ./db/mysql/config:/config
       depends_on:
-        - oracledb
+        - mysqldb
+      links:
+        - mysqldb
       #logging:
       #  driver: "gelf"
       #  options:
@@ -82,17 +90,15 @@
       build: key/
       ports:
         - "6886:6886"
-      networks:
-        - light
+      volumes:
+        - ./db/mysql/config:/config
       depends_on:
-        - oracledb
+        - mysqldb
+      links:
+        - mysqldb
       #logging:
       #  driver: "gelf"
       #  options:
       #    gelf-address: "udp://localhost:12201"
       #    tag: "oauth2-key"
       #    env: "dev"
-
-  networks:
-    light:
-      driver: bridge
