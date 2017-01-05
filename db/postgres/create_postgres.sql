@@ -17,7 +17,7 @@ DROP TABLE IF EXISTS clients;
 CREATE TABLE clients (
   client_id VARCHAR(36) NOT NULL,
   client_type VARCHAR(10) NOT NULL,  -- server, mobile, service, standalone, browser etc
-  client_secret VARCHAR(22) NOT NULL,
+  client_secret VARCHAR(1024) NOT NULL,
   client_name VARCHAR(32) NOT NULL,
   client_desc VARCHAR(2048),
   scope VARCHAR(1024),

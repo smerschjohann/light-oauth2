@@ -17,7 +17,7 @@ DROP TABLE clients CASCADE CONSTRAINTS;
 CREATE TABLE clients (
   client_id VARCHAR2(36) NOT NULL,
   client_type VARCHAR2(10) NOT NULL,  -- server, mobile, service, standalone, browser etc
-  client_secret VARCHAR2(22) NOT NULL,
+  client_secret VARCHAR2(1024) NOT NULL,
   client_name VARCHAR2(32) NOT NULL,
   client_desc VARCHAR2(2048),
   scope VARCHAR2(1024),
