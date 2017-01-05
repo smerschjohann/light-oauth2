@@ -1,5 +1,6 @@
 package com.networknt.oauth.user.handler;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.networknt.client.Client;
 import com.networknt.config.Config;
 import com.networknt.exception.ApiException;
@@ -60,7 +61,7 @@ public class Oauth2UserGetHandlerTest {
             Assert.assertEquals(200, statusCode);
             if(statusCode == 200) {
                 // make sure that there are three users in the result.
-                List<User> users = Config.getInstance().getMapper().readValue(body, List.class);
+                List<User> users = Config.getInstance().getMapper().readValue(body, new TypeReference<List<User>>(){});
                 Assert.assertTrue(users.size() >= 3 && users.size() <=4);
             }
         } catch (Exception e) {
@@ -80,7 +81,7 @@ public class Oauth2UserGetHandlerTest {
             Assert.assertEquals(200, statusCode);
             if(statusCode == 200) {
                 // make sure that there are three users in the result.
-                List<User> users = Config.getInstance().getMapper().readValue(body, List.class);
+                List<User> users = Config.getInstance().getMapper().readValue(body, new TypeReference<List<User>>(){});
                 Assert.assertEquals(10, users.size());
                 // make sure that the first is admin
                 User user = users.get(0);
@@ -103,7 +104,7 @@ public class Oauth2UserGetHandlerTest {
             Assert.assertEquals(200, statusCode);
             if(statusCode == 200) {
                 // make sure that there are three users in the result.
-                List<User> users = Config.getInstance().getMapper().readValue(body, List.class);
+                List<User> users = Config.getInstance().getMapper().readValue(body, new TypeReference<List<User>>(){});
                 Assert.assertEquals(2, users.size());
             }
         } catch (Exception e) {

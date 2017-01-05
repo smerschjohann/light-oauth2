@@ -1,5 +1,6 @@
 package com.networknt.oauth.service.handler;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.networknt.client.Client;
 import com.networknt.config.Config;
 import com.networknt.exception.ApiException;
@@ -59,7 +60,7 @@ public class Oauth2ServiceGetHandlerTest {
             Assert.assertEquals(200, statusCode);
             if(statusCode == 200) {
                 // make sure that there are two services in the result.
-                List<Service> services = Config.getInstance().getMapper().readValue(body, List.class);
+                List<Service> services = Config.getInstance().getMapper().readValue(body, new TypeReference<List<Service>>(){});
                 Assert.assertTrue(services.size()>= 2 && services.size() <= 3);
                 // make sure that the first is AACT0001
                 Service service = services.get(0);
@@ -81,7 +82,7 @@ public class Oauth2ServiceGetHandlerTest {
             Assert.assertEquals(200, statusCode);
             if(statusCode == 200) {
                 // make sure that there are two services in the result.
-                List<Service> services = Config.getInstance().getMapper().readValue(body, List.class);
+                List<Service> services = Config.getInstance().getMapper().readValue(body, new TypeReference<List<Service>>(){});
                 Assert.assertEquals(0, services.size());
             }
         } catch (Exception e) {
