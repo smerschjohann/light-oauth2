@@ -10,6 +10,7 @@ import com.networknt.oauth.cache.model.Client;
 import com.networknt.oauth.cache.model.User;
 import com.networknt.security.JwtHelper;
 import com.networknt.status.Status;
+import com.networknt.utility.HashUtil;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
@@ -20,6 +21,8 @@ import org.jose4j.jwt.JwtClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -37,6 +40,8 @@ public class Oauth2TokenPostHandler implements HttpHandler {
     static final String UNAUTHORIZED_CLIENT = "ERR12007";
     static final String INVALID_AUTHORIZATION_CODE = "ERR12008";
     static final String GENERIC_EXCEPTION = "ERR10014";
+    static final String RUNTIME_EXCEPTION = "ERR10010";
+
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         ObjectMapper mapper = Config.getInstance().getMapper();
@@ -105,24 +110,27 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                     if(client == null) {
                         throw new ApiException(new Status(CLIENT_NOT_FOUND, clientId));
                     } else {
-                        String secret = client.getClientSecret();
-                        if(secret.equals(clientSecret)) {
-                            String scope = client.getScope();
-                            String jwt;
-                            try {
-                                jwt = JwtHelper.getJwt(mockCcClaims(clientId, scope));
-                            } catch (Exception e) {
-                                throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
+                        try {
+                            if(HashUtil.validatePassword(clientSecret, client.getClientSecret())) {
+                                String scope = client.getScope();
+                                String jwt;
+                                try {
+                                    jwt = JwtHelper.getJwt(mockCcClaims(clientId, scope));
+                                } catch (Exception e) {
+                                    throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
+                                }
+                                Map<String, Object> resMap = new HashMap<>();
+                                resMap.put("access_token", jwt);
+                                resMap.put("token_type", "bearer");
+                                resMap.put("expires_in", 600);
+                                return resMap;
+                            } else {
+                                throw new ApiException(new Status(UNAUTHORIZED_CLIENT));
                             }
-                            Map<String, Object> resMap = new HashMap<>();
-                            resMap.put("access_token", jwt);
-                            resMap.put("token_type", "bearer");
-                            resMap.put("expires_in", 600);
-                            return resMap;
-                        } else {
-                            throw new ApiException(new Status(UNAUTHORIZED_CLIENT));
+                        } catch ( NoSuchAlgorithmException | InvalidKeySpecException e) {
+                            logger.error("Exception:", e);
+                            throw new ApiException(new Status(RUNTIME_EXCEPTION));
                         }
-
                     }
                 } else {
                     throw new ApiException(new Status(INVALID_BASIC_CREDENTIALS, credentials));
@@ -130,7 +138,6 @@ public class Oauth2TokenPostHandler implements HttpHandler {
             } else {
                 throw new ApiException(new Status(INVALID_AUTHORIZATION_HEADER, auth));
             }
-
         }
     }
 
@@ -161,29 +168,33 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                     if(client == null) {
                         throw new ApiException(new Status(CLIENT_NOT_FOUND, clientId));
                     } else {
-                        String secret = client.getClientSecret();
-                        if(secret.equals(clientSecret)) {
-                            String userId = (String)CacheStartupHookProvider.hz.getMap("codes").remove(code);
-                            if(userId != null) {
-                                IMap<String, User> users = CacheStartupHookProvider.hz.getMap("users");
-                                User user = users.get(userId);
-                                String scope = client.getScope();
-                                String jwt;
-                                try {
-                                    jwt = JwtHelper.getJwt(mockAcClaims(clientId, scope, userId, user.getUserType().toString()));
-                                } catch (Exception e) {
-                                    throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
+                        try {
+                            if(HashUtil.validatePassword(clientSecret, client.getClientSecret())) {
+                                String userId = (String)CacheStartupHookProvider.hz.getMap("codes").remove(code);
+                                if(userId != null) {
+                                    IMap<String, User> users = CacheStartupHookProvider.hz.getMap("users");
+                                    User user = users.get(userId);
+                                    String scope = client.getScope();
+                                    String jwt;
+                                    try {
+                                        jwt = JwtHelper.getJwt(mockAcClaims(clientId, scope, userId, user.getUserType().toString()));
+                                    } catch (Exception e) {
+                                        throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
+                                    }
+                                    Map<String, Object> resMap = new HashMap<>();
+                                    resMap.put("access_token", jwt);
+                                    resMap.put("token_type", "bearer");
+                                    resMap.put("expires_in", 600);
+                                    return resMap;
+                                } else {
+                                    throw new ApiException(new Status(INVALID_AUTHORIZATION_CODE, code));
                                 }
-                                Map<String, Object> resMap = new HashMap<>();
-                                resMap.put("access_token", jwt);
-                                resMap.put("token_type", "bearer");
-                                resMap.put("expires_in", 600);
-                                return resMap;
                             } else {
-                                throw new ApiException(new Status(INVALID_AUTHORIZATION_CODE, code));
+                                throw new ApiException(new Status(UNAUTHORIZED_CLIENT));
                             }
-                        } else {
-                            throw new ApiException(new Status(UNAUTHORIZED_CLIENT));
+                        } catch ( NoSuchAlgorithmException | InvalidKeySpecException e) {
+                            logger.error("Exception:", e);
+                            throw new ApiException(new Status(RUNTIME_EXCEPTION));
                         }
                     }
                 } else {

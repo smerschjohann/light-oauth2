@@ -6,6 +6,7 @@ import com.networknt.exception.ApiException;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
 import com.networknt.oauth.cache.model.Client;
 import com.networknt.status.Status;
+import com.networknt.utility.HashUtil;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.FlexBase64;
@@ -19,6 +20,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Locale;
 import java.util.Map;
 
@@ -111,12 +114,12 @@ public class Oauth2KeyKeyIdGetHandler implements HttpHandler {
                     if(client == null) {
                         throw new ApiException(new Status(CLIENT_NOT_FOUND, clientId));
                     }
-                    if(!clientSecret.equals(client.getClientSecret())) {
+                    if(!HashUtil.validatePassword(clientSecret, client.getClientSecret())) {
                         throw new ApiException(new Status(UNAUTHORIZED_CLIENT));
                     }
                     result = clientId;
                 }
-            } catch (IOException e) {
+            } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
                 logger.error("Exception:", e);
                 throw new ApiException(new Status(RUNTIME_EXCEPTION));
             }

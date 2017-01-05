@@ -7,6 +7,7 @@ import com.networknt.oauth.cache.CacheStartupHookProvider;
 import com.networknt.oauth.cache.model.Client;
 import com.networknt.oauth.cache.model.User;
 import com.networknt.status.Status;
+import com.networknt.utility.HashUtil;
 import com.networknt.utility.Util;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -33,6 +34,7 @@ public class Oauth2ClientPostHandler implements HttpHandler {
         String clientId = UUID.randomUUID().toString();
         client.setClientId(clientId);
         String clientSecret = Util.getUUID();
+        clientSecret = HashUtil.generateStorngPasswordHash(clientSecret);
         client.setClientSecret(clientSecret);
         client.setCreateDt(new Date(System.currentTimeMillis()));
 
