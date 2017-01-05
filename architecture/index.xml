@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Architectures on Light OAuth2 - OAuth2 Serivces based on Light Java</title>
+    <title>Architecture-rsses on Light OAuth2 - OAuth2 Serivces based on Light Java</title>
     <link>https://networknt.github.io/light-oauth2/architecture/index.xml</link>
-    <description>Recent content in Architectures on Light OAuth2 - OAuth2 Serivces based on Light Java</description>
+    <description>Recent content in Architecture-rsses on Light OAuth2 - OAuth2 Serivces based on Light Java</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Released under the MIT license</copyright>
@@ -33,7 +33,8 @@ instance and each service can be scaled individually if necessary.&lt;/p&gt;
 &lt;h2 id=&#34;in-memory-data-grid&#34;&gt;In-Memory Data Grid&lt;/h2&gt;
 
 &lt;p&gt;Hazelcast is used as Data Grid across multiple services and majority of operations
-won&amp;rsquo;t hit database server for best performance.&lt;/p&gt;
+won&amp;rsquo;t hit database server for best performance. This also makes database as plugin
+so that persistence layer can be anything from SQL to NoSQL.&lt;/p&gt;
 
 &lt;h2 id=&#34;built-in-security&#34;&gt;Built-in Security&lt;/h2&gt;
 

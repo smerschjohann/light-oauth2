@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=10" />
     <title>Architecture - Light OAuth2 - OAuth2 Serivces based on Light Java</title>
-    <meta name="generator" content="Hugo 0.18.1" />
+    <meta name="generator" content="Hugo 0.17" />
 
     
     <meta name="description" content="Light OAuth2 Docs">
@@ -411,7 +411,8 @@ instance and each service can be scaled individually if necessary.</p>
 <h2 id="in-memory-data-grid">In-Memory Data Grid</h2>
 
 <p>Hazelcast is used as Data Grid across multiple services and majority of operations
-won&rsquo;t hit database server for best performance.</p>
+won&rsquo;t hit database server for best performance. This also makes database as plugin
+so that persistence layer can be anything from SQL to NoSQL.</p>
 
 <h2 id="built-in-security">Built-in Security</h2>
 

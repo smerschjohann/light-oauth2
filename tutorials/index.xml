@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tutorials on Light OAuth2 - OAuth2 Serivces based on Light Java</title>
+    <title>Tutorials-rsses on Light OAuth2 - OAuth2 Serivces based on Light Java</title>
     <link>https://networknt.github.io/light-oauth2/tutorials/index.xml</link>
-    <description>Recent content in Tutorials on Light OAuth2 - OAuth2 Serivces based on Light Java</description>
+    <description>Recent content in Tutorials-rsses on Light OAuth2 - OAuth2 Serivces based on Light Java</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Released under the MIT license</copyright>
@@ -46,38 +46,49 @@ Development edition, there is only one service to serve both code and token endp
       <guid>https://networknt.github.io/light-oauth2/tutorials/enterprise/</guid>
       <description>
 
-&lt;p&gt;Note: the following steps use Oracle database as an example. MySQL and Postgres should be the same.&lt;/p&gt;
+&lt;p&gt;Note: the following steps use Oracle database as an example. MySQL and Postgres should be the same
+by choosing docker-compose-mysql.yml or docker-compose-postgres.yml when starting docker-compose.&lt;/p&gt;
 
 &lt;h1 id=&#34;start-services&#34;&gt;Start Services&lt;/h1&gt;
 
-&lt;p&gt;To start services and test them in development mode.&lt;/p&gt;
+&lt;p&gt;In production mode, all services will have docker images downloaded from hub.docker.com or private
+docker hub within your organization. And Kubernetes or other docker orchestration tools will be
+used to manage containers.&lt;/p&gt;
+
+&lt;p&gt;To help use to understand how each service work and enable user to modify services, the first section
+of this tutorial will focus on development mode which will build these services and dockerize them.
+And start them as a docker compose.&lt;/p&gt;
+
+&lt;p&gt;The following will check out the repo, build and start services with Oracle XE database.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;git clone git@github.com:networknt/light-oauth2.git
 cd light-oauth2
-git checkout oracle
+git checkout enterprise
 mvn clean install -DskipTests
-docker-compose up
+docker-compose -f docker-compose-oracle.yml up
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;It will take about 30 seconds to have all services and database up and running.&lt;/p&gt;
+&lt;p&gt;It will take about 30 seconds to have all services and database up and running. If Oracle XE image
+doesn&amp;rsquo;t exist on your host, it will take longer to download it.&lt;/p&gt;
 
 &lt;p&gt;If you have modified source code, please follow the steps to restart services.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;docker-compose down
+&lt;pre&gt;&lt;code&gt;docker-compose -f docker-compose-oracle.yml down
 mvn clean install
 ./cleanup.sh
-docker-compose up
+docker-compose -f docker-compose-oracle.yml up
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h1 id=&#34;test-services&#34;&gt;Test Services&lt;/h1&gt;
 
-&lt;p&gt;By default, the security is partially disabled on these services so that users
-can easily test these services to learn how to use them.&lt;/p&gt;
+&lt;p&gt;By default, the security is partially disabled on these services out of the box so that users
+can easily test these services to learn how to use them. In later sections, there are steps to enable
+all security with config files.&lt;/p&gt;
 
 &lt;h3 id=&#34;code&#34;&gt;Code&lt;/h3&gt;
 
-&lt;p&gt;This is the service that takes user&amp;rsquo;s credentials and redirect back authorization
-code to webserver.&lt;/p&gt;
+&lt;p&gt;This is part of authorization flow that takes user&amp;rsquo;s credentials and redirect back authorization
+code to the webserver.&lt;/p&gt;
 
 &lt;p&gt;There are two endpoints: /oauth2/code@get and /oauth2/code@post&lt;/p&gt;
 
@@ -87,9 +98,13 @@ code to webserver.&lt;/p&gt;
 the browser to ask username and password. And there is no need to create a login page
 and error page.&lt;/p&gt;
 
-&lt;p&gt;POST endpoint is usually used with existing web server that provides login form and
-post the user credentials to this endpoint to get authorization code indirectly. It
-requires customization most of the time.&lt;/p&gt;
+&lt;p&gt;POST endpoint is usually used when you want to have customized login page and error page to make
+sure users have the same experience as they browser other part of your web server. Browser will have
+a login form to collect user credentials and posts it to the OAuth2 server endpoint. Once the user
+is authenticated, a authorization code is redirected back to the browser with a redirect URL passed
+in from the request or the default redirect URL for the client will be used from client registration.
+As you might guess, this endpoint requires customization most of the time on login page and error page.
+Default login page and error page are provided as a starting points to make your customized pages.&lt;/p&gt;
 
 &lt;p&gt;There is only one admin user after the system is installed and the default password
 is &amp;ldquo;123456&amp;rdquo;. The password needs to be reset immediately with User Service for
@@ -100,7 +115,7 @@ production.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;http://localhost:6881/oauth2/code?response_type=code&amp;amp;client_id=f7d42348-c647-4efb-a52d-4c5787421e72&amp;amp;redirect_url=http://localhost:8080/authorization
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;If this is the first time on this browser, you will have a popup window for user
+&lt;p&gt;If this is the first time you hit this url on the browser, you will have a popup window for user
 credentials. Now let&amp;rsquo;s use admin/123456 to login given you haven&amp;rsquo;t reset the password
 yet for admin user.&lt;/p&gt;
 
@@ -120,7 +135,7 @@ a server listening to the redirect url you have specified.&lt;/p&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;If you want to try the above command line, you have to make sure that redirect_url is alive. Otherwise,
-you have an error that doesn&amp;rsquo;t make any sense.&lt;/p&gt;
+you will have an error that doesn&amp;rsquo;t make any sense.&lt;/p&gt;
 
 &lt;h3 id=&#34;token&#34;&gt;Token&lt;/h3&gt;
 

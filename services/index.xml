@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Services on Light OAuth2 - OAuth2 Serivces based on Light Java</title>
+    <title>Services-rsses on Light OAuth2 - OAuth2 Serivces based on Light Java</title>
     <link>https://networknt.github.io/light-oauth2/services/index.xml</link>
-    <description>Recent content in Services on Light OAuth2 - OAuth2 Serivces based on Light Java</description>
+    <description>Recent content in Services-rsses on Light OAuth2 - OAuth2 Serivces based on Light Java</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Released under the MIT license</copyright>
@@ -45,7 +45,23 @@ Development edition, there is only one service to serve both code and token endp
       <pubDate>Sun, 01 Jan 2017 09:37:32 -0500</pubDate>
       
       <guid>https://networknt.github.io/light-oauth2/services/enterprise/</guid>
-      <description></description>
+      <description>
+
+&lt;p&gt;There are six standard services that cover standard OAuth2 grant flows and extended features like
+service on-boarding, client on-boarding, user management and public key certificate distribution.&lt;/p&gt;
+
+&lt;h2 id=&#34;code&#34;&gt;Code&lt;/h2&gt;
+
+&lt;h2 id=&#34;token&#34;&gt;Token&lt;/h2&gt;
+
+&lt;h2 id=&#34;client&#34;&gt;Client&lt;/h2&gt;
+
+&lt;h2 id=&#34;service&#34;&gt;Service&lt;/h2&gt;
+
+&lt;h2 id=&#34;user&#34;&gt;User&lt;/h2&gt;
+
+&lt;h2 id=&#34;key&#34;&gt;Key&lt;/h2&gt;
+</description>
     </item>
     
     <item>

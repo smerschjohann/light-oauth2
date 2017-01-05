@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=10" />
     <title>Enterprise Edition Tutorial - Light OAuth2 - OAuth2 Serivces based on Light Java</title>
-    <meta name="generator" content="Hugo 0.18.1" />
+    <meta name="generator" content="Hugo 0.17" />
 
     
     <meta name="description" content="Light OAuth2 Docs">
@@ -393,38 +393,49 @@
 
 			
 
-<p>Note: the following steps use Oracle database as an example. MySQL and Postgres should be the same.</p>
+<p>Note: the following steps use Oracle database as an example. MySQL and Postgres should be the same
+by choosing docker-compose-mysql.yml or docker-compose-postgres.yml when starting docker-compose.</p>
 
 <h1 id="start-services">Start Services</h1>
 
-<p>To start services and test them in development mode.</p>
+<p>In production mode, all services will have docker images downloaded from hub.docker.com or private
+docker hub within your organization. And Kubernetes or other docker orchestration tools will be
+used to manage containers.</p>
+
+<p>To help use to understand how each service work and enable user to modify services, the first section
+of this tutorial will focus on development mode which will build these services and dockerize them.
+And start them as a docker compose.</p>
+
+<p>The following will check out the repo, build and start services with Oracle XE database.</p>
 
 <pre><code>git clone git@github.com:networknt/light-oauth2.git
 cd light-oauth2
-git checkout oracle
+git checkout enterprise
 mvn clean install -DskipTests
-docker-compose up
+docker-compose -f docker-compose-oracle.yml up
 </code></pre>
 
-<p>It will take about 30 seconds to have all services and database up and running.</p>
+<p>It will take about 30 seconds to have all services and database up and running. If Oracle XE image
+doesn&rsquo;t exist on your host, it will take longer to download it.</p>
 
 <p>If you have modified source code, please follow the steps to restart services.</p>
 
-<pre><code>docker-compose down
+<pre><code>docker-compose -f docker-compose-oracle.yml down
 mvn clean install
 ./cleanup.sh
-docker-compose up
+docker-compose -f docker-compose-oracle.yml up
 </code></pre>
 
 <h1 id="test-services">Test Services</h1>
 
-<p>By default, the security is partially disabled on these services so that users
-can easily test these services to learn how to use them.</p>
+<p>By default, the security is partially disabled on these services out of the box so that users
+can easily test these services to learn how to use them. In later sections, there are steps to enable
+all security with config files.</p>
 
 <h3 id="code">Code</h3>
 
-<p>This is the service that takes user&rsquo;s credentials and redirect back authorization
-code to webserver.</p>
+<p>This is part of authorization flow that takes user&rsquo;s credentials and redirect back authorization
+code to the webserver.</p>
 
 <p>There are two endpoints: /oauth2/code@get and /oauth2/code@post</p>
 
@@ -434,9 +445,13 @@ code to webserver.</p>
 the browser to ask username and password. And there is no need to create a login page
 and error page.</p>
 
-<p>POST endpoint is usually used with existing web server that provides login form and
-post the user credentials to this endpoint to get authorization code indirectly. It
-requires customization most of the time.</p>
+<p>POST endpoint is usually used when you want to have customized login page and error page to make
+sure users have the same experience as they browser other part of your web server. Browser will have
+a login form to collect user credentials and posts it to the OAuth2 server endpoint. Once the user
+is authenticated, a authorization code is redirected back to the browser with a redirect URL passed
+in from the request or the default redirect URL for the client will be used from client registration.
+As you might guess, this endpoint requires customization most of the time on login page and error page.
+Default login page and error page are provided as a starting points to make your customized pages.</p>
 
 <p>There is only one admin user after the system is installed and the default password
 is &ldquo;123456&rdquo;. The password needs to be reset immediately with User Service for
@@ -447,7 +462,7 @@ production.</p>
 <pre><code>http://localhost:6881/oauth2/code?response_type=code&amp;client_id=f7d42348-c647-4efb-a52d-4c5787421e72&amp;redirect_url=http://localhost:8080/authorization
 </code></pre>
 
-<p>If this is the first time on this browser, you will have a popup window for user
+<p>If this is the first time you hit this url on the browser, you will have a popup window for user
 credentials. Now let&rsquo;s use admin/123456 to login given you haven&rsquo;t reset the password
 yet for admin user.</p>
 
@@ -467,7 +482,7 @@ a server listening to the redirect url you have specified.</p>
 </code></pre>
 
 <p>If you want to try the above command line, you have to make sure that redirect_url is alive. Otherwise,
-you have an error that doesn&rsquo;t make any sense.</p>
+you will have an error that doesn&rsquo;t make any sense.</p>
 
 <h3 id="token">Token</h3>
 
