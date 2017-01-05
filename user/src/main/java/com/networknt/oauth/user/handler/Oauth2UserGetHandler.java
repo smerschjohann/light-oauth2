@@ -18,6 +18,11 @@ import java.util.Deque;
 
 /**
  * Created by stevehu on 2017-01-03.
+ * The current implementation creates a new PagingPredicate for each request which is not very
+ * efficient. We should create a map of PagingPredicate object with user_id as key from JWT. In
+ * that case, the same user navigate from page to page will use the same object without creating
+ * a new one each request.
+ * TODO implement above once people report performance issue.
  */
 public class Oauth2UserGetHandler implements HttpHandler {
     static Logger logger = LoggerFactory.getLogger(Oauth2UserGetHandler.class);
