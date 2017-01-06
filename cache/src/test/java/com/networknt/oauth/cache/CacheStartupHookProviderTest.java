@@ -65,7 +65,7 @@ public class CacheStartupHookProviderTest {
         Client client = clients.get("f7d42348-c647-4efb-a52d-4c5787421e72");
         System.out.println("client = " + client);
 
-        client.setClientType(Client.ClientTypeEnum.fromValue("mobile"));
+        client.setClientType(Client.ClientTypeEnum.fromValue("trusted"));
 
         clients.put("f7d42348-c647-4efb-a52d-4c5787421e72", client);
         System.out.println("clients size = " + clients.size());

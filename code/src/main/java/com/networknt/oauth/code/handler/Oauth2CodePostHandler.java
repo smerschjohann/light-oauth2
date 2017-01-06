@@ -21,9 +21,7 @@ import java.util.Map;
 
 public class Oauth2CodePostHandler implements HttpHandler {
     static final Logger logger = LoggerFactory.getLogger(Oauth2CodeGetHandler.class);
-    static final String INVALID_CODE_REQUEST = "ERR12009";
     static final String CLIENT_NOT_FOUND = "ERR12014";
-    static final String MISSING_AUTHORIZATION_HEADER = "ERR12002";
 
     static final String DEFAULT_AUTHENTICATE_CLASS = "com.networknt.oauth.code.auth.FormAuthentication";
     @SuppressWarnings("unchecked")
@@ -42,21 +40,15 @@ public class Oauth2CodePostHandler implements HttpHandler {
             }
         }
         if(logger.isDebugEnabled()) logger.debug("params", params);
-        String responseType = params.get("response_type");
         String clientId = params.get("client_id");
-        if(responseType == null || clientId == null) {
-            Status status = new Status(INVALID_CODE_REQUEST);
+        // check if the client_id is valid
+        IMap<String, Client> clients = CacheStartupHookProvider.hz.getMap("clients");
+        Client client = clients.get(clientId);
+        if(client == null) {
+            Status status = new Status(CLIENT_NOT_FOUND, clientId);
             exchange.setStatusCode(status.getStatusCode());
             exchange.getResponseSender().send(status.toString());
         } else {
-            // check if the client_id is valid
-            IMap<String, Client> clients = CacheStartupHookProvider.hz.getMap("clients");
-            Client client = clients.get(clientId);
-            if(client == null) {
-                Status status = new Status(CLIENT_NOT_FOUND, clientId);
-                exchange.setStatusCode(status.getStatusCode());
-                exchange.getResponseSender().send(status.toString());
-            } else {
                 /*
                 String clazz = (String)client.get("authenticateClass");
                 if(clazz == null) clazz = DEFAULT_AUTHENTICATE_CLASS;
@@ -69,22 +61,21 @@ public class Oauth2CodePostHandler implements HttpHandler {
                     return;
                 }
                 */
-                final SecurityContext context = exchange.getSecurityContext();
-                String userId = context.getAuthenticatedAccount().getPrincipal().getName();
-                // generate auth code
-                String code = Util.getUUID();
-                CacheStartupHookProvider.hz.getMap("codes").set(code, userId);
-                String redirectUrl = params.get("redirect_url");
-                if(redirectUrl == null) {
-                    redirectUrl = client.getRedirectUrl();
-                }
-                redirectUrl = redirectUrl + "?code=" + code;
-                if(logger.isDebugEnabled()) logger.debug("redirectUrl = " + redirectUrl);
-                // now redirect here.
-                exchange.setStatusCode(StatusCodes.FOUND);
-                exchange.getResponseHeaders().put(Headers.LOCATION, redirectUrl);
-                exchange.endExchange();
+            final SecurityContext context = exchange.getSecurityContext();
+            String userId = context.getAuthenticatedAccount().getPrincipal().getName();
+            // generate auth code
+            String code = Util.getUUID();
+            CacheStartupHookProvider.hz.getMap("codes").set(code, userId);
+            String redirectUrl = params.get("redirect_url");
+            if(redirectUrl == null) {
+                redirectUrl = client.getRedirectUrl();
             }
+            redirectUrl = redirectUrl + "?code=" + code;
+            if(logger.isDebugEnabled()) logger.debug("redirectUrl = " + redirectUrl);
+            // now redirect here.
+            exchange.setStatusCode(StatusCodes.FOUND);
+            exchange.getResponseHeaders().put(Headers.LOCATION, redirectUrl);
+            exchange.endExchange();
         }
     }
 }

@@ -44,7 +44,7 @@ public class Oauth2CodePostHandlerTest {
             new BasicNameValuePair("j_username", "admin"),
             new BasicNameValuePair("j_password", "123456"),
             new BasicNameValuePair("response_type", "code"),
-            new BasicNameValuePair("client_id", "6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d")
+            new BasicNameValuePair("client_id", "59f347a0-c92d-11e6-9d9d-cec0c932ce01")
         };
         final List<NameValuePair> data = new ArrayList<>();
         data.addAll(Arrays.asList(pairs));

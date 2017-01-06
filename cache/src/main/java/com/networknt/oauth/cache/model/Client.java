@@ -21,15 +21,11 @@ public class Client implements IdentifiedDataSerializable {
    * client type
    */
   public enum ClientTypeEnum {
-    SERVER("server"),
+    CONFIDENTIAL("confidential"),
     
-    MOBILE("mobile"),
+    PUBLIC("public"),
     
-    SERVICE("service"),
-    
-    STANDALONE("standalone"),
-    
-    BROWSER("browser");
+    TRUSTED("trusted");
 
     private final String value;
 
@@ -55,6 +51,44 @@ public class Client implements IdentifiedDataSerializable {
   }
 
   private ClientTypeEnum clientType = null;
+  /**
+   * client profile
+   */
+  public enum ClientProfileEnum {
+    WEBSERVER("webserver"),
+    
+    BROWSER("browser"),
+    
+    MOBILE("mobile"),
+    
+    SERVICE("service"),
+    
+    BATCH("batch");
+
+    private final String value;
+
+    ClientProfileEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    @JsonValue
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ClientProfileEnum fromValue(String text) {
+      for (ClientProfileEnum b : ClientProfileEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
+  }
+
+  private ClientProfileEnum clientProfile = null;
 
   private String clientName = null;
 
@@ -122,6 +156,24 @@ public class Client implements IdentifiedDataSerializable {
   }
   public void setClientType(ClientTypeEnum clientType) {
     this.clientType = clientType;
+  }
+
+  /**
+   * client profile
+   **/
+  public Client clientProfile(ClientProfileEnum clientProfile) {
+    this.clientProfile = clientProfile;
+    return this;
+  }
+
+  
+  @ApiModelProperty(example = "null", value = "client profile")
+  @JsonProperty("clientProfile")
+  public ClientProfileEnum getClientProfile() {
+    return clientProfile;
+  }
+  public void setClientProfile(ClientProfileEnum clientProfile) {
+    this.clientProfile = clientProfile;
   }
 
   /**
@@ -205,7 +257,7 @@ public class Client implements IdentifiedDataSerializable {
   }
 
 
-  @ApiModelProperty(example = "null", required = true, value = "redirect url")
+  @ApiModelProperty(example = "null", value = "redirect url")
   @JsonProperty("redirectUrl")
   public String getRedirectUrl() {
     return redirectUrl;
@@ -263,6 +315,7 @@ public class Client implements IdentifiedDataSerializable {
     return Objects.equals(clientId, client.clientId) &&
         Objects.equals(clientSecret, client.clientSecret) &&
         Objects.equals(clientType, client.clientType) &&
+        Objects.equals(clientProfile, client.clientProfile) &&
         Objects.equals(clientName, client.clientName) &&
         Objects.equals(clientDesc, client.clientDesc) &&
         Objects.equals(ownerId, client.ownerId) &&
@@ -274,7 +327,7 @@ public class Client implements IdentifiedDataSerializable {
 
   @Override
   public int hashCode() {
-    return Objects.hash(clientId, clientSecret, clientType, clientName, clientDesc, ownerId, scope, redirectUrl, createDt, updateDt);
+    return Objects.hash(clientId, clientSecret, clientType, clientProfile, clientName, clientDesc, ownerId, scope, redirectUrl, createDt, updateDt);
   }
 
   @Override
@@ -285,6 +338,7 @@ public class Client implements IdentifiedDataSerializable {
     sb.append("    clientId: ").append(toIndentedString(clientId)).append("\n");
     sb.append("    clientSecret: ").append(toIndentedString(clientSecret)).append("\n");
     sb.append("    clientType: ").append(toIndentedString(clientType)).append("\n");
+    sb.append("    clientProfile: ").append(toIndentedString(clientProfile)).append("\n");
     sb.append("    clientName: ").append(toIndentedString(clientName)).append("\n");
     sb.append("    clientDesc: ").append(toIndentedString(clientDesc)).append("\n");
     sb.append("    ownerId: ").append(toIndentedString(ownerId)).append("\n");
@@ -316,6 +370,7 @@ public class Client implements IdentifiedDataSerializable {
     this.clientId = in.readUTF();
     this.clientSecret = in.readUTF();
     this.clientType = Client.ClientTypeEnum.fromValue(in.readUTF());
+    this.clientProfile = Client.ClientProfileEnum.fromValue(in.readUTF());
     this.clientName = in.readUTF();
     this.clientDesc = in.readUTF();
     this.ownerId = in.readUTF();
@@ -330,6 +385,7 @@ public class Client implements IdentifiedDataSerializable {
     out.writeUTF(this.clientId);
     out.writeUTF(this.clientSecret);
     out.writeUTF(this.clientType.toString());
+    out.writeUTF(this.clientProfile.toString());
     out.writeUTF(this.clientName);
     out.writeUTF(this.clientDesc);
     out.writeUTF(this.ownerId);
