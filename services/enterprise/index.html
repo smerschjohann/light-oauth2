@@ -1587,6 +1587,150 @@ definitions:
 
 <h2 id="key">Key</h2>
 
+<p>In microservices architecture, the traditional way of copying public key certificates
+to hosts of services is not working. With container orchestration tool like Kubernetes
+old containers can be shutdown and new container can be started at anytime. So the push
+certificates to services has to be changed to pull certificates from OAuth2 server
+instead. This service is designed to pull public key certificate based on keyId that is
+in the JWT token header. It is tighly integrated with Light-Java framework security
+component.</p>
+
+<p>This service is listening to port number 6886.</p>
+
+<p>Here is the specification</p>
+
+<pre><code>swagger: '2.0'
+
+info:
+  version: &quot;1.0.0&quot;
+  title: OAuth2 Key Service
+  description: OAuth2 Key Service microservices endpoints. 
+  contact:
+    email: stevehu@gmail.com
+  license:
+    name: &quot;Apache 2.0&quot;
+    url: &quot;http://www.apache.org/licenses/LICENSE-2.0.html&quot;
+host: oauth2.networknt.com
+schemes:
+  - http
+  - https
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+paths:
+  /oauth2/key/{keyId}:
+    get:
+      description: Get a key by Id
+      operationId: getKeyById
+      parameters:
+      - name: &quot;keyId&quot;
+        in: &quot;path&quot;
+        description: &quot;Key Id&quot;
+        required: true
+        type: &quot;string&quot;
+      responses:
+        200: 
+          description: Successful response
+          schema:
+            $ref: &quot;#/definitions/Key&quot;          
+        400:
+          description: &quot;Invalid keyId supplied&quot;
+        404:
+          description: &quot;Key not found&quot;
+      security:
+        - key_auth:
+          - oauth.key.r
+          - oauth.key.w
+
+securityDefinitions:
+  key_auth:
+    type: &quot;oauth2&quot;
+    authorizationUrl: &quot;http://localhost:8888/oauth2/code&quot;
+    flow: &quot;implicit&quot;
+    scopes:
+      oauth.key.w: &quot;write key&quot;
+      oauth.key.r: &quot;read key&quot;
+definitions:
+  Key:
+    type: &quot;object&quot;
+    required:
+    - &quot;keyId&quot;
+    - &quot;certificate&quot;
+    properties:
+      keyId:
+        type: &quot;string&quot;
+        description: &quot;a unique id&quot;
+      certificate:
+        type: &quot;string&quot;
+        description: &quot;certificate&quot;
+
+</code></pre>
+
+<h3 id="oauth2-key-keyid-get">/oauth2/key/{keyId}@get</h3>
+
+<p>This endpoint is used to get public key certificate for JWT signature verification based
+on keyId in the JWT header. Light-Java framework should have packaged with several keys
+already when deployed to production, however, keys are changing frequently as old ones
+are expired. You don&rsquo;t want to redeploy your services just due to key changes on the
+OAuth server. This endpoint is available for all services which have an entry in client
+table so that clientId and clientSecret can be used to verify the identity of the service.</p>
+
+<p>The following validations are performed before the key is issued by the service.</p>
+
+<ul>
+<li>If authorization header doesn&rsquo;t exist in the request, the following error will be
+returned.</li>
+</ul>
+
+<pre><code>  &quot;ERR12002&quot;: {
+    &quot;statusCode&quot;: 401,
+    &quot;code&quot;: &quot;ERR12002&quot;,
+    &quot;message&quot;: &quot;MISSING_AUTHORIZATION_HEADER&quot;,
+    &quot;description&quot;: &quot;Missing authorization header. client credentials must be passed in as Authorization header.&quot;
+  }
+</code></pre>
+
+<ul>
+<li>If the client secret is not correct when matching with hashed and salted client secret
+in cache, then the following error will be returned.</li>
+</ul>
+
+<pre><code>  &quot;ERR12007&quot;: {
+    &quot;statusCode&quot;: 401,
+    &quot;code&quot;: &quot;ERR12007&quot;,
+    &quot;message&quot;: &quot;UNAUTHORIZED_CLIENT&quot;,
+    &quot;description&quot;: &quot;Unauthorized client with wrong client secret.&quot;
+  }
+</code></pre>
+
+<ul>
+<li>If the client id in the authorization header doesn&rsquo;t exist in client cache in memory,
+then the following error will be returned.</li>
+</ul>
+
+<pre><code>  &quot;ERR12014&quot;: {
+    &quot;statusCode&quot;: 404,
+    &quot;code&quot;: &quot;ERR12014&quot;,
+    &quot;message&quot;: &quot;CLIENT_NOT_FOUND&quot;,
+    &quot;description&quot;: &quot;Client %s is not found.&quot;
+  }
+</code></pre>
+
+<ul>
+<li>If the keyId cannot be found on the server, then the following error will be returned.</li>
+</ul>
+
+<pre><code>  &quot;ERR10010&quot;: {
+    &quot;statusCode&quot;: 500,
+    &quot;code&quot;: &quot;ERR10010&quot;,
+    &quot;message&quot;: &quot;RUNTIME_EXCEPTION&quot;,
+    &quot;description&quot;: &quot;Unexpected runtime exception&quot;
+  }
+</code></pre>
+
 
 			<aside class="copyright" role="note">
 				
