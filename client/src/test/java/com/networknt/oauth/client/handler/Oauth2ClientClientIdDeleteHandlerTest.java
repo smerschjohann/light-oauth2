@@ -1,8 +1,11 @@
 package com.networknt.oauth.client.handler;
 
 import com.networknt.client.Client;
+import com.networknt.config.Config;
 import com.networknt.exception.ApiException;
 import com.networknt.exception.ClientException;
+import com.networknt.status.Status;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -33,4 +36,25 @@ public class Oauth2ClientClientIdDeleteHandlerTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void testClientNotFound() throws ClientException, ApiException {
+        CloseableHttpClient client = Client.getInstance().getSyncClient();
+        HttpDelete httpDelete = new HttpDelete("http://localhost:6884/oauth2/client/fake");
+        try {
+            CloseableHttpResponse response = client.execute(httpDelete);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertEquals(404, statusCode);
+            if(statusCode == 404) {
+                Status status = Config.getInstance().getMapper().readValue(body, Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR12014", status.getCode());
+                Assert.assertEquals("CLIENT_NOT_FOUND", status.getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

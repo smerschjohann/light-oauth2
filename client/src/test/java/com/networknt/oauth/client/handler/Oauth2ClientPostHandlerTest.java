@@ -72,4 +72,53 @@ public class Oauth2ClientPostHandlerTest {
         }
     }
 
+    @Test
+    public void testInvalidClientType() throws ClientException, ApiException, UnsupportedEncodingException {
+        String c = "{\"clientType\":\"fake\",\"clientProfile\":\"mobile\",\"clientName\":\"AccountViewer\",\"clientDesc\":\"Retail Online Banking Account Viewer\",\"scope\":\"act.r act.w\",\"redirectUrl\": \"http://localhost:8080/authorization\",\"ownerId\":\"fake\"}";
+        CloseableHttpClient client = Client.getInstance().getSyncClient();
+        HttpPost httpPost = new HttpPost("http://localhost:6884/oauth2/client");
+        httpPost.setHeader("Content-type", "application/json");
+        httpPost.setEntity(new StringEntity(c));
+
+        try {
+            CloseableHttpResponse response = client.execute(httpPost);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertEquals(400, statusCode);
+            if(statusCode == 400) {
+                Status status = Config.getInstance().getMapper().readValue(body, Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR11004", status.getCode());
+                Assert.assertEquals("VALIDATOR_SCHEMA", status.getMessage()); // response_type missing
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testInvalidClientProfile() throws ClientException, ApiException, UnsupportedEncodingException {
+        String c = "{\"clientType\":\"public\",\"clientProfile\":\"fake\",\"clientName\":\"AccountViewer\",\"clientDesc\":\"Retail Online Banking Account Viewer\",\"scope\":\"act.r act.w\",\"redirectUrl\": \"http://localhost:8080/authorization\",\"ownerId\":\"fake\"}";
+        CloseableHttpClient client = Client.getInstance().getSyncClient();
+        HttpPost httpPost = new HttpPost("http://localhost:6884/oauth2/client");
+        httpPost.setHeader("Content-type", "application/json");
+        httpPost.setEntity(new StringEntity(c));
+
+        try {
+            CloseableHttpResponse response = client.execute(httpPost);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertEquals(400, statusCode);
+            if(statusCode == 400) {
+                Status status = Config.getInstance().getMapper().readValue(body, Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR11004", status.getCode());
+                Assert.assertEquals("VALIDATOR_SCHEMA", status.getMessage()); // response_type missing
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

@@ -1,8 +1,10 @@
 package com.networknt.oauth.user.handler;
 
 import com.networknt.client.Client;
+import com.networknt.config.Config;
 import com.networknt.exception.ApiException;
 import com.networknt.exception.ClientException;
+import com.networknt.status.Status;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -43,4 +45,97 @@ public class Oauth2UserPostHandlerTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void testUserIdExists() throws ClientException, ApiException, UnsupportedEncodingException {
+        String user = "{\"userId\":\"admin\",\"userType\":\"employee\",\"firstName\":\"Steve\",\"lastName\":\"Hu\",\"email\":\"admin@gmail.com\",\"password\":\"123456\",\"passwordConfirm\":\"123456\"}";
+        CloseableHttpClient client = Client.getInstance().getSyncClient();
+        HttpPost httpPost = new HttpPost("http://localhost:6885/oauth2/user");
+        httpPost.setHeader("Content-type", "application/json");
+        httpPost.setEntity(new StringEntity(user));
+        try {
+            CloseableHttpResponse response = client.execute(httpPost);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertEquals(400, statusCode);
+            if(statusCode == 400) {
+                Status status = Config.getInstance().getMapper().readValue(body, Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR12020", status.getCode());
+                Assert.assertEquals("USER_ID_EXISTS", status.getMessage()); // response_type missing
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testEmailExists() throws ClientException, ApiException, UnsupportedEncodingException {
+        String user = "{\"userId\":\"steve\",\"userType\":\"employee\",\"firstName\":\"Steve\",\"lastName\":\"Hu\",\"email\":\"admin@networknt.com\",\"password\":\"123456\",\"passwordConfirm\":\"123456\"}";
+        CloseableHttpClient client = Client.getInstance().getSyncClient();
+        HttpPost httpPost = new HttpPost("http://localhost:6885/oauth2/user");
+        httpPost.setHeader("Content-type", "application/json");
+        httpPost.setEntity(new StringEntity(user));
+        try {
+            CloseableHttpResponse response = client.execute(httpPost);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertEquals(400, statusCode);
+            if(statusCode == 400) {
+                Status status = Config.getInstance().getMapper().readValue(body, Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR12021", status.getCode());
+                Assert.assertEquals("EMAIL_EXISTS", status.getMessage()); // response_type missing
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testPasswordEmpty() throws ClientException, ApiException, UnsupportedEncodingException {
+        String user = "{\"userId\":\"steve\",\"userType\":\"employee\",\"firstName\":\"Steve\",\"lastName\":\"Hu\",\"email\":\"admin1@networknt.com\",\"passwordConfirm\":\"123456\"}";
+        CloseableHttpClient client = Client.getInstance().getSyncClient();
+        HttpPost httpPost = new HttpPost("http://localhost:6885/oauth2/user");
+        httpPost.setHeader("Content-type", "application/json");
+        httpPost.setEntity(new StringEntity(user));
+        try {
+            CloseableHttpResponse response = client.execute(httpPost);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertEquals(400, statusCode);
+            if(statusCode == 400) {
+                Status status = Config.getInstance().getMapper().readValue(body, Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR12011", status.getCode());
+                Assert.assertEquals("PASSWORD_OR_PASSWORDCONFIRM_EMPTY", status.getMessage()); // response_type missing
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testPasswordAndConfirmNotMatch() throws ClientException, ApiException, UnsupportedEncodingException {
+        String user = "{\"userId\":\"steve001\",\"userType\":\"employee\",\"firstName\":\"Steve\",\"lastName\":\"Hu\",\"email\":\"abc@networknt.com\",\"password\":\"123456\",\"passwordConfirm\":\"678901\"}";
+        CloseableHttpClient client = Client.getInstance().getSyncClient();
+        HttpPost httpPost = new HttpPost("http://localhost:6885/oauth2/user");
+        httpPost.setHeader("Content-type", "application/json");
+        httpPost.setEntity(new StringEntity(user));
+        try {
+            CloseableHttpResponse response = client.execute(httpPost);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertEquals(400, statusCode);
+            if(statusCode == 400) {
+                Status status = Config.getInstance().getMapper().readValue(body, Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR12012", status.getCode());
+                Assert.assertEquals("PASSWORD_PASSWORDCONFIRM_NOT_MATCH", status.getMessage()); // response_type missing
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

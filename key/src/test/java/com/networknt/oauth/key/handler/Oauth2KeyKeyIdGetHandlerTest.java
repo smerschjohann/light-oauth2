@@ -87,4 +87,48 @@ public class Oauth2KeyKeyIdGetHandlerTest {
         }
     }
 
+    @Test
+    public void testClientNotFound() throws ClientException, ApiException {
+        CloseableHttpClient client = Client.getInstance().getSyncClient();
+        HttpGet httpGet = new HttpGet("http://localhost:6886/oauth2/key/101");
+        // must have client_id and client_secret as Basic Auth in header.
+        httpGet.setHeader("Authorization", "Basic " + encodeCredentials("fake", "f6h1FTI8Q3-7UScPZDzfXA"));
+        try {
+            CloseableHttpResponse response = client.execute(httpGet);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body  = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertEquals(404, statusCode);
+            if(statusCode == 404) {
+                Status status = Config.getInstance().getMapper().readValue(body, Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR12014", status.getCode());
+                Assert.assertEquals("CLIENT_NOT_FOUND", status.getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testKeyNotFound() throws ClientException, ApiException {
+        CloseableHttpClient client = Client.getInstance().getSyncClient();
+        HttpGet httpGet = new HttpGet("http://localhost:6886/oauth2/key/999");
+        // must have client_id and client_secret as Basic Auth in header.
+        httpGet.setHeader("Authorization", "Basic " + encodeCredentials("f7d42348-c647-4efb-a52d-4c5787421e72", "f6h1FTI8Q3-7UScPZDzfXA"));
+        try {
+            CloseableHttpResponse response = client.execute(httpGet);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body  = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertEquals(500, statusCode);
+            if(statusCode == 500) {
+                Status status = Config.getInstance().getMapper().readValue(body, Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR10010", status.getCode());
+                Assert.assertEquals("RUNTIME_EXCEPTION", status.getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
