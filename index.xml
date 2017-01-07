@@ -674,15 +674,1194 @@ Development edition, there is only one service to serve both code and token endp
 &lt;p&gt;There are six standard services that cover standard OAuth2 grant flows and extended features like
 service on-boarding, client on-boarding, user management and public key certificate distribution.&lt;/p&gt;
 
-&lt;h2 id=&#34;code&#34;&gt;Code&lt;/h2&gt;
+&lt;p&gt;This document only describe the features and processes of each service. Please refer to &lt;a href=&#34;https://networknt.github.io/light-oauth2/tutorial/enterprise/&#34;&gt;tutorial&lt;/a&gt;
+on how to access these services.&lt;/p&gt;
 
-&lt;h2 id=&#34;token&#34;&gt;Token&lt;/h2&gt;
+&lt;h1 id=&#34;code&#34;&gt;Code&lt;/h1&gt;
 
-&lt;h2 id=&#34;client&#34;&gt;Client&lt;/h2&gt;
+&lt;p&gt;This is a service that accepts user credentials and redirects back authorization code with redirect
+URL defined in the client registration or overwritten it by passing in a redirect URL in the request.&lt;/p&gt;
 
-&lt;h2 id=&#34;service&#34;&gt;Service&lt;/h2&gt;
+&lt;p&gt;There are two endpoints and the service default listening port is 6881.&lt;/p&gt;
+
+&lt;p&gt;Here is the specification:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;swagger: &#39;2.0&#39;
+
+info:
+  version: &amp;quot;1.0.0&amp;quot;
+  title: OAuth2 Service Authorization Code
+  description: OAuth2 Service that logs in user and provide authorization code. 
+  contact:
+    email: stevehu@gmail.com
+  license:
+    name: &amp;quot;Apache 2.0&amp;quot;
+    url: &amp;quot;http://www.apache.org/licenses/LICENSE-2.0.html&amp;quot;
+host: oauth2.networknt.com
+schemes:
+  - http
+  - https
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+paths:
+  /oauth2/code:
+    get:
+      description: Return 302 redirect with authorization code
+      operationId: getAuthCode
+      parameters:
+      - name: &amp;quot;Authorization&amp;quot;
+        in: &amp;quot;header&amp;quot;
+        required: false
+        type: &amp;quot;string&amp;quot;
+      - name: &amp;quot;response_type&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;The response type for authorization code&amp;quot;
+        required: true
+        type: &amp;quot;string&amp;quot;
+        enum:
+        - &amp;quot;code&amp;quot;
+      - name: &amp;quot;client_id&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;The client id for authorization code&amp;quot;
+        required: true
+        type: &amp;quot;string&amp;quot;
+      - name: &amp;quot;redirect_url&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;The redirect uri for authorization code&amp;quot;
+        required: false
+        type: &amp;quot;string&amp;quot;
+      - name: &amp;quot;username&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;The user name for authorization code&amp;quot;
+        required: false
+        type: &amp;quot;string&amp;quot;
+      - name: &amp;quot;password&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;The password for authorization code in clear text&amp;quot;
+        required: false
+        type: &amp;quot;string&amp;quot;
+      responses:
+        302:
+          description: &amp;quot;Successful Operation&amp;quot;
+
+    post:
+      description: Return 302 redirect with authorization code
+      operationId: postAuthCode
+      consumes:
+      - &amp;quot;application/x-www-form-urlencoded&amp;quot;
+      produces:
+      - &amp;quot;application/json&amp;quot;
+      parameters:
+      - name: &amp;quot;j_username&amp;quot;
+        in: &amp;quot;formData&amp;quot;
+        description: &amp;quot;User name&amp;quot;
+        required: true
+        type: &amp;quot;string&amp;quot;
+      - name: &amp;quot;j_password&amp;quot;
+        in: &amp;quot;formData&amp;quot;
+        description: &amp;quot;Password&amp;quot;
+        required: true
+        type: &amp;quot;string&amp;quot;
+      - name: &amp;quot;response_type&amp;quot;
+        in: &amp;quot;formData&amp;quot;
+        description: &amp;quot;Response type&amp;quot;
+        required: true
+        type: &amp;quot;string&amp;quot;
+        enum: 
+        - &amp;quot;code&amp;quot;
+      - name: &amp;quot;client_id&amp;quot;
+        in: &amp;quot;formData&amp;quot;
+        description: &amp;quot;Client Id&amp;quot;
+        required: true
+        type: &amp;quot;string&amp;quot;
+      - name: &amp;quot;redirect_url&amp;quot;
+        in: &amp;quot;formData&amp;quot;
+        description: &amp;quot;Redirect Url&amp;quot;
+        required: false
+        type: &amp;quot;string&amp;quot;
+      responses:
+        302:
+          description: &amp;quot;Successful Operation&amp;quot;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;oauth2-code-get&#34;&gt;/oauth2/code@get&lt;/h2&gt;
+
+&lt;p&gt;The get endpoint is the most used as it is very simple and supported by all browsers
+without any customization. When request is received by the service, the following
+validations or processes are done before issuing a authorization code redirect.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Make sure that user credentials are passed in. Otherwise, it will redirect the
+browser to display popup window to collect userId and password. The username and
+password will be passed in as Basic Authorization header. The passed in userId
+and password will be matched with cached password(which is hashed and salted). If
+userId and password combination is not valid, then a brand new popup window will
+be shown. Depending on browsers, an error message will be shown up after several
+times of retries.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;If password is incorrect, then the following error will return.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12016&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 401,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12016&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;INCORRECT_PASSWORD&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Incorrect password.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Make sure that response_type and client_id are passed in as parameters. If not,
+the following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR11000&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR11000&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;VALIDATOR_REQUEST_PARAMETER_QUERY_MISSING&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Query parameter &#39;%s&#39; is required on path &#39;%s&#39; but not found in request.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If response_type doesn&amp;rsquo;t equal &amp;ldquo;code&amp;rdquo; then the following error will return&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR11002&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR11002&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;VALIDATOR_REQUEST_PARAMETER_ENUM_INVALID&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Value &#39;%s&#39; for parameter &#39;%s&#39; is not allowed. Allowed values are &amp;lt;%s&amp;gt;.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Make sure client_id passed in is valid again in memory client cache. If not,
+then the following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12014&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12014&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;CLIENT_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Client %s is not found.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;As you can see from the specification, there is an optional parameter called
+redirect_url. If this parameter is passed in, it will be used to redirect the
+authorization code. Otherwise, the default redirect_url from client_id will be
+used. This is retrieved from in memory client cache. The url is populated when
+client is registered during on-boarding process.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;oauth2-code-post&#34;&gt;/oauth2/code@post&lt;/h2&gt;
+
+&lt;p&gt;To be completed later&lt;/p&gt;
+
+&lt;h1 id=&#34;token&#34;&gt;Token&lt;/h1&gt;
+
+&lt;p&gt;This is a post endpoint to get JSON web tokens. Currently, it support two different
+access tokens: authorization code token(which has user_id and user_type) and client
+credentials token which doesn&amp;rsquo;t have user info in the claim.&lt;/p&gt;
+
+&lt;p&gt;There is only one post endpoint for this service and the default port is 6882.&lt;/p&gt;
+
+&lt;p&gt;Here is the specification.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;swagger: &#39;2.0&#39;
+
+info:
+  version: &amp;quot;1.0.0&amp;quot;
+  title: OAuth2 Service Token Service
+  description: OAuth2 Service that issues access tokens. 
+  contact:
+    email: stevehu@gmail.com
+  license:
+    name: &amp;quot;Apache 2.0&amp;quot;
+    url: &amp;quot;http://www.apache.org/licenses/LICENSE-2.0.html&amp;quot;
+host: oauth2.networknt.com
+schemes:
+  - http
+  - https
+
+consumes:
+  - application/x-www-form-urlencoded   
+produces:
+  - application/json
+
+paths:
+  /oauth2/token:
+    post:
+      description: JSON object that contains access token
+      operationId: postToken
+      parameters:
+      - name: authorization
+        in: header
+        type: string
+        required: true      
+      - name: grant_type
+        type: string
+        required: true
+        in: formData
+      - name: code
+        type: string
+        in: formData
+      responses:
+        200:
+          description: &amp;quot;Successful Operation&amp;quot;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;oauth2-token&#34;&gt;/oauth2/token&lt;/h2&gt;
+
+&lt;p&gt;When a post request is received, the following validations and processes will be performed.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The handler expects a x-www-form-urlencoded form and if it doesn&amp;rsquo;t exist, the following
+error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12000&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12000&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;UNABLE_TO_PARSE_FORM_DATA&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Unable to parse x-www-form-urlencoded form data.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The parameter grant type should only allowed client_credentials and authorization_code. If
+other grant_type is passed in, the following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12001&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12001&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;UNSUPPORTED_GRANT_TYPE&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Unsupported grant type %s. Only authorization_code and client_credentials are supported.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;When this endpoint is called, the client_id and client_secret must be base64 encoded and put
+into Authorization header. If there is no Authorization header available in the request, the
+following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR11017&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR11017&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;VALIDATOR_REQUEST_PARAMETER_HEADER_MISSING&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Header parameter &#39;%s&#39; is required on path &#39;%s&#39; but not found in request.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;When validating client_id and client_secret, the first thing is to check the client_id in
+the client cache in memory. If client_id doesn&amp;rsquo;t exist, the following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12014&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12014&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;CLIENT_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Client %s is not found.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The encoded client_id:client_secret combination will be decoded and then client secret will
+be checked with hashed and salted in memory client secret to make sure it is correct. If the
+client secret is not correct, the following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12007&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 401,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12007&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;UNAUTHORIZED_CLIENT&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Unauthorized client with wrong client secret.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If the basic client_id:client_secret cannot be decoded and parsed correctly, the following
+error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12004&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 401,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12004&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;INVALID_BASIC_CREDENTIALS&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Invalid Basic credentials %s.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If there is no Basic authorization header passed in, i.e. a bearer token is passed in, the
+following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12003&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 401,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12003&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;INVALID_AUTHORIZATION_HEADER&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Invalid authorization header %s. Basic authentication with credentials is required.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If all validation is passed, a JWT token will be generated and returned in a JSON object.&lt;/p&gt;
+
+&lt;h1 id=&#34;service&#34;&gt;Service&lt;/h1&gt;
+
+&lt;p&gt;Every micro service or API needs to register itself to OAuth2 server in order to control who
+can access it. During the registration/on-boarding, a list of scopes defined in the OpenAPI
+specification should be populated as well. This list of scopes will be used for client to
+register scopes in order to access this particular service or API.&lt;/p&gt;
+
+&lt;p&gt;This service has several endpoints and listening to port 6883.&lt;/p&gt;
+
+&lt;p&gt;Here is the specification.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;oauth2-service-get&#34;&gt;/oauth2/service@get&lt;/h2&gt;
+
+&lt;h2 id=&#34;oauth2-service-post&#34;&gt;/oauth2/service@post&lt;/h2&gt;
+
+&lt;h2 id=&#34;oauth2-service-put&#34;&gt;/oauth2/service@put&lt;/h2&gt;
+
+&lt;h2 id=&#34;oauth2-service-serviceid-delete&#34;&gt;/oauth2/service/{serviceId}@delete&lt;/h2&gt;
+
+&lt;h2 id=&#34;oauth2-service-serviceid-get&#34;&gt;/oauth2/service/{serviceId}@get&lt;/h2&gt;
+
+&lt;h1 id=&#34;client&#34;&gt;Client&lt;/h1&gt;
+
+&lt;p&gt;Before initiating the protocol, the client registers with the authorization server. The
+means through which the client registers with the authorization server are not defined
+in OAuth 2.0 specification.&lt;/p&gt;
+
+&lt;p&gt;As an extension, we have implemented client registration/on-boarding as a micro service
+that exposes several endpoints.&lt;/p&gt;
+
+&lt;p&gt;Before digging into the details of implementation, let&amp;rsquo;s clarify some concepts about
+client.&lt;/p&gt;
+
+&lt;h2 id=&#34;client-type&#34;&gt;Client Type&lt;/h2&gt;
+
+&lt;p&gt;OAuth defines two client types, based on their ability to authenticate securely with
+the authorization server (i.e., ability to maintain the confidentiality of their
+client credentials):&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;confidential&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Clients capable of maintaining the confidentiality of their credentials (e.g., client
+implemented on a secure server with restricted access to the client credentials), or
+capable of secure client authentication using other means.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;public&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Clients incapable of maintaining the confidentiality of their credentials (e.g.,
+clients executing on the device used by the resource owner, such as an installed
+native application or a web browser-based application), and incapable of secure
+client authentication via any other means.&lt;/p&gt;
+
+&lt;p&gt;Above are standard client types defined in the specification and we have added
+another one to control which client can issue resource owner password credentials
+grant request.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;trusted&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;These clients are marked as trusted and they are the only clients that can issue
+resource owner password credentials grant type. For API management team, please
+make sure that trusted client is also confidential and the client and resource
+must be deployed and managed by the same organization as this flow is not as
+secure as authorization code and client credentials flows.&lt;/p&gt;
+
+&lt;p&gt;The client type designation is based on the authorization server&amp;rsquo;s definition of
+secure authentication and its acceptable exposure levels of client credentials.&lt;br /&gt;
+The authorization server does not make assumptions about the client type.&lt;/p&gt;
+
+&lt;p&gt;A client may be implemented as a distributed set of components or services, each
+with a different client type and security context (e.g., a distributed client with
+both a confidential server-based component and a public browser-based component).&lt;br /&gt;
+In this case, the client should register each component or service as a separate
+client.&lt;/p&gt;
+
+&lt;p&gt;In a microservices architecture, a service might call other services to fulfill
+its request, in this case, it should register itself as a service and a client.
+That means the owner needs to follow both service on-boarding and client on-boarding
+processes.&lt;/p&gt;
+
+&lt;h2 id=&#34;client-profile&#34;&gt;Client Profile&lt;/h2&gt;
+
+&lt;p&gt;This specification has been designed around the following client profiles:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;web application (web server)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;A web application is a confidential client running on a web server. Resource owners
+access the client via an HTML user interface rendered in a user-agent on the device
+used by the resource owner. The client credentials as well as any access token issued
+to the client are stored on the web server and are not exposed to or accessible by
+the resource owner.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;user-agent-based application (browser)
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;A user-agent-based application is a public client in which the client code is
+downloaded from a web server and executes within a user-agent (e.g., web browser) on
+the device used by the resource owner. Protocol data and credentials are easily
+accessible (and often visible) to the resource owner. Since such applications
+reside within the user-agent, they can make seamless use of the user-agent
+capabilities when requesting authorization.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;native application (mobile)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;A native application is a public client installed and executed on the device used by
+the resource owner. Protocol data and credentials are accessible to the resource owner.&lt;br /&gt;
+It is assumed that any client authentication credentials included in the application can
+be extracted. On the other hand, dynamically issued credentials such as access tokens or
+refresh tokens can receive an acceptable level of protection. At a minimum, these
+credentials are protected from hostile servers with which the application may interact.&lt;br /&gt;
+On some platforms, these credentials might be protected from other applications residing
+on the same device.&lt;/p&gt;
+
+&lt;p&gt;The specification only mentioned above client profiles and the following two profiles
+are added in our OAuth 2.0 implementation.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;batch application (batch)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Batch jobs are very similar with web application but they are managed by enterprise
+scheduler and executed in a projected environment. It is considered as confidential
+client.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;service (service)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Services are usually protected as resources but in a microservices architecture, a
+service can also be a client to call other services or resources. These services
+normally running within light-weight containers in a secured environment. And they
+are considered as confidential clients.&lt;/p&gt;
+
+&lt;h2 id=&#34;client-identifier&#34;&gt;Client Identifier&lt;/h2&gt;
+
+&lt;p&gt;The authorization server issues the registered client a client identifier - a unique
+string representing the registration information provided by the client. The client
+identifier is not a secret; it is exposed to the resource owner and MUST NOT be used
+alone for client authentication. The client identifier is unique to the authorization
+server. In our implementation, it is a UUID generated on the server. Here is an example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;f7d42348-c647-4efb-a52d-4c5787421e72
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;client-secret&#34;&gt;Client Secret&lt;/h2&gt;
+
+&lt;p&gt;Clients in possession of a client secret MAY use the HTTP Basic authentication scheme
+as defined in [RFC2617] to authenticate with the authorization server. The client
+identifier is encoded using the &amp;ldquo;application/x-www-form-urlencoded&amp;rdquo; encoding algorithm
+, and the encoded value is used as the username; the client secret is encoded using
+the same algorithm and used as the password. The authorization server supports the HTTP
+Basic authentication scheme for authenticating clients that were issued a client secret.&lt;/p&gt;
+
+&lt;p&gt;For example (with extra line breaks for display purposes only):&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;     Authorization: Basic czZCaGRSa3F0Mzo3RmpmcDBaQnIxS3REUmJuZlZkbUl3
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;other-authentication-methods&#34;&gt;Other Authentication Methods&lt;/h2&gt;
+
+&lt;p&gt;Currently we don&amp;rsquo;t support other authentication method but we are open to support others
+if there are request from our users.&lt;/p&gt;
+
+&lt;h2 id=&#34;unregistered-clients&#34;&gt;Unregistered Clients&lt;/h2&gt;
+
+&lt;p&gt;Due to security reasons, all client must be registered before authenticated on the server.
+Unregistered clients are not supported on this implementation.&lt;/p&gt;
+
+&lt;h2 id=&#34;client-micro-service&#34;&gt;Client Micro Service&lt;/h2&gt;
+
+&lt;p&gt;This service has several endpoints and listening to port 6884.&lt;/p&gt;
+
+&lt;p&gt;Here is the specification.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;swagger: &#39;2.0&#39;
+
+info:
+  version: &amp;quot;1.0.0&amp;quot;
+  title: OAuth2 Client Registration
+  description: OAuth2 Client Registration microservices endpoints. 
+  contact:
+    email: stevehu@gmail.com
+  license:
+    name: &amp;quot;Apache 2.0&amp;quot;
+    url: &amp;quot;http://www.apache.org/licenses/LICENSE-2.0.html&amp;quot;
+host: oauth2.networknt.com
+schemes:
+  - http
+  - https
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+paths:
+  /oauth2/client:
+    post:
+      description: Return a client object
+      operationId: createClient
+      parameters:
+      - in: &amp;quot;body&amp;quot;
+        name: &amp;quot;body&amp;quot;
+        description: &amp;quot;Client object that needs to be added&amp;quot;
+        required: true
+        schema:
+          $ref: &amp;quot;#/definitions/Client&amp;quot;      
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: &amp;quot;#/definitions/Client&amp;quot;          
+      security:
+      - client_auth:
+        - &amp;quot;oauth.client.w&amp;quot;
+    put:
+      description: Return the updated client
+      operationId: updateClient
+      parameters:
+      - in: &amp;quot;body&amp;quot;
+        name: &amp;quot;body&amp;quot;
+        description: &amp;quot;Client object that needs to be added&amp;quot;
+        required: true
+        schema:
+          $ref: &amp;quot;#/definitions/Client&amp;quot;      
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: &amp;quot;#/definitions/Client&amp;quot;          
+      security:
+      - client_auth:
+        - &amp;quot;oauth.client.w&amp;quot;
+    get:
+      description: Return all clients
+      operationId: getAllClient
+      parameters:
+      - name: &amp;quot;page&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;Page number&amp;quot;
+        required: true
+        type: &amp;quot;integer&amp;quot;
+        format: &amp;quot;int32&amp;quot;
+      - name: &amp;quot;pageSize&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;Pag size&amp;quot;
+        required: false
+        type: &amp;quot;integer&amp;quot;
+        format: &amp;quot;int32&amp;quot;
+      - name: &amp;quot;clientName&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;Partial clientName for filter&amp;quot;
+        required: false
+        type: &amp;quot;string&amp;quot;
+      responses:
+        200:
+          description: &amp;quot;successful operation&amp;quot;
+          schema:
+            type: &amp;quot;array&amp;quot;
+            items:
+              $ref: &amp;quot;#/definitions/Client&amp;quot;
+      security:
+      - client_auth:
+        - &amp;quot;oauth.client.r&amp;quot;
+          
+  /oauth2/client/{clientId}:
+    delete:
+      description: Delete a client by Id
+      operationId: deleteClient
+      parameters:
+      - name: &amp;quot;clientId&amp;quot;
+        in: &amp;quot;path&amp;quot;
+        description: &amp;quot;Client Id&amp;quot;
+        required: true
+        type: &amp;quot;string&amp;quot;
+      responses:
+        400:
+          description: &amp;quot;Invalid clientId supplied&amp;quot;
+        404:
+          description: &amp;quot;Client not found&amp;quot;
+      security:
+        - client_auth:
+          - oauth.client.w
+    get:
+      description: Get a client by Id
+      operationId: getClient
+      parameters:
+      - name: &amp;quot;clientId&amp;quot;
+        in: &amp;quot;path&amp;quot;
+        description: &amp;quot;Client Id&amp;quot;
+        required: true
+        type: &amp;quot;string&amp;quot;
+      responses:
+        200: 
+          description: Successful response
+          schema:
+            $ref: &amp;quot;#/definitions/Client&amp;quot;          
+        400:
+          description: &amp;quot;Invalid clientId supplied&amp;quot;
+        404:
+          description: &amp;quot;Client not found&amp;quot;
+      security:
+        - client_auth:
+          - oauth.client.r
+          - oauth.client.w
+
+securityDefinitions:
+  client_auth:
+    type: &amp;quot;oauth2&amp;quot;
+    authorizationUrl: &amp;quot;http://localhost:8888/oauth2/code&amp;quot;
+    flow: &amp;quot;implicit&amp;quot;
+    scopes:
+      oauth.client.w: &amp;quot;write oauth client&amp;quot;
+      oauth.client.r: &amp;quot;read oauth client&amp;quot;
+definitions:
+  Client:
+    type: &amp;quot;object&amp;quot;
+    required:
+    - clientType
+    - clientName
+    - clientDesc
+    - ownerId
+    - scope
+    properties:
+      clientId:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;a unique client id&amp;quot;
+      clientSecret:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;client secret&amp;quot;
+      clientType:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;client type&amp;quot;
+        enum:
+        - server
+        - mobile
+        - service
+        - standalone
+        - browser
+      clientName:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;client name&amp;quot;
+      clientDesc:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;client description&amp;quot;
+      ownerId:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;client owner id&amp;quot;
+      scope:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;client scope separated by space&amp;quot;
+      redirectUrl:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;redirect url&amp;quot;
+      createDt:
+        type: &amp;quot;string&amp;quot;
+        format: &amp;quot;date-time&amp;quot;
+        description: &amp;quot;create date time&amp;quot;
+      updateDt:
+        type: &amp;quot;string&amp;quot;
+        format: &amp;quot;date-time&amp;quot;
+        description: &amp;quot;update date time&amp;quot;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;oauth2-client-clientid-delete&#34;&gt;/oauth2/client/{clientId}@delete&lt;/h3&gt;
+
+&lt;p&gt;This endpoint is used to delete existing client. The following validation will be
+performed in the service.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If clientId cannot be found in the in-memory grid, then the following error will
+be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12014&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12014&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;CLIENT_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Client %s is not found.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;oauth2-client-clientid-get&#34;&gt;/oauth2/client/{clientId}@get&lt;/h3&gt;
+
+&lt;p&gt;This endpoint is used to get a particular client with clientId. The following
+validation will be performed in the service.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If clientId cannot be found in the in-memory grid, then the following error will
+be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12014&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12014&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;CLIENT_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Client %s is not found.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;oauth2-client-get&#34;&gt;/oauth2/client@get&lt;/h3&gt;
+
+&lt;p&gt;This endpoint get all the clients from client service with filter and sorted on
+clientName. A page query parameter is mandatory and pageSize and clientName filter
+are optional.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;page&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Page number which must be specified. It starts with 1 and an empty list will
+be returned if the page is greater than the last page.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;pageSize&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Default pageSize is 10 and you can overwrite it with another number. Please don&amp;rsquo;t
+use a big number due to performance reason.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;clientName&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This is the only filter available and it supports filter by start with a few characters.
+For example, &amp;ldquo;clientName=abc&amp;rdquo; means any clientName start with &amp;ldquo;abc&amp;rdquo;. The result is also
+sorted by clientName in the pagination.&lt;/p&gt;
+
+&lt;p&gt;The following validation will be performed in the service.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If page is missing from the query parameter, an error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR11000&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR11000&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;VALIDATOR_REQUEST_PARAMETER_QUERY_MISSING&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Query parameter &#39;%s&#39; is required on path &#39;%s&#39; but not found in request.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;oauth2-client-post&#34;&gt;/oauth2/client@post&lt;/h3&gt;
+
+&lt;p&gt;This endpoint is used to create a new client. This usually will be called from light-portal
+and the following validations will be performed before a new client is added.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Verify that clientId exist in the cache. The clientId is generated as a UUID so this
+cannot be triggered. It is implemented this way just want to be in sync with other
+services.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12019&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12019&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;CLIENT_ID_EXISTS&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Client id %s exists.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Verify that ownerId is in user cache in memory. If it doesn&amp;rsquo;t exist, the following
+error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12013&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12013&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;USER_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;User %s is not found.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Make sure the clientType is from a list of valid values. If not, an error message
+will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR11004&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR11004&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;VALIDATOR_SCHEMA&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Schema Validation Error - %s&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Make sure that clientProfile is from a list of valid values. If not, an error
+message will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR11004&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR11004&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;VALIDATOR_SCHEMA&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Schema Validation Error - %s&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;oauth2-client-put&#34;&gt;/oauth2/client@put&lt;/h3&gt;
+
+&lt;p&gt;This endpoint is used to update an existing client. This usually will be called from
+light-portal and the following validations will be performed before a client is updated.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Verify that clientId exist in the cache. If clientId doesn&amp;rsquo;t existing the cache, an
+error message will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12014&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12014&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;CLIENT_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Client %s is not found.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Verify that ownerId is in user cache in memory. If it doesn&amp;rsquo;t exist, the following
+error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12013&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12013&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;USER_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;User %s is not found.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Make sure the clientType is from a list of valid values. If not, an error message
+will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR11004&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR11004&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;VALIDATOR_SCHEMA&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Schema Validation Error - %s&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Make sure that clientProfile is from a list of valid values. If not, an error
+message will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR11004&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR11004&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;VALIDATOR_SCHEMA&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Schema Validation Error - %s&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&#34;user&#34;&gt;User&lt;/h2&gt;
+
+&lt;p&gt;This is a service for user registration and management. The OAuth server supports
+integration with other user management system like active directory or LDAP.
+However, for most enterprise customers, their customer information normally will
+be in database. This service provides a database table for user management and
+several endpoints to manage users.&lt;/p&gt;
+
+&lt;p&gt;In OAuth 2.0 specification, user is normally called resource owner.&lt;/p&gt;
+
+&lt;h3 id=&#34;user-type&#34;&gt;User Type&lt;/h3&gt;
+
+&lt;p&gt;Currently there are three user types to support.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;customer&lt;/li&gt;
+&lt;li&gt;partner&lt;/li&gt;
+&lt;li&gt;employee&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;user-id&#34;&gt;User Id&lt;/h3&gt;
+
+&lt;p&gt;User id must be unique within the system.&lt;/p&gt;
+
+&lt;h3 id=&#34;password&#34;&gt;Password&lt;/h3&gt;
+
+&lt;p&gt;Password is provided when registering and it is hashed and salted in persistence
+layer.&lt;/p&gt;
+
+&lt;h3 id=&#34;user-micro-service&#34;&gt;User Micro Service&lt;/h3&gt;
+
+&lt;p&gt;This service has several endpoints and listening to port 6885.&lt;/p&gt;
+
+&lt;p&gt;Here is the specification.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;swagger: &#39;2.0&#39;
+
+info:
+  version: &amp;quot;1.0.0&amp;quot;
+  title: OAuth2 User Service
+  description: OAuth2 User Service microservices endpoints. 
+  contact:
+    email: stevehu@gmail.com
+  license:
+    name: &amp;quot;Apache 2.0&amp;quot;
+    url: &amp;quot;http://www.apache.org/licenses/LICENSE-2.0.html&amp;quot;
+host: oauth2.networknt.com
+schemes:
+  - http
+  - https
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+paths:
+  /oauth2/user:
+    get:
+      description: Return all users
+      operationId: getAllUsers
+      parameters:
+      - name: &amp;quot;page&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;Page number&amp;quot;
+        required: true
+        type: &amp;quot;integer&amp;quot;
+        format: &amp;quot;int32&amp;quot;
+      - name: &amp;quot;pageSize&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;Pag size&amp;quot;
+        required: false
+        type: &amp;quot;integer&amp;quot;
+        format: &amp;quot;int32&amp;quot;
+      - name: &amp;quot;userId&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;Partial userId for filter&amp;quot;
+        required: false
+        type: &amp;quot;string&amp;quot;
+      responses:
+        200:
+          description: &amp;quot;successful operation&amp;quot;
+          schema:
+            type: &amp;quot;array&amp;quot;
+            items:
+              $ref: &amp;quot;#/definitions/User&amp;quot;
+      security:
+      - user_auth:
+        - &amp;quot;oauth.user.r&amp;quot;
+    post:
+      description: Return a user object
+      operationId: createUser
+      parameters:
+      - in: &amp;quot;body&amp;quot;
+        name: &amp;quot;body&amp;quot;
+        description: &amp;quot;User object that needs to be added&amp;quot;
+        required: true
+        schema:
+          $ref: &amp;quot;#/definitions/User&amp;quot;      
+      responses:
+        200:
+          description: Successful response
+      security:
+      - user_auth:
+        - &amp;quot;oauth.user.w&amp;quot;
+    put:
+      description: Return the updated user
+      operationId: updateUser
+      parameters:
+      - in: &amp;quot;body&amp;quot;
+        name: &amp;quot;body&amp;quot;
+        description: &amp;quot;User object that needs to be added&amp;quot;
+        required: true
+        schema:
+          $ref: &amp;quot;#/definitions/User&amp;quot;      
+      responses:
+        200:
+          description: Successful response
+      security:
+      - user_auth:
+        - &amp;quot;oauth.user.w&amp;quot;
+          
+  /oauth2/user/{userId}:
+    delete:
+      description: Delete a user by Id
+      operationId: deleteUser
+      parameters:
+      - name: &amp;quot;userId&amp;quot;
+        in: &amp;quot;path&amp;quot;
+        description: &amp;quot;User Id&amp;quot;
+        required: true
+        type: &amp;quot;string&amp;quot;
+      responses:
+        400:
+          description: &amp;quot;Invalid userId supplied&amp;quot;
+        404:
+          description: &amp;quot;User not found&amp;quot;
+      security:
+        - user_auth:
+          - oauth.user.w
+    get:
+      description: Get a user by Id
+      operationId: getUser
+      parameters:
+      - name: &amp;quot;userId&amp;quot;
+        in: &amp;quot;path&amp;quot;
+        description: &amp;quot;User Id&amp;quot;
+        required: true
+        type: &amp;quot;string&amp;quot;
+      responses:
+        200: 
+          description: Successful response
+          schema:
+            $ref: &amp;quot;#/definitions/User&amp;quot;          
+        400:
+          description: &amp;quot;Invalid userId supplied&amp;quot;
+        404:
+          description: &amp;quot;User not found&amp;quot;
+      security:
+        - user_auth:
+          - oauth.user.r
+          - oauth.user.w
+  /oauth2/password/{userId}:
+    post:
+      description: Reset Password
+      operationId: resetPassword
+      parameters:
+      - in: &amp;quot;body&amp;quot;
+        name: &amp;quot;body&amp;quot;
+        description: &amp;quot;Password object that needs to be added&amp;quot;
+        required: true
+        schema:
+          $ref: &amp;quot;#/definitions/Password&amp;quot;      
+      - name: &amp;quot;userId&amp;quot;
+        in: &amp;quot;path&amp;quot;
+        description: &amp;quot;User Id&amp;quot;
+        required: true
+        type: &amp;quot;string&amp;quot;
+      responses:
+        404:
+          description: &amp;quot;User not found&amp;quot;
+      security:
+      - user_auth:
+        - &amp;quot;oauth.user.w&amp;quot;
+          
+securityDefinitions:
+  user_auth:
+    type: &amp;quot;oauth2&amp;quot;
+    authorizationUrl: &amp;quot;http://localhost:8888/oauth2/code&amp;quot;
+    flow: &amp;quot;implicit&amp;quot;
+    scopes:
+      oauth.user.w: &amp;quot;write user&amp;quot;
+      oauth.user.r: &amp;quot;read user&amp;quot;
+definitions:
+  User:
+    type: &amp;quot;object&amp;quot;
+    required:
+    - &amp;quot;userId&amp;quot;
+    - &amp;quot;userType&amp;quot;
+    - &amp;quot;firstName&amp;quot;
+    - &amp;quot;lastName&amp;quot;
+    - &amp;quot;email&amp;quot;
+    properties:
+      userId:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;a unique id&amp;quot;
+      userType:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;user type&amp;quot;
+        enum:
+        - &amp;quot;admin&amp;quot;
+        - &amp;quot;employee&amp;quot;
+        - &amp;quot;customer&amp;quot;
+        - &amp;quot;partner&amp;quot;
+      firstName:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;first name&amp;quot;
+      lastName:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;last name&amp;quot;
+      email:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;email address&amp;quot;
+      password:
+        type: &amp;quot;string&amp;quot;
+        format: &amp;quot;password&amp;quot;
+        description: &amp;quot;password&amp;quot;
+      passwordConfirm:
+        type: &amp;quot;string&amp;quot;
+        format: &amp;quot;password&amp;quot;
+        description: &amp;quot;password confirm&amp;quot;
+      createDt:
+        type: &amp;quot;string&amp;quot;
+        format: &amp;quot;date-time&amp;quot;
+        description: &amp;quot;create date time&amp;quot;
+      updateDt:
+        type: &amp;quot;string&amp;quot;
+        format: &amp;quot;date-time&amp;quot;
+        description: &amp;quot;update date time&amp;quot;
+  Password:
+    type: &amp;quot;object&amp;quot;
+    required:
+    - &amp;quot;password&amp;quot;
+    - &amp;quot;newPassword&amp;quot;
+    - &amp;quot;newPasswordConfirm&amp;quot;
+    properties:
+      password:
+        type: &amp;quot;string&amp;quot;
+        format: &amp;quot;password&amp;quot;
+        description: &amp;quot;existing password&amp;quot;
+      newPassword:
+        type: &amp;quot;string&amp;quot;
+        format: &amp;quot;password&amp;quot;
+        description: &amp;quot;new password&amp;quot;
+      newPasswordConfirm:
+        type: &amp;quot;string&amp;quot;
+        format: &amp;quot;password&amp;quot;
+        description: &amp;quot;new password confirm&amp;quot;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;oauth2-password-userid-post&#34;&gt;/oauth2/password/{userId}@post&lt;/h3&gt;
+
+&lt;h3 id=&#34;oauth2-user-get&#34;&gt;/oauth2/user@get&lt;/h3&gt;
+
+&lt;h3 id=&#34;oauth2-user-post&#34;&gt;/oauth2/user@post&lt;/h3&gt;
+
+&lt;h3 id=&#34;oauth2-user-put&#34;&gt;/oauth2/user@put&lt;/h3&gt;
+
+&lt;h3 id=&#34;oauth2-user-userid-delete&#34;&gt;/oauth2/user/{userId}@delete&lt;/h3&gt;
+
+&lt;h3 id=&#34;oauth2-user-userid-get&#34;&gt;/oauth2/user/{userId}get&lt;/h3&gt;
 
 &lt;h2 id=&#34;key&#34;&gt;Key&lt;/h2&gt;
 </description>
