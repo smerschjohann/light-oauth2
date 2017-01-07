@@ -29,7 +29,7 @@ public class Oauth2CodeGetHandlerTest {
 
     @Test(expected = ConnectException.class)
     public void testAuthorizationCode() throws Exception {
-        String url = "http://localhost:6881/oauth2/code?response_type=code&client_id=59f347a0-c92d-11e6-9d9d-cec0c932ce01&redirect_url=http://localhost:8080/authorization";
+        String url = "http://localhost:6881/oauth2/code?response_type=code&client_id=59f347a0-c92d-11e6-9d9d-cec0c932ce01&redirect_uri=http://localhost:8080/authorization";
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
         // add authentication header
@@ -44,7 +44,7 @@ public class Oauth2CodeGetHandlerTest {
 
     @Test
     public void testCodeWithoutResponseType() throws Exception {
-        String url = "http://localhost:6881/oauth2/code?client_id=59f347a0-c92d-11e6-9d9d-cec0c932ce01&redirect_url=http://localhost:8888/authorization";
+        String url = "http://localhost:6881/oauth2/code?client_id=59f347a0-c92d-11e6-9d9d-cec0c932ce01&redirect_uri=http://localhost:8888/authorization";
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
         httpGet.setHeader("Authorization", "Basic " + encodeCredentials("admin", "123456"));
@@ -65,7 +65,7 @@ public class Oauth2CodeGetHandlerTest {
 
     @Test
     public void testCodeWithoutClientId() throws Exception {
-        String url = "http://localhost:6881/oauth2/code?response_type=code&redirect_url=http://localhost:8888/authorization";
+        String url = "http://localhost:6881/oauth2/code?response_type=code&redirect_uri=http://localhost:8888/authorization";
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
         httpGet.setHeader("Authorization", "Basic " + encodeCredentials("admin", "123456"));
@@ -86,7 +86,7 @@ public class Oauth2CodeGetHandlerTest {
 
     @Test
     public void testCodeWrongPassword() throws Exception {
-        String url = "http://localhost:6881/oauth2/code?response_type=code&client_id=59f347a0-c92d-11e6-9d9d-cec0c932ce01&redirect_url=http://localhost:8888/authorization";
+        String url = "http://localhost:6881/oauth2/code?response_type=code&client_id=59f347a0-c92d-11e6-9d9d-cec0c932ce01&redirect_uri=http://localhost:8888/authorization";
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
         httpGet.setHeader("Authorization", "Basic " + encodeCredentials("admin", "admin"));
@@ -108,7 +108,7 @@ public class Oauth2CodeGetHandlerTest {
 
     @Test
     public void testCodeInvalidResponseType() throws Exception {
-        String url = "http://localhost:6881/oauth2/code?response_type=wrong&client_id=59f347a0-c92d-11e6-9d9d-cec0c932ce01&redirect_url=http://localhost:8888/authorization";
+        String url = "http://localhost:6881/oauth2/code?response_type=wrong&client_id=59f347a0-c92d-11e6-9d9d-cec0c932ce01&redirect_uri=http://localhost:8888/authorization";
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
         httpGet.setHeader("Authorization", "Basic " + encodeCredentials("admin", "123456"));
@@ -129,7 +129,7 @@ public class Oauth2CodeGetHandlerTest {
     }
     @Test
     public void testCodeClientNotFound() throws Exception {
-        String url = "http://localhost:6881/oauth2/code?response_type=code&client_id=fake&redirect_url=http://localhost:8888/authorization";
+        String url = "http://localhost:6881/oauth2/code?response_type=code&client_id=fake&redirect_uri=http://localhost:8888/authorization";
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
         httpGet.setHeader("Authorization", "Basic " + encodeCredentials("admin", "123456"));

@@ -56,15 +56,19 @@ public class Oauth2CodeGetHandler implements HttpHandler {
             String userId = context.getAuthenticatedAccount().getPrincipal().getName();
 
             CacheStartupHookProvider.hz.getMap("codes").set(code, userId);
-            String redirectUrl = params.get("redirect_url");
-            if(redirectUrl == null) {
-                redirectUrl = client.getRedirectUrl();
+            String redirectUri = params.get("redirect_uri");
+            if(redirectUri == null) {
+                redirectUri = client.getRedirectUrl();
             }
-            redirectUrl = redirectUrl + "?code=" + code;
-            if(logger.isDebugEnabled()) logger.debug("redirectUrl = " + redirectUrl);
+            redirectUri = redirectUri + "?code=" + code;
+            String state = params.get("state");
+            if(state != null) {
+                redirectUri = redirectUri + "&state=" + state;
+            }
+            if(logger.isDebugEnabled()) logger.debug("redirectUri = " + redirectUri);
             // now redirect here.
             exchange.setStatusCode(StatusCodes.FOUND);
-            exchange.getResponseHeaders().put(Headers.LOCATION, redirectUrl);
+            exchange.getResponseHeaders().put(Headers.LOCATION, redirectUri);
             exchange.endExchange();
         }
     }
