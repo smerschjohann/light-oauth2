@@ -1029,18 +1029,324 @@ register scopes in order to access this particular service or API.&lt;/p&gt;
 
 &lt;p&gt;Here is the specification.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;
+&lt;pre&gt;&lt;code&gt;swagger: &#39;2.0&#39;
+
+info:
+  version: &amp;quot;1.0.0&amp;quot;
+  title: OAuth2 Service Registration
+  description: OAuth2 Service Registration microservices endpoints. 
+  contact:
+    email: stevehu@gmail.com
+  license:
+    name: &amp;quot;Apache 2.0&amp;quot;
+    url: &amp;quot;http://www.apache.org/licenses/LICENSE-2.0.html&amp;quot;
+host: oauth2.networknt.com
+schemes:
+  - http
+  - https
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+paths:
+  /oauth2/service:
+    post:
+      description: Return a service object
+      operationId: createService
+      parameters:
+      - in: &amp;quot;body&amp;quot;
+        name: &amp;quot;body&amp;quot;
+        description: &amp;quot;Service object that needs to be added&amp;quot;
+        required: true
+        schema:
+          $ref: &amp;quot;#/definitions/Service&amp;quot;      
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: &amp;quot;#/definitions/Service&amp;quot;          
+      security:
+      - service_auth:
+        - &amp;quot;oauth.service.w&amp;quot;
+    put:
+      description: Return the updated service
+      operationId: updateService
+      parameters:
+      - in: &amp;quot;body&amp;quot;
+        name: &amp;quot;body&amp;quot;
+        description: &amp;quot;Service object that needs to be added&amp;quot;
+        required: true
+        schema:
+          $ref: &amp;quot;#/definitions/Service&amp;quot;      
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: &amp;quot;#/definitions/Service&amp;quot;          
+      security:
+      - service_auth:
+        - &amp;quot;oauth.service.w&amp;quot;
+    get:
+      description: Return all services
+      operationId: getAllService
+      parameters:
+      - name: &amp;quot;page&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;Page number&amp;quot;
+        required: true
+        type: &amp;quot;integer&amp;quot;
+        format: &amp;quot;int32&amp;quot;
+      - name: &amp;quot;pageSize&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;Pag size&amp;quot;
+        required: false
+        type: &amp;quot;integer&amp;quot;
+        format: &amp;quot;int32&amp;quot;
+      - name: &amp;quot;serviceId&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;Partial serviceId for filter&amp;quot;
+        required: false
+        type: &amp;quot;string&amp;quot;
+      responses:
+        200:
+          description: &amp;quot;successful operation&amp;quot;
+          schema:
+            type: &amp;quot;array&amp;quot;
+            items:
+              $ref: &amp;quot;#/definitions/Service&amp;quot;
+      security:
+      - service_auth:
+        - &amp;quot;oauth.service.r&amp;quot;
+          
+  /oauth2/service/{serviceId}:
+    delete:
+      description: Delete a service by Id
+      operationId: deleteService
+      parameters:
+      - name: &amp;quot;serviceId&amp;quot;
+        in: &amp;quot;path&amp;quot;
+        description: &amp;quot;Service Id&amp;quot;
+        required: true
+        type: &amp;quot;string&amp;quot;
+      responses:
+        400:
+          description: &amp;quot;Invalid serviceId supplied&amp;quot;
+        404:
+          description: &amp;quot;Service not found&amp;quot;
+      security:
+        - service_auth:
+          - oauth.service.w
+    get:
+      description: Get a service by Id
+      operationId: getService
+      parameters:
+      - name: &amp;quot;serviceId&amp;quot;
+        in: &amp;quot;path&amp;quot;
+        description: &amp;quot;Service Id&amp;quot;
+        required: true
+        type: &amp;quot;string&amp;quot;
+      responses:
+        200: 
+          description: Successful response
+          schema:
+            $ref: &amp;quot;#/definitions/Service&amp;quot;          
+        400:
+          description: &amp;quot;Invalid serviceId supplied&amp;quot;
+        404:
+          description: &amp;quot;Service not found&amp;quot;
+      security:
+        - service_auth:
+          - oauth.service.r
+          - oauth.service.w
+
+securityDefinitions:
+  service_auth:
+    type: &amp;quot;oauth2&amp;quot;
+    authorizationUrl: &amp;quot;http://localhost:8888/oauth2/code&amp;quot;
+    flow: &amp;quot;implicit&amp;quot;
+    scopes:
+      oauth.service.w: &amp;quot;write oauth service&amp;quot;
+      oauth.service.r: &amp;quot;read oauth service&amp;quot;
+definitions:
+  Service:
+    type: &amp;quot;object&amp;quot;
+    required:
+    - &amp;quot;serviceId&amp;quot;
+    - &amp;quot;serviceName&amp;quot;
+    - &amp;quot;serviceType&amp;quot;
+    - &amp;quot;scope&amp;quot;
+    properties:
+      serviceId:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;a unique service id&amp;quot;
+      serviceType:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;service type&amp;quot;
+        enum:
+        - &amp;quot;ms&amp;quot;
+        - &amp;quot;api&amp;quot;
+      serviceName:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;service name&amp;quot;
+      serviceDesc:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;service description&amp;quot;
+      ownerId:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;service owner userId&amp;quot;
+      scope:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;service scopes separated by space&amp;quot;
+      createDt:
+        type: &amp;quot;string&amp;quot;
+        format: &amp;quot;date-time&amp;quot;
+        description: &amp;quot;create date time&amp;quot;
+      updateDt:
+        type: &amp;quot;string&amp;quot;
+        format: &amp;quot;date-time&amp;quot;
+        description: &amp;quot;update date time&amp;quot;
+        
+
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&#34;oauth2-service-get&#34;&gt;/oauth2/service@get&lt;/h2&gt;
 
+&lt;p&gt;This endpoint gets all the services from service with filter and sorted on
+serviceId. A page query parameter is mandatory and pageSize and serviceId filter
+are optional.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;page&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Page number which must be specified. It starts with 1 and an empty list will
+be returned if the page is greater than the last page.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;pageSize&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Default pageSize is 10 and you can overwrite it with another number. Please don&amp;rsquo;t
+use a big number due to performance reason.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;serviceId&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This is the only filter available and it supports filter by start with a few characters.
+For example, &amp;ldquo;serviceId=abc&amp;rdquo; means any serviceId starts with &amp;ldquo;abc&amp;rdquo;. The result is also
+sorted by serviceId in the pagination.&lt;/p&gt;
+
+&lt;p&gt;The following validation will be performed in the service.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If page is missing from the query parameter, an error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR11000&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR11000&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;VALIDATOR_REQUEST_PARAMETER_QUERY_MISSING&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Query parameter &#39;%s&#39; is required on path &#39;%s&#39; but not found in request.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
 &lt;h2 id=&#34;oauth2-service-post&#34;&gt;/oauth2/service@post&lt;/h2&gt;
+
+&lt;p&gt;This endpoint is used to create a new service. The following validation will be performed
+before a new service is created.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If serviceId exists in the cache, then the following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12018&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12018&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;SERVICE_ID_EXISTS&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Service id %s exists.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If ownerId doesn&amp;rsquo;t exist in user cache, then the following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12013&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12013&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;USER_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;User %s is not found.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&#34;oauth2-service-put&#34;&gt;/oauth2/service@put&lt;/h2&gt;
 
+&lt;p&gt;This is the endpoint to update existing service. Before service is updated, the
+following validation will be performed.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If serviceId cannot be found in the service cache, then the following error will be
+returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12015&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12015&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;SERVICE_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Service %s is not found.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If ownerId doesn&amp;rsquo;t exist in user cache, then the following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12013&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12013&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;USER_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;User %s is not found.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
 &lt;h2 id=&#34;oauth2-service-serviceid-delete&#34;&gt;/oauth2/service/{serviceId}@delete&lt;/h2&gt;
 
+&lt;p&gt;This endpoint is used to delete existing service. Before the service is deleted,
+the following validations will be performed.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If serviceId cannot be found in the service cache, then the following error will be
+returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12015&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12015&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;SERVICE_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Service %s is not found.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
 &lt;h2 id=&#34;oauth2-service-serviceid-get&#34;&gt;/oauth2/service/{serviceId}@get&lt;/h2&gt;
+
+&lt;p&gt;This endpoint is used to get a particular service by serviceId. Before the service is
+returned, the following validation will be performed.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If serviceId cannot be found in the service cache, then the following error will be
+returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12015&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12015&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;SERVICE_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Service %s is not found.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h1 id=&#34;client&#34;&gt;Client&lt;/h1&gt;
 
@@ -1435,7 +1741,7 @@ be returned.&lt;/li&gt;
 
 &lt;h3 id=&#34;oauth2-client-get&#34;&gt;/oauth2/client@get&lt;/h3&gt;
 
-&lt;p&gt;This endpoint get all the clients from client service with filter and sorted on
+&lt;p&gt;This endpoint gets all the clients from client service with filter and sorted on
 clientName. A page query parameter is mandatory and pageSize and clientName filter
 are optional.&lt;/p&gt;
 
@@ -1458,7 +1764,7 @@ use a big number due to performance reason.&lt;/p&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;This is the only filter available and it supports filter by start with a few characters.
-For example, &amp;ldquo;clientName=abc&amp;rdquo; means any clientName start with &amp;ldquo;abc&amp;rdquo;. The result is also
+For example, &amp;ldquo;clientName=abc&amp;rdquo; means any clientName starts with &amp;ldquo;abc&amp;rdquo;. The result is also
 sorted by clientName in the pagination.&lt;/p&gt;
 
 &lt;p&gt;The following validation will be performed in the service.&lt;/p&gt;
@@ -1590,7 +1896,7 @@ message will be returned.&lt;/li&gt;
   }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;user&#34;&gt;User&lt;/h2&gt;
+&lt;h1 id=&#34;user&#34;&gt;User&lt;/h1&gt;
 
 &lt;p&gt;This is a service for user registration and management. The OAuth server supports
 integration with other user management system like active directory or LDAP.
@@ -1600,7 +1906,7 @@ several endpoints to manage users.&lt;/p&gt;
 
 &lt;p&gt;In OAuth 2.0 specification, user is normally called resource owner.&lt;/p&gt;
 
-&lt;h3 id=&#34;user-type&#34;&gt;User Type&lt;/h3&gt;
+&lt;h2 id=&#34;user-type&#34;&gt;User Type&lt;/h2&gt;
 
 &lt;p&gt;Currently there are three user types to support.&lt;/p&gt;
 
@@ -1610,16 +1916,16 @@ several endpoints to manage users.&lt;/p&gt;
 &lt;li&gt;employee&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;user-id&#34;&gt;User Id&lt;/h3&gt;
+&lt;h2 id=&#34;user-id&#34;&gt;User Id&lt;/h2&gt;
 
 &lt;p&gt;User id must be unique within the system.&lt;/p&gt;
 
-&lt;h3 id=&#34;password&#34;&gt;Password&lt;/h3&gt;
+&lt;h2 id=&#34;password&#34;&gt;Password&lt;/h2&gt;
 
 &lt;p&gt;Password is provided when registering and it is hashed and salted in persistence
 layer.&lt;/p&gt;
 
-&lt;h3 id=&#34;user-micro-service&#34;&gt;User Micro Service&lt;/h3&gt;
+&lt;h2 id=&#34;user-micro-service&#34;&gt;User Micro Service&lt;/h2&gt;
 
 &lt;p&gt;This service has several endpoints and listening to port 6885.&lt;/p&gt;
 
@@ -1851,19 +2157,204 @@ definitions:
 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;oauth2-password-userid-post&#34;&gt;/oauth2/password/{userId}@post&lt;/h3&gt;
+&lt;h2 id=&#34;oauth2-password-userid-post&#34;&gt;/oauth2/password/{userId}@post&lt;/h2&gt;
 
-&lt;h3 id=&#34;oauth2-user-get&#34;&gt;/oauth2/user@get&lt;/h3&gt;
+&lt;p&gt;This endpoint is used to reset user password. The user has to provide existing password,
+the new password and password confirmation in order to reset it.&lt;/p&gt;
 
-&lt;h3 id=&#34;oauth2-user-post&#34;&gt;/oauth2/user@post&lt;/h3&gt;
+&lt;p&gt;There are several validations need to be performed before the password can be reset.&lt;/p&gt;
 
-&lt;h3 id=&#34;oauth2-user-put&#34;&gt;/oauth2/user@put&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;If userId cannot be found in the user cache, then the following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
 
-&lt;h3 id=&#34;oauth2-user-userid-delete&#34;&gt;/oauth2/user/{userId}@delete&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12013&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12013&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;USER_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;User %s is not found.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;oauth2-user-userid-get&#34;&gt;/oauth2/user/{userId}get&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;If password is not matched the cached password, then the following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
 
-&lt;h2 id=&#34;key&#34;&gt;Key&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12016&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 401,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12016&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;INCORRECT_PASSWORD&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Incorrect password.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If new password and password confirmation are not matched, then the following error
+will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12012&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12012&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;PASSWORD_PASSWORDCONFIRM_NOT_MATCH&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Password %s and PasswordConfirm %s are not matched.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;oauth2-user-get&#34;&gt;/oauth2/user@get&lt;/h2&gt;
+
+&lt;p&gt;This endpoint gets all the users from user service with filter and sorted on
+userId. A page query parameter is mandatory. pageSize and userId filter
+are optional.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;page&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Page number which must be specified. It starts with 1 and an empty list will
+be returned if the page is greater than the last page.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;pageSize&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Default pageSize is 10 and you can overwrite it with another number. Please don&amp;rsquo;t
+use a big number due to performance reason.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;userId&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This is the only filter available and it supports filter by start with a few characters.
+For example, &amp;ldquo;userId=abc&amp;rdquo; means any userId starts with &amp;ldquo;abc&amp;rdquo;. The result is also
+sorted by userId in the pagination.&lt;/p&gt;
+
+&lt;p&gt;The following validation will be performed in the service.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If page is missing from the query parameter, an error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR11000&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR11000&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;VALIDATOR_REQUEST_PARAMETER_QUERY_MISSING&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Query parameter &#39;%s&#39; is required on path &#39;%s&#39; but not found in request.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;oauth2-user-post&#34;&gt;/oauth2/user@post&lt;/h2&gt;
+
+&lt;p&gt;This endpoint is used to create a new user. The following validations will be performed
+before a new user will be added.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If the userId exists in the system, then the following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12020&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12020&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;USER_ID_EXISTS&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;User id %s exists.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If the email exists in the system, then the following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12021&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12021&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;EMAIL_EXISTS&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Email %s exists.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If new password and password confirmation are not matched, the following error
+will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12012&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12012&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;PASSWORD_PASSWORDCONFIRM_NOT_MATCH&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Password %s and PasswordConfirm %s are not matched.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If password or password confirmation is empty, the following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12011&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12011&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;PASSWORD_OR_PASSWORDCONFIRM_EMPTY&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Password %s or PasswordConfirm %s is empty.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;oauth2-user-put&#34;&gt;/oauth2/user@put&lt;/h2&gt;
+
+&lt;p&gt;This is the endpoint to update existing user. Most of the attributes of users can be
+updated through this endpoint except password. You must use password reset endpoint
+to update password.&lt;/p&gt;
+
+&lt;p&gt;The following validations will be performed before the user will be updated.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If userId cannot be found in cache, then the following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12013&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12013&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;USER_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;User %s is not found.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;oauth2-user-userid-delete&#34;&gt;/oauth2/user/{userId}@delete&lt;/h2&gt;
+
+&lt;p&gt;This endpoint is used to delete an existing user. It removes the user physically so
+be careful when calling this endpoint. On the user interface, please make sure the
+operator confirms the action before submitting the request to the service.&lt;/p&gt;
+
+&lt;p&gt;Before the user is deleted, the following validation will be performed.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If userId doesn&amp;rsquo;t exist in memory, then the following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12013&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12013&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;USER_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;User %s is not found.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;oauth2-user-userid-get&#34;&gt;/oauth2/user/{userId}get&lt;/h2&gt;
+
+&lt;p&gt;This is the endpoint to get a particular user with userId. The server will perform
+the following validations before the user object is returned to the consumer.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If userId doesn&amp;rsquo;t exist in cache, then the following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12013&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12013&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;USER_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;User %s is not found.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;key&#34;&gt;Key&lt;/h1&gt;
 
 &lt;p&gt;In microservices architecture, the traditional way of copying public key certificates
 to hosts of services is not working. With container orchestration tool like Kubernetes
@@ -1947,7 +2438,7 @@ definitions:
 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;oauth2-key-keyid-get&#34;&gt;/oauth2/key/{keyId}@get&lt;/h3&gt;
+&lt;h2 id=&#34;oauth2-key-keyid-get&#34;&gt;/oauth2/key/{keyId}@get&lt;/h2&gt;
 
 &lt;p&gt;This endpoint is used to get public key certificate for JWT signature verification based
 on keyId in the JWT header. Light-Java framework should have packaged with several keys
