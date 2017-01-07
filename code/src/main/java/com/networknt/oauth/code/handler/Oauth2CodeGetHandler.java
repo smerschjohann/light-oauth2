@@ -58,7 +58,7 @@ public class Oauth2CodeGetHandler implements HttpHandler {
             CacheStartupHookProvider.hz.getMap("codes").set(code, userId);
             String redirectUri = params.get("redirect_uri");
             if(redirectUri == null) {
-                redirectUri = client.getRedirectUrl();
+                redirectUri = client.getRedirectUri();
             }
             redirectUri = redirectUri + "?code=" + code;
             String state = params.get("state");

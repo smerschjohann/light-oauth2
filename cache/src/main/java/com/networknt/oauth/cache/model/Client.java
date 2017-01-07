@@ -98,7 +98,7 @@ public class Client implements IdentifiedDataSerializable {
 
   private String scope = null;
 
-  private String redirectUrl = null;
+  private String redirectUri = null;
 
   private Date createDt = null;
 
@@ -249,21 +249,21 @@ public class Client implements IdentifiedDataSerializable {
   }
 
   /**
-   * redirect url
+   * redirect uri
    **/
-  public Client redirectUrl(String redirectUrl) {
-    this.redirectUrl = redirectUrl;
+  public Client redirectUri(String redirectUri) {
+    this.redirectUri = redirectUri;
     return this;
   }
 
 
-  @ApiModelProperty(example = "null", value = "redirect url")
-  @JsonProperty("redirectUrl")
-  public String getRedirectUrl() {
-    return redirectUrl;
+  @ApiModelProperty(example = "null", value = "redirect uri")
+  @JsonProperty("redirectUri")
+  public String getRedirectUri() {
+    return redirectUri;
   }
-  public void setRedirectUrl(String redirectUrl) {
-    this.redirectUrl = redirectUrl;
+  public void setRedirectUri(String redirectUri) {
+    this.redirectUri = redirectUri;
   }
 
   /**
@@ -320,14 +320,14 @@ public class Client implements IdentifiedDataSerializable {
         Objects.equals(clientDesc, client.clientDesc) &&
         Objects.equals(ownerId, client.ownerId) &&
         Objects.equals(scope, client.scope) &&
-        Objects.equals(redirectUrl, client.redirectUrl) &&
+        Objects.equals(redirectUri, client.redirectUri) &&
         Objects.equals(createDt, client.createDt) &&
         Objects.equals(updateDt, client.updateDt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(clientId, clientSecret, clientType, clientProfile, clientName, clientDesc, ownerId, scope, redirectUrl, createDt, updateDt);
+    return Objects.hash(clientId, clientSecret, clientType, clientProfile, clientName, clientDesc, ownerId, scope, redirectUri, createDt, updateDt);
   }
 
   @Override
@@ -343,7 +343,7 @@ public class Client implements IdentifiedDataSerializable {
     sb.append("    clientDesc: ").append(toIndentedString(clientDesc)).append("\n");
     sb.append("    ownerId: ").append(toIndentedString(ownerId)).append("\n");
     sb.append("    scope: ").append(toIndentedString(scope)).append("\n");
-    sb.append("    redirectUrl: ").append(toIndentedString(redirectUrl)).append("\n");
+    sb.append("    redirectUri: ").append(toIndentedString(redirectUri)).append("\n");
     sb.append("    createDt: ").append(toIndentedString(createDt)).append("\n");
     sb.append("    updateDt: ").append(toIndentedString(updateDt)).append("\n");
     sb.append("}");
@@ -375,7 +375,7 @@ public class Client implements IdentifiedDataSerializable {
     this.clientDesc = in.readUTF();
     this.ownerId = in.readUTF();
     this.scope = in.readUTF();
-    this.redirectUrl = in.readUTF();
+    this.redirectUri = in.readUTF();
     this.createDt = in.readObject();
     this.updateDt = in.readObject();
   }
@@ -390,7 +390,7 @@ public class Client implements IdentifiedDataSerializable {
     out.writeUTF(this.clientDesc);
     out.writeUTF(this.ownerId);
     out.writeUTF(this.scope);
-    out.writeUTF(this.redirectUrl);
+    out.writeUTF(this.redirectUri);
     out.writeObject(this.createDt);
     out.writeObject(this.updateDt);
   }

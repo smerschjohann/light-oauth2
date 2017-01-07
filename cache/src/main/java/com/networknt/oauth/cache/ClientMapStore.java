@@ -18,10 +18,10 @@ import java.util.*;
 public class ClientMapStore implements MapStore<String, Client> {
     private static final Logger logger = LoggerFactory.getLogger(ClientMapStore.class);
     private static final DataSource ds = (DataSource) SingletonServiceFactory.getBean(DataSource.class);
-    private static final String insert = "INSERT INTO clients (client_id, client_secret, client_type, client_profile, client_name, client_desc, scope, redirect_url, owner_id, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String insert = "INSERT INTO clients (client_id, client_secret, client_type, client_profile, client_name, client_desc, scope, redirect_uri, owner_id, create_dt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String delete = "DELETE FROM clients WHERE client_id = ?";
     private static final String select = "SELECT * FROM clients WHERE client_id = ?";
-    private static final String update = "UPDATE clients SET client_type=?, client_profile=?, client_name=?, client_desc=?, scope=?, redirect_url=?, owner_id=?, update_dt=? WHERE client_id=?";
+    private static final String update = "UPDATE clients SET client_type=?, client_profile=?, client_name=?, client_desc=?, scope=?, redirect_uri=?, owner_id=?, update_dt=? WHERE client_id=?";
     private static final String loadall = "SELECT client_id FROM clients";
 
     @Override
@@ -47,7 +47,7 @@ public class ClientMapStore implements MapStore<String, Client> {
                 stmt.setString(5, client.getClientName());
                 stmt.setString(6, client.getClientDesc());
                 stmt.setString(7, client.getScope());
-                stmt.setString(8, client.getRedirectUrl());
+                stmt.setString(8, client.getRedirectUri());
                 stmt.setString(9, client.getOwnerId());
                 stmt.setDate(10, new Date(System.currentTimeMillis()));
                 stmt.executeUpdate();
@@ -62,7 +62,7 @@ public class ClientMapStore implements MapStore<String, Client> {
                 stmt.setString(3, client.getClientName());
                 stmt.setString(4, client.getClientDesc());
                 stmt.setString(5, client.getScope());
-                stmt.setString(6, client.getRedirectUrl());
+                stmt.setString(6, client.getRedirectUri());
                 stmt.setString(7, client.getOwnerId());
                 stmt.setDate(8, new Date(System.currentTimeMillis()));
                 stmt.setString(9, client.getClientId());
@@ -98,7 +98,7 @@ public class ClientMapStore implements MapStore<String, Client> {
                     client.setClientName(rs.getString("client_name"));
                     client.setClientDesc(rs.getString("client_desc"));
                     client.setScope(rs.getString("scope"));
-                    client.setRedirectUrl(rs.getString("redirect_url"));
+                    client.setRedirectUri(rs.getString("redirect_uri"));
                     client.setOwnerId(rs.getString("owner_id"));
                     client.setCreateDt(rs.getDate("create_dt"));
                     client.setUpdateDt(rs.getDate("update_dt"));
