@@ -101,8 +101,8 @@ and error page.&lt;/p&gt;
 &lt;p&gt;POST endpoint is usually used when you want to have customized login page and error page to make
 sure users have the same experience as they browser other part of your web server. Browser will have
 a login form to collect user credentials and posts it to the OAuth2 server endpoint. Once the user
-is authenticated, a authorization code is redirected back to the browser with a redirect URL passed
-in from the request or the default redirect URL for the client will be used from client registration.
+is authenticated, a authorization code is redirected back to the browser with a redirect URI passed
+in from the request or the default redirect URI for the client will be used from client registration.
 As you might guess, this endpoint requires customization most of the time on login page and error page.
 Default login page and error page are provided as a starting points to make your customized pages.&lt;/p&gt;
 
@@ -112,7 +112,7 @@ production.&lt;/p&gt;
 
 &lt;p&gt;To get authorization code put the following url into your browser.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;http://localhost:6881/oauth2/code?response_type=code&amp;amp;client_id=f7d42348-c647-4efb-a52d-4c5787421e72&amp;amp;redirect_url=http://localhost:8080/authorization
+&lt;pre&gt;&lt;code&gt;http://localhost:6881/oauth2/code?response_type=code&amp;amp;client_id=f7d42348-c647-4efb-a52d-4c5787421e72&amp;amp;redirect_uri=http://localhost:8080/authorization
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;If this is the first time you hit this url on the browser, you will have a popup window for user
@@ -127,14 +127,14 @@ browser. Something like the following.&lt;/p&gt;
 
 &lt;p&gt;If you want to call the get endpoint from your command line or script, you can put
 the user credentials into the header in above command. Just make sure you have
-a server listening to the redirect url you have specified.&lt;/p&gt;
+a server listening to the redirect uri you have specified.&lt;/p&gt;
 
 &lt;p&gt;Here is a sample curl command.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;curl -H &amp;quot;Authorization: Basic admin:123456&amp;quot; http://localhost:6881/oauth2/code?response_type=code&amp;amp;client_id=f7d42348-c647-4efb-a52d-4c5787421e72&amp;amp;redirect_url=http://localhost:8080/authorization
+&lt;pre&gt;&lt;code&gt;curl -H &amp;quot;Authorization: Basic admin:123456&amp;quot; http://localhost:6881/oauth2/code?response_type=code&amp;amp;client_id=f7d42348-c647-4efb-a52d-4c5787421e72&amp;amp;redirect_uri=http://localhost:8080/authorization
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;If you want to try the above command line, you have to make sure that redirect_url is alive. Otherwise,
+&lt;p&gt;If you want to try the above command line, you have to make sure that redirect_uri is alive. Otherwise,
 you will have an error that doesn&amp;rsquo;t make any sense.&lt;/p&gt;
 
 &lt;h3 id=&#34;token&#34;&gt;Token&lt;/h3&gt;
@@ -218,12 +218,12 @@ same time and in this case, it must register twice as client and service.&lt;/p&
 
 &lt;p&gt;To add a new client.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;curl -H &amp;quot;Content-Type: application/json&amp;quot; -X POST -d &#39;{&amp;quot;clientType&amp;quot;:&amp;quot;mobile&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;AccountViewer&amp;quot;,&amp;quot;clientDesc&amp;quot;:&amp;quot;Retail Online Banking Account Viewer&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;act.r act.w&amp;quot;,&amp;quot;redirectUrl&amp;quot;: &amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;}&#39; http://localhost:6884/oauth2/client
+&lt;pre&gt;&lt;code&gt;curl -H &amp;quot;Content-Type: application/json&amp;quot; -X POST -d &#39;{&amp;quot;clientType&amp;quot;:&amp;quot;public&amp;quot;,&amp;quot;clientProfile&amp;quot;:&amp;quot;mobile&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;AccountViewer&amp;quot;,&amp;quot;clientDesc&amp;quot;:&amp;quot;Retail Online Banking Account Viewer&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;act.r act.w&amp;quot;,&amp;quot;redirectUri&amp;quot;: &amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;}&#39; http://localhost:6884/oauth2/client
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;And here is the result with client_id and client_secret.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;{&amp;quot;clientDesc&amp;quot;:&amp;quot;Retail Online Banking Account Viewer&amp;quot;,&amp;quot;clientType&amp;quot;:&amp;quot;mobile&amp;quot;,&amp;quot;redirectUrl&amp;quot;:&amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;clientId&amp;quot;:&amp;quot;e24e7110-c39f-49f1-85eb-8434cb577482&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;AccountViewer&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;act.r act.w&amp;quot;,&amp;quot;clientSecret&amp;quot;:&amp;quot;YDJLse8SQRapHyoMsdPUig&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;,&amp;quot;createDt&amp;quot;:&amp;quot;2016-12-31&amp;quot;}
+&lt;pre&gt;&lt;code&gt;{&amp;quot;clientDesc&amp;quot;:&amp;quot;Retail Online Banking Account Viewer&amp;quot;,&amp;quot;clientType&amp;quot;:&amp;quot;public&amp;quot;,&amp;quot;clientProfile&amp;quot;:&amp;quot;mobile&amp;quot;,&amp;quot;redirectUri&amp;quot;:&amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;clientId&amp;quot;:&amp;quot;e24e7110-c39f-49f1-85eb-8434cb577482&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;AccountViewer&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;act.r act.w&amp;quot;,&amp;quot;clientSecret&amp;quot;:&amp;quot;YDJLse8SQRapHyoMsdPUig&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;,&amp;quot;createDt&amp;quot;:&amp;quot;2016-12-31&amp;quot;}
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;To query all clients.&lt;/p&gt;
@@ -234,7 +234,7 @@ same time and in this case, it must register twice as client and service.&lt;/p&
 
 &lt;p&gt;And here is the result.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;[{&amp;quot;clientDesc&amp;quot;:&amp;quot;PetStore Web Server that calls PetStore API&amp;quot;,&amp;quot;clientId&amp;quot;:&amp;quot;f7d42348-c647-4efb-a52d-4c5787421e72&amp;quot;,&amp;quot;clientType&amp;quot;:&amp;quot;server&amp;quot;,&amp;quot;redirectUrl&amp;quot;:&amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;PetStore Web Server&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;petstore.r petstore.w&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;,&amp;quot;updateDt&amp;quot;:null,&amp;quot;createDt&amp;quot;:&amp;quot;2016-12-31&amp;quot;,&amp;quot;authenticateClass&amp;quot;:null},{&amp;quot;clientDesc&amp;quot;:&amp;quot;Retail Online Banking Account Viewer&amp;quot;,&amp;quot;clientId&amp;quot;:&amp;quot;9ef89c7b-f17b-4a64-a24b-ce539ed80641&amp;quot;,&amp;quot;clientType&amp;quot;:&amp;quot;mobile&amp;quot;,&amp;quot;redirectUrl&amp;quot;:&amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;AccountViewer&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;act.r act.w&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;,&amp;quot;updateDt&amp;quot;:null,&amp;quot;createDt&amp;quot;:&amp;quot;2016-12-31&amp;quot;,&amp;quot;authenticateClass&amp;quot;:null}]
+&lt;pre&gt;&lt;code&gt;[{&amp;quot;clientDesc&amp;quot;:&amp;quot;PetStore Web Server that calls PetStore API&amp;quot;,&amp;quot;clientId&amp;quot;:&amp;quot;f7d42348-c647-4efb-a52d-4c5787421e72&amp;quot;,&amp;quot;clientType&amp;quot;:&amp;quot;public&amp;quot;,&amp;quot;clientProfile&amp;quot;:&amp;quot;mobile&amp;quot;,&amp;quot;redirectUri&amp;quot;:&amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;PetStore Web Server&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;petstore.r petstore.w&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;,&amp;quot;updateDt&amp;quot;:null,&amp;quot;createDt&amp;quot;:&amp;quot;2016-12-31&amp;quot;,&amp;quot;authenticateClass&amp;quot;:null},{&amp;quot;clientDesc&amp;quot;:&amp;quot;Retail Online Banking Account Viewer&amp;quot;,&amp;quot;clientId&amp;quot;:&amp;quot;9ef89c7b-f17b-4a64-a24b-ce539ed80641&amp;quot;,&amp;quot;clientType&amp;quot;:&amp;quot;public&amp;quot;,&amp;quot;clientProfile&amp;quot;:&amp;quot;mobile&amp;quot;,&amp;quot;redirectUri&amp;quot;:&amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;AccountViewer&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;act.r act.w&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;,&amp;quot;updateDt&amp;quot;:null,&amp;quot;createDt&amp;quot;:&amp;quot;2016-12-31&amp;quot;,&amp;quot;authenticateClass&amp;quot;:null}]
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;To query a client by id.&lt;/p&gt;
@@ -244,12 +244,12 @@ same time and in this case, it must register twice as client and service.&lt;/p&
 
 &lt;p&gt;And here is the result.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;{&amp;quot;clientDesc&amp;quot;:&amp;quot;PetStore Web Server that calls PetStore API&amp;quot;,&amp;quot;clientId&amp;quot;:&amp;quot;f7d42348-c647-4efb-a52d-4c5787421e72&amp;quot;,&amp;quot;clientType&amp;quot;:&amp;quot;server&amp;quot;,&amp;quot;redirectUrl&amp;quot;:&amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;PetStore Web Server&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;petstore.r petstore.w&amp;quot;,&amp;quot;clientSecret&amp;quot;:&amp;quot;f6h1FTI8Q3-7UScPZDzfXA&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;,&amp;quot;updateDt&amp;quot;:null,&amp;quot;createDt&amp;quot;:&amp;quot;2016-12-31&amp;quot;,&amp;quot;authenticateClass&amp;quot;:null}
+&lt;pre&gt;&lt;code&gt;{&amp;quot;clientDesc&amp;quot;:&amp;quot;PetStore Web Server that calls PetStore API&amp;quot;,&amp;quot;clientId&amp;quot;:&amp;quot;f7d42348-c647-4efb-a52d-4c5787421e72&amp;quot;,&amp;quot;clientType&amp;quot;:&amp;quot;public&amp;quot;,&amp;quot;clientProfile&amp;quot;:&amp;quot;mobile&amp;quot;,&amp;quot;redirectUri&amp;quot;:&amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;PetStore Web Server&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;petstore.r petstore.w&amp;quot;,&amp;quot;clientSecret&amp;quot;:&amp;quot;f6h1FTI8Q3-7UScPZDzfXA&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;,&amp;quot;updateDt&amp;quot;:null,&amp;quot;createDt&amp;quot;:&amp;quot;2016-12-31&amp;quot;,&amp;quot;authenticateClass&amp;quot;:null}
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;To update a client with a shorter clientDesc.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;curl -H &amp;quot;Content-Type: application/json&amp;quot; -X PUT -d &#39;{&amp;quot;clientDesc&amp;quot;:&amp;quot;PetStore Web Server&amp;quot;,&amp;quot;clientId&amp;quot;:&amp;quot;f7d42348-c647-4efb-a52d-4c5787421e72&amp;quot;,&amp;quot;clientType&amp;quot;:&amp;quot;server&amp;quot;,&amp;quot;redirectUrl&amp;quot;:&amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;PetStore Web Server&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;petstore.r petstore.w&amp;quot;,&amp;quot;clientSecret&amp;quot;:&amp;quot;f6h1FTI8Q3-7UScPZDzfXA&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;,&amp;quot;updateDt&amp;quot;:null,&amp;quot;createDt&amp;quot;:&amp;quot;2016-12-31&amp;quot;,&amp;quot;authenticateClass&amp;quot;:null}&#39; http://localhost:6884/oauth2/client
+&lt;pre&gt;&lt;code&gt;curl -H &amp;quot;Content-Type: application/json&amp;quot; -X PUT -d &#39;{&amp;quot;clientDesc&amp;quot;:&amp;quot;PetStore Web Server&amp;quot;,&amp;quot;clientId&amp;quot;:&amp;quot;f7d42348-c647-4efb-a52d-4c5787421e72&amp;quot;,&amp;quot;clientType&amp;quot;:&amp;quot;public&amp;quot;,&amp;quot;clientProfile&amp;quot;:&amp;quot;mobile&amp;quot;,&amp;quot;redirectUri&amp;quot;:&amp;quot;http://localhost:8080/authorization&amp;quot;,&amp;quot;clientName&amp;quot;:&amp;quot;PetStore Web Server&amp;quot;,&amp;quot;scope&amp;quot;:&amp;quot;petstore.r petstore.w&amp;quot;,&amp;quot;clientSecret&amp;quot;:&amp;quot;f6h1FTI8Q3-7UScPZDzfXA&amp;quot;,&amp;quot;ownerId&amp;quot;:&amp;quot;admin&amp;quot;,&amp;quot;updateDt&amp;quot;:null,&amp;quot;createDt&amp;quot;:&amp;quot;2016-12-31&amp;quot;,&amp;quot;authenticateClass&amp;quot;:null}&#39; http://localhost:6884/oauth2/client
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;To delete a client with client id.&lt;/p&gt;
@@ -680,7 +680,7 @@ on how to access these services.&lt;/p&gt;
 &lt;h1 id=&#34;code&#34;&gt;Code&lt;/h1&gt;
 
 &lt;p&gt;This is a service that accepts user credentials and redirects back authorization code with redirect
-URL defined in the client registration or overwritten it by passing in a redirect URL in the request.&lt;/p&gt;
+URL defined in the client registration or overwritten it by passing in a redirect URI in the request.&lt;/p&gt;
 
 &lt;p&gt;There are two endpoints and the service default listening port is 6881.&lt;/p&gt;
 
@@ -714,6 +714,7 @@ paths:
       operationId: getAuthCode
       parameters:
       - name: &amp;quot;Authorization&amp;quot;
+        description: &amp;quot;encoded username:password mandatory if Basic Authentication is used&amp;quot;
         in: &amp;quot;header&amp;quot;
         required: false
         type: &amp;quot;string&amp;quot;
@@ -729,7 +730,7 @@ paths:
         description: &amp;quot;The client id for authorization code&amp;quot;
         required: true
         type: &amp;quot;string&amp;quot;
-      - name: &amp;quot;redirect_url&amp;quot;
+      - name: &amp;quot;redirect_uri&amp;quot;
         in: &amp;quot;query&amp;quot;
         description: &amp;quot;The redirect uri for authorization code&amp;quot;
         required: false
@@ -742,6 +743,11 @@ paths:
       - name: &amp;quot;password&amp;quot;
         in: &amp;quot;query&amp;quot;
         description: &amp;quot;The password for authorization code in clear text&amp;quot;
+        required: false
+        type: &amp;quot;string&amp;quot;
+      - name: &amp;quot;state&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;to prevent cross-site request forgery&amp;quot;
         required: false
         type: &amp;quot;string&amp;quot;
       responses:
@@ -778,15 +784,19 @@ paths:
         description: &amp;quot;Client Id&amp;quot;
         required: true
         type: &amp;quot;string&amp;quot;
-      - name: &amp;quot;redirect_url&amp;quot;
+      - name: &amp;quot;redirect_uri&amp;quot;
         in: &amp;quot;formData&amp;quot;
-        description: &amp;quot;Redirect Url&amp;quot;
+        description: &amp;quot;Redirect Uri&amp;quot;
+        required: false
+        type: &amp;quot;string&amp;quot;
+      - name: &amp;quot;state&amp;quot;
+        in: &amp;quot;formData&amp;quot;
+        description: &amp;quot;to prevent cross-site request forgery&amp;quot;
         required: false
         type: &amp;quot;string&amp;quot;
       responses:
         302:
           description: &amp;quot;Successful Operation&amp;quot;
-
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&#34;oauth2-code-get&#34;&gt;/oauth2/code@get&lt;/h2&gt;
@@ -855,8 +865,8 @@ then the following error will be returned.&lt;/li&gt;
 
 &lt;ul&gt;
 &lt;li&gt;As you can see from the specification, there is an optional parameter called
-redirect_url. If this parameter is passed in, it will be used to redirect the
-authorization code. Otherwise, the default redirect_url from client_id will be
+redirect_uri. If this parameter is passed in, it will be used to redirect the
+authorization code. Otherwise, the default redirect_uri from client_id will be
 used. This is retrieved from in memory client cache. The url is populated when
 client is registered during on-boarding process.&lt;/li&gt;
 &lt;/ul&gt;
@@ -903,20 +913,41 @@ paths:
       operationId: postToken
       parameters:
       - name: authorization
+        description: &amp;quot;encoded client_id and client_secret pair&amp;quot;
         in: header
         type: string
         required: true      
       - name: grant_type
         type: string
+        enum: 
+        - authorization_code
+        - client_credentials
+        - password
         required: true
         in: formData
       - name: code
+        description: &amp;quot;used in authorization_code to specify the code&amp;quot; 
+        type: string
+        in: formData
+      - name: username
+        description: &amp;quot;mandatory in password grant type&amp;quot;
+        type: string
+        in: formData
+      - name: password
+        description: &amp;quot;mandatory in password grant type&amp;quot;
+        type: string
+        in: formData
+      - name: scope
+        description: &amp;quot;used by all flows to specify scope in the access token&amp;quot;
+        type: string
+        in: formData
+      - name: redirect_uri
+        description: &amp;quot;used in authorization code if code endpoint with rediret_uri&amp;quot;
         type: string
         in: formData
       responses:
         200:
           description: &amp;quot;Successful Operation&amp;quot;
-
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&#34;oauth2-token&#34;&gt;/oauth2/token&lt;/h2&gt;
@@ -1657,6 +1688,7 @@ definitions:
     type: &amp;quot;object&amp;quot;
     required:
     - clientType
+    - clientProfile
     - clientName
     - clientDesc
     - ownerId
@@ -1672,11 +1704,18 @@ definitions:
         type: &amp;quot;string&amp;quot;
         description: &amp;quot;client type&amp;quot;
         enum:
-        - server
+        - confidential
+        - public
+        - trusted
+      clientProfile:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;client profile&amp;quot;
+        enum:
+        - webserver
+        - browser
         - mobile
         - service
-        - standalone
-        - browser
+        - batch
       clientName:
         type: &amp;quot;string&amp;quot;
         description: &amp;quot;client name&amp;quot;
@@ -1689,9 +1728,9 @@ definitions:
       scope:
         type: &amp;quot;string&amp;quot;
         description: &amp;quot;client scope separated by space&amp;quot;
-      redirectUrl:
+      redirectUri:
         type: &amp;quot;string&amp;quot;
-        description: &amp;quot;redirect url&amp;quot;
+        description: &amp;quot;redirect uri&amp;quot;
       createDt:
         type: &amp;quot;string&amp;quot;
         format: &amp;quot;date-time&amp;quot;

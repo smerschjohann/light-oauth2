@@ -448,8 +448,8 @@ and error page.</p>
 <p>POST endpoint is usually used when you want to have customized login page and error page to make
 sure users have the same experience as they browser other part of your web server. Browser will have
 a login form to collect user credentials and posts it to the OAuth2 server endpoint. Once the user
-is authenticated, a authorization code is redirected back to the browser with a redirect URL passed
-in from the request or the default redirect URL for the client will be used from client registration.
+is authenticated, a authorization code is redirected back to the browser with a redirect URI passed
+in from the request or the default redirect URI for the client will be used from client registration.
 As you might guess, this endpoint requires customization most of the time on login page and error page.
 Default login page and error page are provided as a starting points to make your customized pages.</p>
 
@@ -459,7 +459,7 @@ production.</p>
 
 <p>To get authorization code put the following url into your browser.</p>
 
-<pre><code>http://localhost:6881/oauth2/code?response_type=code&amp;client_id=f7d42348-c647-4efb-a52d-4c5787421e72&amp;redirect_url=http://localhost:8080/authorization
+<pre><code>http://localhost:6881/oauth2/code?response_type=code&amp;client_id=f7d42348-c647-4efb-a52d-4c5787421e72&amp;redirect_uri=http://localhost:8080/authorization
 </code></pre>
 
 <p>If this is the first time you hit this url on the browser, you will have a popup window for user
@@ -474,14 +474,14 @@ browser. Something like the following.</p>
 
 <p>If you want to call the get endpoint from your command line or script, you can put
 the user credentials into the header in above command. Just make sure you have
-a server listening to the redirect url you have specified.</p>
+a server listening to the redirect uri you have specified.</p>
 
 <p>Here is a sample curl command.</p>
 
-<pre><code>curl -H &quot;Authorization: Basic admin:123456&quot; http://localhost:6881/oauth2/code?response_type=code&amp;client_id=f7d42348-c647-4efb-a52d-4c5787421e72&amp;redirect_url=http://localhost:8080/authorization
+<pre><code>curl -H &quot;Authorization: Basic admin:123456&quot; http://localhost:6881/oauth2/code?response_type=code&amp;client_id=f7d42348-c647-4efb-a52d-4c5787421e72&amp;redirect_uri=http://localhost:8080/authorization
 </code></pre>
 
-<p>If you want to try the above command line, you have to make sure that redirect_url is alive. Otherwise,
+<p>If you want to try the above command line, you have to make sure that redirect_uri is alive. Otherwise,
 you will have an error that doesn&rsquo;t make any sense.</p>
 
 <h3 id="token">Token</h3>
@@ -565,12 +565,12 @@ same time and in this case, it must register twice as client and service.</p>
 
 <p>To add a new client.</p>
 
-<pre><code>curl -H &quot;Content-Type: application/json&quot; -X POST -d '{&quot;clientType&quot;:&quot;mobile&quot;,&quot;clientName&quot;:&quot;AccountViewer&quot;,&quot;clientDesc&quot;:&quot;Retail Online Banking Account Viewer&quot;,&quot;scope&quot;:&quot;act.r act.w&quot;,&quot;redirectUrl&quot;: &quot;http://localhost:8080/authorization&quot;,&quot;ownerId&quot;:&quot;admin&quot;}' http://localhost:6884/oauth2/client
+<pre><code>curl -H &quot;Content-Type: application/json&quot; -X POST -d '{&quot;clientType&quot;:&quot;public&quot;,&quot;clientProfile&quot;:&quot;mobile&quot;,&quot;clientName&quot;:&quot;AccountViewer&quot;,&quot;clientDesc&quot;:&quot;Retail Online Banking Account Viewer&quot;,&quot;scope&quot;:&quot;act.r act.w&quot;,&quot;redirectUri&quot;: &quot;http://localhost:8080/authorization&quot;,&quot;ownerId&quot;:&quot;admin&quot;}' http://localhost:6884/oauth2/client
 </code></pre>
 
 <p>And here is the result with client_id and client_secret.</p>
 
-<pre><code>{&quot;clientDesc&quot;:&quot;Retail Online Banking Account Viewer&quot;,&quot;clientType&quot;:&quot;mobile&quot;,&quot;redirectUrl&quot;:&quot;http://localhost:8080/authorization&quot;,&quot;clientId&quot;:&quot;e24e7110-c39f-49f1-85eb-8434cb577482&quot;,&quot;clientName&quot;:&quot;AccountViewer&quot;,&quot;scope&quot;:&quot;act.r act.w&quot;,&quot;clientSecret&quot;:&quot;YDJLse8SQRapHyoMsdPUig&quot;,&quot;ownerId&quot;:&quot;admin&quot;,&quot;createDt&quot;:&quot;2016-12-31&quot;}
+<pre><code>{&quot;clientDesc&quot;:&quot;Retail Online Banking Account Viewer&quot;,&quot;clientType&quot;:&quot;public&quot;,&quot;clientProfile&quot;:&quot;mobile&quot;,&quot;redirectUri&quot;:&quot;http://localhost:8080/authorization&quot;,&quot;clientId&quot;:&quot;e24e7110-c39f-49f1-85eb-8434cb577482&quot;,&quot;clientName&quot;:&quot;AccountViewer&quot;,&quot;scope&quot;:&quot;act.r act.w&quot;,&quot;clientSecret&quot;:&quot;YDJLse8SQRapHyoMsdPUig&quot;,&quot;ownerId&quot;:&quot;admin&quot;,&quot;createDt&quot;:&quot;2016-12-31&quot;}
 </code></pre>
 
 <p>To query all clients.</p>
@@ -581,7 +581,7 @@ same time and in this case, it must register twice as client and service.</p>
 
 <p>And here is the result.</p>
 
-<pre><code>[{&quot;clientDesc&quot;:&quot;PetStore Web Server that calls PetStore API&quot;,&quot;clientId&quot;:&quot;f7d42348-c647-4efb-a52d-4c5787421e72&quot;,&quot;clientType&quot;:&quot;server&quot;,&quot;redirectUrl&quot;:&quot;http://localhost:8080/authorization&quot;,&quot;clientName&quot;:&quot;PetStore Web Server&quot;,&quot;scope&quot;:&quot;petstore.r petstore.w&quot;,&quot;ownerId&quot;:&quot;admin&quot;,&quot;updateDt&quot;:null,&quot;createDt&quot;:&quot;2016-12-31&quot;,&quot;authenticateClass&quot;:null},{&quot;clientDesc&quot;:&quot;Retail Online Banking Account Viewer&quot;,&quot;clientId&quot;:&quot;9ef89c7b-f17b-4a64-a24b-ce539ed80641&quot;,&quot;clientType&quot;:&quot;mobile&quot;,&quot;redirectUrl&quot;:&quot;http://localhost:8080/authorization&quot;,&quot;clientName&quot;:&quot;AccountViewer&quot;,&quot;scope&quot;:&quot;act.r act.w&quot;,&quot;ownerId&quot;:&quot;admin&quot;,&quot;updateDt&quot;:null,&quot;createDt&quot;:&quot;2016-12-31&quot;,&quot;authenticateClass&quot;:null}]
+<pre><code>[{&quot;clientDesc&quot;:&quot;PetStore Web Server that calls PetStore API&quot;,&quot;clientId&quot;:&quot;f7d42348-c647-4efb-a52d-4c5787421e72&quot;,&quot;clientType&quot;:&quot;public&quot;,&quot;clientProfile&quot;:&quot;mobile&quot;,&quot;redirectUri&quot;:&quot;http://localhost:8080/authorization&quot;,&quot;clientName&quot;:&quot;PetStore Web Server&quot;,&quot;scope&quot;:&quot;petstore.r petstore.w&quot;,&quot;ownerId&quot;:&quot;admin&quot;,&quot;updateDt&quot;:null,&quot;createDt&quot;:&quot;2016-12-31&quot;,&quot;authenticateClass&quot;:null},{&quot;clientDesc&quot;:&quot;Retail Online Banking Account Viewer&quot;,&quot;clientId&quot;:&quot;9ef89c7b-f17b-4a64-a24b-ce539ed80641&quot;,&quot;clientType&quot;:&quot;public&quot;,&quot;clientProfile&quot;:&quot;mobile&quot;,&quot;redirectUri&quot;:&quot;http://localhost:8080/authorization&quot;,&quot;clientName&quot;:&quot;AccountViewer&quot;,&quot;scope&quot;:&quot;act.r act.w&quot;,&quot;ownerId&quot;:&quot;admin&quot;,&quot;updateDt&quot;:null,&quot;createDt&quot;:&quot;2016-12-31&quot;,&quot;authenticateClass&quot;:null}]
 </code></pre>
 
 <p>To query a client by id.</p>
@@ -591,12 +591,12 @@ same time and in this case, it must register twice as client and service.</p>
 
 <p>And here is the result.</p>
 
-<pre><code>{&quot;clientDesc&quot;:&quot;PetStore Web Server that calls PetStore API&quot;,&quot;clientId&quot;:&quot;f7d42348-c647-4efb-a52d-4c5787421e72&quot;,&quot;clientType&quot;:&quot;server&quot;,&quot;redirectUrl&quot;:&quot;http://localhost:8080/authorization&quot;,&quot;clientName&quot;:&quot;PetStore Web Server&quot;,&quot;scope&quot;:&quot;petstore.r petstore.w&quot;,&quot;clientSecret&quot;:&quot;f6h1FTI8Q3-7UScPZDzfXA&quot;,&quot;ownerId&quot;:&quot;admin&quot;,&quot;updateDt&quot;:null,&quot;createDt&quot;:&quot;2016-12-31&quot;,&quot;authenticateClass&quot;:null}
+<pre><code>{&quot;clientDesc&quot;:&quot;PetStore Web Server that calls PetStore API&quot;,&quot;clientId&quot;:&quot;f7d42348-c647-4efb-a52d-4c5787421e72&quot;,&quot;clientType&quot;:&quot;public&quot;,&quot;clientProfile&quot;:&quot;mobile&quot;,&quot;redirectUri&quot;:&quot;http://localhost:8080/authorization&quot;,&quot;clientName&quot;:&quot;PetStore Web Server&quot;,&quot;scope&quot;:&quot;petstore.r petstore.w&quot;,&quot;clientSecret&quot;:&quot;f6h1FTI8Q3-7UScPZDzfXA&quot;,&quot;ownerId&quot;:&quot;admin&quot;,&quot;updateDt&quot;:null,&quot;createDt&quot;:&quot;2016-12-31&quot;,&quot;authenticateClass&quot;:null}
 </code></pre>
 
 <p>To update a client with a shorter clientDesc.</p>
 
-<pre><code>curl -H &quot;Content-Type: application/json&quot; -X PUT -d '{&quot;clientDesc&quot;:&quot;PetStore Web Server&quot;,&quot;clientId&quot;:&quot;f7d42348-c647-4efb-a52d-4c5787421e72&quot;,&quot;clientType&quot;:&quot;server&quot;,&quot;redirectUrl&quot;:&quot;http://localhost:8080/authorization&quot;,&quot;clientName&quot;:&quot;PetStore Web Server&quot;,&quot;scope&quot;:&quot;petstore.r petstore.w&quot;,&quot;clientSecret&quot;:&quot;f6h1FTI8Q3-7UScPZDzfXA&quot;,&quot;ownerId&quot;:&quot;admin&quot;,&quot;updateDt&quot;:null,&quot;createDt&quot;:&quot;2016-12-31&quot;,&quot;authenticateClass&quot;:null}' http://localhost:6884/oauth2/client
+<pre><code>curl -H &quot;Content-Type: application/json&quot; -X PUT -d '{&quot;clientDesc&quot;:&quot;PetStore Web Server&quot;,&quot;clientId&quot;:&quot;f7d42348-c647-4efb-a52d-4c5787421e72&quot;,&quot;clientType&quot;:&quot;public&quot;,&quot;clientProfile&quot;:&quot;mobile&quot;,&quot;redirectUri&quot;:&quot;http://localhost:8080/authorization&quot;,&quot;clientName&quot;:&quot;PetStore Web Server&quot;,&quot;scope&quot;:&quot;petstore.r petstore.w&quot;,&quot;clientSecret&quot;:&quot;f6h1FTI8Q3-7UScPZDzfXA&quot;,&quot;ownerId&quot;:&quot;admin&quot;,&quot;updateDt&quot;:null,&quot;createDt&quot;:&quot;2016-12-31&quot;,&quot;authenticateClass&quot;:null}' http://localhost:6884/oauth2/client
 </code></pre>
 
 <p>To delete a client with client id.</p>

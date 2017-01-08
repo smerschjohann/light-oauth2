@@ -402,7 +402,7 @@ on how to access these services.</p>
 <h1 id="code">Code</h1>
 
 <p>This is a service that accepts user credentials and redirects back authorization code with redirect
-URL defined in the client registration or overwritten it by passing in a redirect URL in the request.</p>
+URL defined in the client registration or overwritten it by passing in a redirect URI in the request.</p>
 
 <p>There are two endpoints and the service default listening port is 6881.</p>
 
@@ -436,6 +436,7 @@ paths:
       operationId: getAuthCode
       parameters:
       - name: &quot;Authorization&quot;
+        description: &quot;encoded username:password mandatory if Basic Authentication is used&quot;
         in: &quot;header&quot;
         required: false
         type: &quot;string&quot;
@@ -451,7 +452,7 @@ paths:
         description: &quot;The client id for authorization code&quot;
         required: true
         type: &quot;string&quot;
-      - name: &quot;redirect_url&quot;
+      - name: &quot;redirect_uri&quot;
         in: &quot;query&quot;
         description: &quot;The redirect uri for authorization code&quot;
         required: false
@@ -464,6 +465,11 @@ paths:
       - name: &quot;password&quot;
         in: &quot;query&quot;
         description: &quot;The password for authorization code in clear text&quot;
+        required: false
+        type: &quot;string&quot;
+      - name: &quot;state&quot;
+        in: &quot;query&quot;
+        description: &quot;to prevent cross-site request forgery&quot;
         required: false
         type: &quot;string&quot;
       responses:
@@ -500,15 +506,19 @@ paths:
         description: &quot;Client Id&quot;
         required: true
         type: &quot;string&quot;
-      - name: &quot;redirect_url&quot;
+      - name: &quot;redirect_uri&quot;
         in: &quot;formData&quot;
-        description: &quot;Redirect Url&quot;
+        description: &quot;Redirect Uri&quot;
+        required: false
+        type: &quot;string&quot;
+      - name: &quot;state&quot;
+        in: &quot;formData&quot;
+        description: &quot;to prevent cross-site request forgery&quot;
         required: false
         type: &quot;string&quot;
       responses:
         302:
           description: &quot;Successful Operation&quot;
-
 </code></pre>
 
 <h2 id="oauth2-code-get">/oauth2/code@get</h2>
@@ -577,8 +587,8 @@ then the following error will be returned.</li>
 
 <ul>
 <li>As you can see from the specification, there is an optional parameter called
-redirect_url. If this parameter is passed in, it will be used to redirect the
-authorization code. Otherwise, the default redirect_url from client_id will be
+redirect_uri. If this parameter is passed in, it will be used to redirect the
+authorization code. Otherwise, the default redirect_uri from client_id will be
 used. This is retrieved from in memory client cache. The url is populated when
 client is registered during on-boarding process.</li>
 </ul>
@@ -625,20 +635,41 @@ paths:
       operationId: postToken
       parameters:
       - name: authorization
+        description: &quot;encoded client_id and client_secret pair&quot;
         in: header
         type: string
         required: true      
       - name: grant_type
         type: string
+        enum: 
+        - authorization_code
+        - client_credentials
+        - password
         required: true
         in: formData
       - name: code
+        description: &quot;used in authorization_code to specify the code&quot; 
+        type: string
+        in: formData
+      - name: username
+        description: &quot;mandatory in password grant type&quot;
+        type: string
+        in: formData
+      - name: password
+        description: &quot;mandatory in password grant type&quot;
+        type: string
+        in: formData
+      - name: scope
+        description: &quot;used by all flows to specify scope in the access token&quot;
+        type: string
+        in: formData
+      - name: redirect_uri
+        description: &quot;used in authorization code if code endpoint with rediret_uri&quot;
         type: string
         in: formData
       responses:
         200:
           description: &quot;Successful Operation&quot;
-
 </code></pre>
 
 <h2 id="oauth2-token">/oauth2/token</h2>
@@ -1379,6 +1410,7 @@ definitions:
     type: &quot;object&quot;
     required:
     - clientType
+    - clientProfile
     - clientName
     - clientDesc
     - ownerId
@@ -1394,11 +1426,18 @@ definitions:
         type: &quot;string&quot;
         description: &quot;client type&quot;
         enum:
-        - server
+        - confidential
+        - public
+        - trusted
+      clientProfile:
+        type: &quot;string&quot;
+        description: &quot;client profile&quot;
+        enum:
+        - webserver
+        - browser
         - mobile
         - service
-        - standalone
-        - browser
+        - batch
       clientName:
         type: &quot;string&quot;
         description: &quot;client name&quot;
@@ -1411,9 +1450,9 @@ definitions:
       scope:
         type: &quot;string&quot;
         description: &quot;client scope separated by space&quot;
-      redirectUrl:
+      redirectUri:
         type: &quot;string&quot;
-        description: &quot;redirect url&quot;
+        description: &quot;redirect uri&quot;
       createDt:
         type: &quot;string&quot;
         format: &quot;date-time&quot;
