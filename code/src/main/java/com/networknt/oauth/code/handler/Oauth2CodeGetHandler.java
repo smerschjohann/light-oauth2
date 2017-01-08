@@ -56,6 +56,10 @@ public class Oauth2CodeGetHandler implements HttpHandler {
             String userId = context.getAuthenticatedAccount().getPrincipal().getName();
             Map<String, String> codeMap = new HashMap<>();
             codeMap.put("userId", userId);
+            String scope = params.get("scope");
+            if(scope != null) {
+                codeMap.put("scope", scope);
+            }
             String redirectUri = params.get("redirect_uri");
             if(redirectUri == null) {
                 redirectUri = client.getRedirectUri();

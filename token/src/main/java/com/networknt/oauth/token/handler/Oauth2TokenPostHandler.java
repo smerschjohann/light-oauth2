@@ -75,7 +75,7 @@ public class Oauth2TokenPostHandler implements HttpHandler {
             if("client_credentials".equals(formMap.get("grant_type"))) {
                 exchange.getResponseSender().send(mapper.writeValueAsString(handleClientCredentials(exchange, (String)formMap.get("scope"))));
             } else if("authorization_code".equals(formMap.get("grant_type"))) {
-                exchange.getResponseSender().send(mapper.writeValueAsString(handleAuthorizationCode(exchange, (String)formMap.get("code"), (String)formMap.get("scope"), (String)formMap.get("redirect_uri"))));
+                exchange.getResponseSender().send(mapper.writeValueAsString(handleAuthorizationCode(exchange, (String)formMap.get("code"), (String)formMap.get("redirect_uri"))));
             } else if("password".equals(formMap.get("grant_type"))) {
                 exchange.getResponseSender().send(mapper.writeValueAsString(handlePassword(exchange, (String)formMap.get("username"), (String)formMap.get("password"), (String)formMap.get("scope"))));
             } else {
@@ -116,13 +116,14 @@ public class Oauth2TokenPostHandler implements HttpHandler {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> handleAuthorizationCode(HttpServerExchange exchange, String code, String scope, String redirectUri) throws ApiException {
-        if(logger.isDebugEnabled()) logger.debug("code = " + code + " scope = " + scope + " redirectUri = " + redirectUri);
+    private Map<String, Object> handleAuthorizationCode(HttpServerExchange exchange, String code, String redirectUri) throws ApiException {
+        if(logger.isDebugEnabled()) logger.debug("code = " + code + " redirectUri = " + redirectUri);
         Client client = authenticateClient(exchange);
         if(client != null) {
             Map<String, String> codeMap = (Map<String, String>)CacheStartupHookProvider.hz.getMap("codes").remove(code);
             String userId = codeMap.get("userId");
             String uri = codeMap.get("redirectUri");
+            String scope = codeMap.get("scope");
             if(userId != null) {
                 // if uri is not null, redirectUri must not be null and must be identical.
                 if(uri != null) {
