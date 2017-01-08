@@ -63,13 +63,18 @@ public class Oauth2CodePostHandler implements HttpHandler {
                 */
             final SecurityContext context = exchange.getSecurityContext();
             String userId = context.getAuthenticatedAccount().getPrincipal().getName();
+            Map<String, String> codeMap = new HashMap<>();
+            codeMap.put("userId", userId);
             // generate auth code
             String code = Util.getUUID();
-            CacheStartupHookProvider.hz.getMap("codes").set(code, userId);
             String redirectUri = params.get("redirect_uri");
             if(redirectUri == null) {
                 redirectUri = client.getRedirectUri();
+            } else {
+                codeMap.put("redirectUri", redirectUri);
             }
+            CacheStartupHookProvider.hz.getMap("codes").set(code, codeMap);
+
             redirectUri = redirectUri + "?code=" + code;
             String state = params.get("state");
             if(state != null) {

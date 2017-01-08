@@ -1,6 +1,8 @@
 package com.networknt.oauth.token.handler;
 
+import com.hazelcast.core.IMap;
 import com.networknt.config.Config;
+import com.networknt.oauth.cache.CacheStartupHookProvider;
 import com.networknt.status.Status;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -21,7 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -279,6 +283,73 @@ public class Oauth2TokenPostHandlerTest {
                 Assert.assertNotNull(status);
                 Assert.assertEquals("ERR12024", status.getCode());
                 Assert.assertEquals("NOT_TRUSTED_CLIENT", status.getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testMissingRedirectUri() throws Exception {
+        // setup codes map for userId but not redirectUri
+        Map<String, String> codeMap = new HashMap<>();
+        codeMap.put("userId", "admin");
+        codeMap.put("redirectUri", "http://localhost:8080/authorization");
+        CacheStartupHookProvider.hz.getMap("codes").put("code1", codeMap);
+        String url = "http://localhost:6882/oauth2/token";
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setHeader("Authorization", "Basic " + encodeCredentials("6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d", "f6h1FTI8Q3-7UScPZDzfXA"));
+
+        List<NameValuePair> urlParameters = new ArrayList<>();
+        urlParameters.add(new BasicNameValuePair("grant_type", "authorization_code"));
+        urlParameters.add(new BasicNameValuePair("code", "code1"));
+
+        httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
+        try {
+            CloseableHttpResponse response = client.execute(httpPost);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertEquals(400, statusCode);
+            if(statusCode == 400) {
+                Status status = Config.getInstance().getMapper().readValue(body, Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR12025", status.getCode());
+                Assert.assertEquals("MISSING_REDIRECT_URI", status.getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testMismatchRedirectUri() throws Exception {
+        // setup codes map for userId but not redirectUri
+        Map<String, String> codeMap = new HashMap<>();
+        codeMap.put("userId", "admin");
+        codeMap.put("redirectUri", "http://localhost:8080/authorization");
+        CacheStartupHookProvider.hz.getMap("codes").put("code1", codeMap);
+        String url = "http://localhost:6882/oauth2/token";
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setHeader("Authorization", "Basic " + encodeCredentials("6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d", "f6h1FTI8Q3-7UScPZDzfXA"));
+
+        List<NameValuePair> urlParameters = new ArrayList<>();
+        urlParameters.add(new BasicNameValuePair("grant_type", "authorization_code"));
+        urlParameters.add(new BasicNameValuePair("code", "code1"));
+        urlParameters.add(new BasicNameValuePair("redirect_uri", "https://localhost:8080/authorization"));
+
+        httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
+        try {
+            CloseableHttpResponse response = client.execute(httpPost);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertEquals(400, statusCode);
+            if(statusCode == 400) {
+                Status status = Config.getInstance().getMapper().readValue(body, Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR12026", status.getCode());
+                Assert.assertEquals("MISMATCH_REDIRECT_URI", status.getMessage());
             }
         } catch (Exception e) {
             e.printStackTrace();

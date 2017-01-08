@@ -143,16 +143,11 @@ public class CacheStartupHookProviderTest {
         start.onStartup();
 
         final IMap<String, Object> codes = CacheStartupHookProvider.hz.getMap("codes");
-        Map<String, Object> user = new HashMap<>();
-        user.put("userId", "admin");
-        user.put("userType", "customer");
+        Map<String, String> codeMap = new HashMap<>();
+        codeMap.put("userId", "admin");
+        codeMap.put("redirectUri", "https://localhost:8080/authorization");
 
-        Map<String, Object> code = new HashMap<>();
-        code.put("code1", user);
-
-        System.out.println("code = " + code);
-
-        codes.put("code1", code);
+        codes.put("code1", codeMap);
 
         System.out.println("codes size = " + codes.size());
 

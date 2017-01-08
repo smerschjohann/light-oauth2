@@ -46,6 +46,8 @@ public class Oauth2TokenPostHandler implements HttpHandler {
     private static final String PASSWORD_REQUIRED = "ERR12023";
     private static final String INCORRECT_PASSWORD = "ERR12016";
     private static final String NOT_TRUSTED_CLIENT = "ERR12024";
+    private static final String MISSING_REDIRECT_URI = "ERR12025";
+    private static final String MISMATCH_REDIRECT_URI = "ERR12026";
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
@@ -73,7 +75,7 @@ public class Oauth2TokenPostHandler implements HttpHandler {
             if("client_credentials".equals(formMap.get("grant_type"))) {
                 exchange.getResponseSender().send(mapper.writeValueAsString(handleClientCredentials(exchange, (String)formMap.get("scope"))));
             } else if("authorization_code".equals(formMap.get("grant_type"))) {
-                exchange.getResponseSender().send(mapper.writeValueAsString(handleAuthorizationCode(exchange, (String)formMap.get("code"), (String)formMap.get("scope"))));
+                exchange.getResponseSender().send(mapper.writeValueAsString(handleAuthorizationCode(exchange, (String)formMap.get("code"), (String)formMap.get("scope"), (String)formMap.get("redirect_uri"))));
             } else if("password".equals(formMap.get("grant_type"))) {
                 exchange.getResponseSender().send(mapper.writeValueAsString(handlePassword(exchange, (String)formMap.get("username"), (String)formMap.get("password"), (String)formMap.get("scope"))));
             } else {
@@ -114,12 +116,24 @@ public class Oauth2TokenPostHandler implements HttpHandler {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> handleAuthorizationCode(HttpServerExchange exchange, String code, String scope) throws ApiException {
-        if(logger.isDebugEnabled()) logger.debug("code = " + code + " scope = " + scope);
+    private Map<String, Object> handleAuthorizationCode(HttpServerExchange exchange, String code, String scope, String redirectUri) throws ApiException {
+        if(logger.isDebugEnabled()) logger.debug("code = " + code + " scope = " + scope + " redirectUri = " + redirectUri);
         Client client = authenticateClient(exchange);
         if(client != null) {
-            String userId = (String)CacheStartupHookProvider.hz.getMap("codes").remove(code);
+            Map<String, String> codeMap = (Map<String, String>)CacheStartupHookProvider.hz.getMap("codes").remove(code);
+            String userId = codeMap.get("userId");
+            String uri = codeMap.get("redirectUri");
             if(userId != null) {
+                // if uri is not null, redirectUri must not be null and must be identical.
+                if(uri != null) {
+                    if(redirectUri == null) {
+                        throw new ApiException(new Status(MISSING_REDIRECT_URI, uri));
+                    } else {
+                        if(!uri.equals(redirectUri)) {
+                            throw new ApiException(new Status(MISMATCH_REDIRECT_URI, redirectUri, uri));
+                        }
+                    }
+                }
                 IMap<String, User> users = CacheStartupHookProvider.hz.getMap("users");
                 User user = users.get(userId);
                 if(scope == null) scope = client.getScope();
