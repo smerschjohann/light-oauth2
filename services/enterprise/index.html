@@ -552,6 +552,11 @@ paths:
         description: &quot;to prevent cross-site request forgery&quot;
         required: false
         type: &quot;string&quot;
+      - name: &quot;scope&quot;
+        in: &quot;query&quot;
+        description: &quot;scope of the request&quot;
+        required: false
+        type: &quot;string&quot;
       responses:
         302:
           description: &quot;Successful Operation&quot;
@@ -594,6 +599,11 @@ paths:
       - name: &quot;state&quot;
         in: &quot;formData&quot;
         description: &quot;to prevent cross-site request forgery&quot;
+        required: false
+        type: &quot;string&quot;
+      - name: &quot;scope&quot;
+        in: &quot;query&quot;
+        description: &quot;scope of the request&quot;
         required: false
         type: &quot;string&quot;
       responses:

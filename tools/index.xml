@@ -7,8 +7,29 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Released under the MIT license</copyright>
-    <lastBuildDate>Sun, 01 Jan 2017 09:36:54 -0500</lastBuildDate>
+    <lastBuildDate>Sun, 08 Jan 2017 15:50:36 -0500</lastBuildDate>
     <atom:link href="https://networknt.github.io/light-oauth2/tools/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>keytool</title>
+      <link>https://networknt.github.io/light-oauth2/tools/keytool/</link>
+      <pubDate>Sun, 08 Jan 2017 15:50:36 -0500</pubDate>
+      
+      <guid>https://networknt.github.io/light-oauth2/tools/keytool/</guid>
+      <description>&lt;p&gt;In production environment, it is recommended to buy certificates to sign the JWT
+token; however, most people will use self-signed certificate on non-production
+environment. Java Keytool is a very convenient tool to generate key pair and public
+key certificate.&lt;/p&gt;
+
+&lt;p&gt;Here is an example to generate key pair and public key certificate in two steps.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;keytool -genkey -keyalg RSA -alias selfsigned -keystore primary.jks -storepass password -validity 3600 -keysize 2048
+
+keytool -export -alias selfsigned -keystore primary.jks -rfc -file primary.crt
+
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
     
     <item>
       <title>Tools</title>
@@ -16,11 +37,13 @@
       <pubDate>Sun, 01 Jan 2017 09:36:54 -0500</pubDate>
       
       <guid>https://networknt.github.io/light-oauth2/tools/</guid>
-      <description>&lt;p&gt;The following tools can be used to test microservices.&lt;/p&gt;
+      <description>&lt;p&gt;The following tools can be used to test microservices and generate key pairs.&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;curl/&#34;&gt;curl&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;postman/&#34;&gt;postman&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;keytool/&#34;&gt;keytool&lt;/a&gt;&lt;/p&gt;
 </description>
     </item>
     

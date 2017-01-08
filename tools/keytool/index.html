@@ -9,18 +9,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=10" />
-    <title>Tutorials - Light OAuth2 - OAuth2 Serivces based on Light Java</title>
+    <title>keytool - Light OAuth2 - OAuth2 Serivces based on Light Java</title>
     <meta name="generator" content="Hugo 0.18.1" />
 
     
     <meta name="description" content="Light OAuth2 Docs">
     
-    <link rel="canonical" href="https://networknt.github.io/light-oauth2/tutorials/">
+    <link rel="canonical" href="https://networknt.github.io/light-oauth2/tools/keytool/">
     
     <meta name="author" content="Steve Hu">
     
 
-    <meta property="og:url" content="https://networknt.github.io/light-oauth2/tutorials/">
+    <meta property="og:url" content="https://networknt.github.io/light-oauth2/tools/keytool/">
     <meta property="og:title" content="Light OAuth2 - OAuth2 Serivces based on Light Java">
     <meta property="og:image" content="https://networknt.github.io/light-oauth2/images/logo.png">
     <meta name="apple-mobile-web-app-title" content="Light OAuth2 - OAuth2 Serivces based on Light Java">
@@ -97,7 +97,7 @@
     </div>
     <div class="stretch">
       <div class="title">
-        Tutorials
+        keytool
       </div>
     </div>
 
@@ -252,14 +252,11 @@
 
 
 
-<a class="current" title="Tutorials" href="https://networknt.github.io/light-oauth2/tutorials/">
+<a  title="Tutorials" href="https://networknt.github.io/light-oauth2/tutorials/">
 	
 	Tutorials
 </a>
 
-
-<ul id="scrollspy">
-</ul>
 
 
   
@@ -392,24 +389,20 @@
 
 	<article class="article">
 		<div class="wrapper">
-			<h1>Tutorials </h1>
+			<h1>keytool </h1>
 
-			<p>There are three editions of OAuth2 servers available and each edition has different
-set of services and endpoints. For Development edition, there is only one service
-to serve both code and token endpoints. And for Enterprise edition, there are six
-services with numeric endpoints. Provider edition is still in planning phase but
-it will have more features than Enterprise edition.</p>
+			<p>In production environment, it is recommended to buy certificates to sign the JWT
+token; however, most people will use self-signed certificate on non-production
+environment. Java Keytool is a very convenient tool to generate key pair and public
+key certificate.</p>
 
-<p>The following links documented services and endpoints served by each service for
-three editions and some other useful guides.</p>
+<p>Here is an example to generate key pair and public key certificate in two steps.</p>
 
-<p><a href="development/">How to use development edition</a></p>
+<pre><code>keytool -genkey -keyalg RSA -alias selfsigned -keystore primary.jks -storepass password -validity 3600 -keysize 2048
 
-<p><a href="enterprise/">How to use enterprise edition</a></p>
+keytool -export -alias selfsigned -keystore primary.jks -rfc -file primary.crt
 
-<p><a href="provider/">How to user provider edition</a></p>
-
-<p><a href="longlive/">How to generate long lived access token</a></p>
+</code></pre>
 
 
 			<aside class="copyright" role="note">
@@ -428,7 +421,7 @@ three editions and some other useful guides.</p>
 <nav class="pagination" aria-label="Footer">
   <div class="previous">
   
-      <a href="https://networknt.github.io/light-oauth2/tools/keytool/" title="keytool">
+      <a href="https://networknt.github.io/light-oauth2/tutorials/longlive/" title="How to generate long lived token">
         <span class="direction">
           Previous
         </span>
@@ -438,7 +431,7 @@ three editions and some other useful guides.</p>
           </div>
           <div class="stretch">
             <div class="title">
-              keytool
+              How to generate long lived token
             </div>
           </div>
         </div>
@@ -448,14 +441,14 @@ three editions and some other useful guides.</p>
 
   <div class="next">
   
-      <a href="https://networknt.github.io/light-oauth2/tutorials/provider/" title="provider">
+      <a href="https://networknt.github.io/light-oauth2/tutorials/" title="Tutorials">
         <span class="direction">
           Next
         </span>
         <div class="page">
           <div class="stretch">
             <div class="title">
-              provider
+              Tutorials
             </div>
           </div>
           <div class="button button-next" role="button" aria-label="Next">
