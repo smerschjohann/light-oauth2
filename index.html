@@ -397,35 +397,48 @@
 
 				
 
-<h2 id="why-this-oauth2-server">Why this OAuth2 server</h2>
+<h2 id="why-this-oauth-2-0-authorization-server">Why this OAuth 2.0 Authorization Server</h2>
 
 <h3 id="fast-and-small-memory-footprint-to-lower-production-cost">Fast and small memory footprint to lower production cost.</h3>
 
 <p>The Development Edition can support 60000 user login and get authorization code redirect
 and can generate 700 access tokens per second on my laptop.</p>
 
-<p>The Enterprise Edition has 6 microservices and each service can be scaled individually.</p>
+<p>The Enterprise Edition has 6 microservices connected with in-memory data grid
+and each service can be scaled individually.</p>
+
+<h3 id="more-secure-than-other-implementations">More secure than other implementations</h3>
+
+<p>OAuth 2.0 is just a specification and a lot of details are in the individual
+implementation. Our implementation has a lot of extensions and enhancements
+for additional security and prevent users making mistakes. For example, we
+have added an additional client type called &ldquo;trusted&rdquo; and only this type of
+client can issue resource owner password credentials grant type.</p>
 
 <h3 id="seamlessly-integration-with-light-java-framework">Seamlessly integration with Light-Java framework</h3>
 
 <ul>
 <li>Built on top of Light-Java</li>
 <li>Light-Java Client and Security modules manages all the communication with OAuth2</li>
-<li>Support service onboarding from Light-Portal</li>
-<li>Support client onboarding from Light-Portal</li>
+<li>Support service on-boarding from Light-Portal</li>
+<li>Support client on-boarding from Light-Portal</li>
 <li>Support user management from Light-Portal</li>
 <li>Open sourced OpenAPI specifications for all microserivces</li>
 </ul>
 
 <h3 id="development-edition-for-api-or-service-development-and-integration">Development Edition for API or Service development and integration</h3>
 
-<p>It has no dependency and everything is in memory with extenalized configuration for
-users and clients.</p>
+<p>It has no dependency and everything is in memory with externalized configuration
+for users and clients. Seamlessly move to enterprise edition or provider edition
+for production.</p>
 
 <h3 id="public-key-certificate-distribution">Public key certificate distribution</h3>
 
-<p>There is a key service with endpoint to retrieve public key certificate from microservices
-during runtime.</p>
+<p>With distributed security verification, JWT signature public key certficates must
+but distributed to all resource servers. The traditional push approach is not
+working with microservices architecture and pull approach is adopted. There is a
+key service with endpoint to retrieve public key certificate from microservices
+during runtime based on the key_id from JWT header.</p>
 
 <h3 id="oauth2-server-portal-and-light-java-to-form-ecosystem">OAuth2 server, portal and light Java to form ecosystem</h3>
 
