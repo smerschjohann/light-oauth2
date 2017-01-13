@@ -453,7 +453,7 @@ request and callback. The authorization server includes this value when redirect
 the user-agent back to the client. The parameter SHOULD be used for preventing
 cross-site request forgery.</p>
 
-<h2 id="response">Response</h2>
+<h2 id="authorization-response">Authorization Response</h2>
 
 <p>If the resource owner grants the access request, the authorization server issues
 an authorization code and delivers it to the client by adding the following
@@ -481,6 +481,99 @@ identifier and redirection URI.</p>
 
 <p>REQUIRED if the &ldquo;state&rdquo; parameter was present in the client authorization
 request. The exact value received from the client.</p>
+
+<h2 id="error-response">Error Response</h2>
+
+<p>If the request fails due to a missing, invalid, or mismatching redirection URI,
+or if the client identifier is missing or invalid, the authorization server
+SHOULD inform the resource owner of the error and MUST NOT automatically redirect
+the user-agent to the invalid redirection URI.</p>
+
+<p>If the resource owner denies the access request or if the request fails for
+reasons other than a missing or invalid redirection URI, the authorization server
+informs the client by adding the following parameters to the query component of
+the redirection URI using the &ldquo;application/x-www-form-urlencoded&rdquo; format.</p>
+
+<h3 id="error">error</h3>
+
+<p>REQUIRED. A single ASCII [USASCII] error code from the following:</p>
+
+<ul>
+<li>invalid_request</li>
+</ul>
+
+<p>The request is missing a required parameter, includes an invalid parameter value,
+includes a parameter more than once, or is otherwise malformed.</p>
+
+<ul>
+<li>unauthorized_client</li>
+</ul>
+
+<p>The client is not authorized to request an authorization code using this method.</p>
+
+<ul>
+<li>access_denied
+<br /></li>
+</ul>
+
+<p>The resource owner or authorization server denied the request.</p>
+
+<ul>
+<li>unsupported_response_type</li>
+</ul>
+
+<p>The authorization server does not support obtaining an authorization code using
+this method.</p>
+
+<ul>
+<li>invalid_scope</li>
+</ul>
+
+<p>The requested scope is invalid, unknown, or malformed.</p>
+
+<ul>
+<li>server_error</li>
+</ul>
+
+<p>The authorization server encountered an unexpected condition that prevented it
+from fulfilling the request.</p>
+
+<p>(This error code is needed because a 500 Internal Server Error HTTP status code
+cannot be returned to the client via an HTTP redirect.)</p>
+
+<ul>
+<li>temporarily_unavailable</li>
+</ul>
+
+<p>The authorization server is currently unable to handle the request due to a
+temporary overloading or maintenance of the server.  (This error code is needed
+because a 503 Service Unavailable HTTP status code cannot be returned to the client
+via an HTTP redirect.)</p>
+
+<p>Values for the &ldquo;error&rdquo; parameter MUST NOT include characters outside the set
+%x20-21 / %x23-5B / %x5D-7E.</p>
+
+<h3 id="error-description">error_description</h3>
+
+<p>OPTIONAL. Human-readable ASCII [USASCII] text providing additional information,
+used to assist the client developer in understanding the error that occurred.</p>
+
+<p>Values for the &ldquo;error_description&rdquo; parameter MUST NOT include characters outside
+the set %x20-21 / %x23-5B / %x5D-7E.</p>
+
+<h3 id="error-uri">error_uri</h3>
+
+<p>OPTIONAL. A URI identifying a human-readable web page with information about the
+error, used to provide the client developer with additional information about the
+error.</p>
+
+<p>Values for the &ldquo;error_uri&rdquo; parameter MUST conform to the URI-reference syntax and
+thus MUST NOT include characters outside the set %x21 / %x23-5B / %x5D-7E.</p>
+
+<h3 id="state">state</h3>
+
+<p>REQUIRED if a &ldquo;state&rdquo; parameter was present in the client authorization request.<br />
+The exact value received from the client.</p>
 
 <h2 id="service">Service</h2>
 
@@ -729,7 +822,7 @@ request, and their values MUST be identical.</p>
 <p>REQUIRED, as BASIC authorization header with encoded client_id:client_secret
 to authenticate with the authorization server.</p>
 
-<h3 id="response-1">Response</h3>
+<h3 id="response">Response</h3>
 
 <p>If the access token request is valid and authorized, the authorization server
 issues an access token and optional refresh token.  If the request client
@@ -772,7 +865,7 @@ character encoding of UTF-8 in the HTTP request entity-body:</p>
 <p>REQUIRED, as BASIC authorization header with encoded client_id:client_secret
 to authenticate with the authorization server.</p>
 
-<h3 id="response-2">Response</h3>
+<h3 id="response-1">Response</h3>
 
 <p>If the access token request is valid and authorized, the authorization server
 issues an access token. A refresh token SHOULD NOT be included. If the request
@@ -834,7 +927,7 @@ encoding of UTF-8 in the HTTP request entity-body:</p>
 <p>REQUIRED, as BASIC authorization header with encoded client_id:client_secret
 to authenticate with the authorization server.</p>
 
-<h3 id="response-3">Response</h3>
+<h3 id="response-2">Response</h3>
 
 <p>If the access token request is valid and authorized, the authorization server
 issues an access token and optional refresh token. If the request failed client
