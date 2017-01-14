@@ -89,6 +89,7 @@
         <module>service</module>
         <module>user</module>
         <module>key</module>
+        <module>refresh-token</module>
     </modules>
 
     <repositories>
@@ -134,6 +135,11 @@
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>oauth2-key</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>oauth2-refresh-token</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

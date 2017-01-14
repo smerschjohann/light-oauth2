@@ -65,6 +65,19 @@ public class CacheStartupHookProvider implements StartupHookProvider {
         codeConfig.setNearCacheConfig(codeCacheConfig);
         config.addMapConfig(codeConfig);
 
+        // fresh token map with near cache and evict. A new refresh token will
+        // be generated each time refresh token is used. This token only lives
+        // for 1 day and it will be removed from the cache automatically.
+        MapConfig tokenConfig = new MapConfig();
+        tokenConfig.setName("tokens");
+        NearCacheConfig tokenCacheConfig = new NearCacheConfig();
+        tokenCacheConfig.setTimeToLiveSeconds(24 * 60 * 60 * 1000); // 1 hour TTL
+        tokenCacheConfig.setMaxIdleSeconds(24 * 60 * 60 * 1000);    // 30 minutes max idle seconds
+        tokenCacheConfig.setInMemoryFormat(InMemoryFormat.OBJECT);
+        tokenCacheConfig.setCacheLocalEntries(true); // this enables the local caching
+        tokenConfig.setNearCacheConfig(tokenCacheConfig);
+        config.addMapConfig(tokenConfig);
+
         // user map distributed.
         MapConfig userConfig = new MapConfig();
         userConfig.setName("users");

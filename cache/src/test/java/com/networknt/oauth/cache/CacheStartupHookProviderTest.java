@@ -160,4 +160,27 @@ public class CacheStartupHookProviderTest {
 
     }
 
+    @Test
+    public void testRefreshTokenCache() {
+        CacheStartupHookProvider start = new CacheStartupHookProvider();
+        start.onStartup();
+
+        final IMap<String, Object> tokens = CacheStartupHookProvider.hz.getMap("tokens");
+        Map<String, String> tokenMap = new HashMap<>();
+        tokenMap.put("userId", "admin");
+        tokenMap.put("redirectUri", "https://localhost:8080/authorization");
+
+        tokens.put("token1", tokenMap);
+
+        System.out.println("tokens size = " + tokens.size());
+
+        tokens.delete("token1");
+
+        System.out.println("tokens size = " + tokens.size());
+
+        CacheShutdownHookProvider shutdown = new CacheShutdownHookProvider();
+        shutdown.onShutdown();
+
+    }
+
 }

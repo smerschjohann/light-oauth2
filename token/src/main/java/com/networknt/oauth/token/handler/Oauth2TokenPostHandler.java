@@ -48,6 +48,9 @@ public class Oauth2TokenPostHandler implements HttpHandler {
     private static final String NOT_TRUSTED_CLIENT = "ERR12024";
     private static final String MISSING_REDIRECT_URI = "ERR12025";
     private static final String MISMATCH_REDIRECT_URI = "ERR12026";
+    private static final String MISMATCH_SCOPE = "ERR12027";
+    private static final String MISMATCH_CLIENT_ID = "ERR12028";
+    private static final String REFRESH_TOKEN_NOT_FOUND = "ERR12029";
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
@@ -78,6 +81,8 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                 exchange.getResponseSender().send(mapper.writeValueAsString(handleAuthorizationCode(exchange, (String)formMap.get("code"), (String)formMap.get("redirect_uri"))));
             } else if("password".equals(formMap.get("grant_type"))) {
                 exchange.getResponseSender().send(mapper.writeValueAsString(handlePassword(exchange, (String)formMap.get("username"), (String)formMap.get("password"), (String)formMap.get("scope"))));
+            } else if("refresh_token".equals(formMap.get("grant_type"))) {
+                exchange.getResponseSender().send(mapper.writeValueAsString(handleRefreshToken(exchange, (String)formMap.get("refresh_token"), (String)formMap.get("scope"))));
             } else {
                 Status status = new Status(UNSUPPORTED_GRANT_TYPE, formMap.get("grant_type"));
                 exchange.setStatusCode(status.getStatusCode());
@@ -98,7 +103,14 @@ public class Oauth2TokenPostHandler implements HttpHandler {
         if(logger.isDebugEnabled()) logger.debug("scope = " + scope);
         Client client = authenticateClient(exchange);
         if(client != null) {
-            if(scope == null) scope = client.getScope();
+            if(scope == null) {
+                scope = client.getScope();
+            } else {
+                // make sure scope is in scope defined in client.
+                if(!matchScope(scope, client.getScope())) {
+                    throw new ApiException(new Status(MISMATCH_SCOPE, scope, client.getScope()));
+                }
+            }
             String jwt;
             try {
                 jwt = JwtHelper.getJwt(mockCcClaims(client.getClientId(), scope));
@@ -137,17 +149,34 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                 }
                 IMap<String, User> users = CacheStartupHookProvider.hz.getMap("users");
                 User user = users.get(userId);
-                if(scope == null) scope = client.getScope();
+                if(scope == null) {
+                    scope = client.getScope();
+                } else {
+                    // make sure scope is in scope defined in client.
+                    if(!matchScope(scope, client.getScope())) {
+                        throw new ApiException(new Status(MISMATCH_SCOPE, scope, client.getScope()));
+                    }
+                }
                 String jwt;
                 try {
                     jwt = JwtHelper.getJwt(mockAcClaims(client.getClientId(), scope, userId, user.getUserType().toString()));
                 } catch (Exception e) {
                     throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
                 }
+                // generate a refresh token and associate it with userId and clientId
+                String refreshToken = UUID.randomUUID().toString();
+                Map<String, Object> refreshTokenMap = new HashMap<>();
+                refreshTokenMap.put("refreshToken", refreshToken);
+                refreshTokenMap.put("userId", userId);
+                refreshTokenMap.put("clientId", client.getClientId());
+                refreshTokenMap.put("scope", scope);
+                IMap<String, Map<String, Object>> tokens = CacheStartupHookProvider.hz.getMap("tokens");
+                tokens.put(refreshToken, refreshTokenMap);
                 Map<String, Object> resMap = new HashMap<>();
                 resMap.put("access_token", jwt);
                 resMap.put("token_type", "bearer");
                 resMap.put("expires_in", 600);
+                resMap.put("refresh_token", refreshToken);
                 return resMap;
             } else {
                 throw new ApiException(new Status(INVALID_AUTHORIZATION_CODE, code));
@@ -171,12 +200,31 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                         if(HashUtil.validatePassword(password, user.getPassword())) {
                             // make sure that client is trusted
                             if(client.getClientType() == Client.ClientTypeEnum.TRUSTED) {
-                                if(scope == null) scope = client.getScope(); // use the default scope defined in client if scope is not passed in
+                                if(scope == null) {
+                                    scope = client.getScope(); // use the default scope defined in client if scope is not passed in
+                                } else {
+                                    // make sure scope is in scope defined in client.
+                                    if(!matchScope(scope, client.getScope())) {
+                                        throw new ApiException(new Status(MISMATCH_SCOPE, scope, client.getScope()));
+                                    }
+                                }
                                 String jwt = JwtHelper.getJwt(mockAcClaims(client.getClientId(), scope, userId, user.getUserType().toString()));
+
+                                // generate a refresh token and associate it with userId and clientId
+                                String refreshToken = UUID.randomUUID().toString();
+                                Map<String, Object> refreshTokenMap = new HashMap<>();
+                                refreshTokenMap.put("refreshToken", refreshToken);
+                                refreshTokenMap.put("userId", userId);
+                                refreshTokenMap.put("clientId", client.getClientId());
+                                refreshTokenMap.put("scope", scope);
+                                IMap<String, Map<String, Object>> tokens = CacheStartupHookProvider.hz.getMap("tokens");
+                                tokens.put(refreshToken, refreshTokenMap);
+
                                 Map<String, Object> resMap = new HashMap<>();
                                 resMap.put("access_token", jwt);
                                 resMap.put("token_type", "bearer");
                                 resMap.put("expires_in", 600);
+                                resMap.put("refresh_token", refreshToken);
                                 return resMap;
                             } else {
                                 throw new ApiException(new Status(NOT_TRUSTED_CLIENT));
@@ -192,6 +240,64 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                 }
             } else {
                 throw new ApiException(new Status(USERNAME_REQUIRED));
+            }
+        }
+        return new HashMap<>(); // return an empty hash map. this is actually not reachable at all.
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> handleRefreshToken(HttpServerExchange exchange, String refreshToken, String scope) throws ApiException {
+        if(logger.isDebugEnabled()) logger.debug("refreshToken = " + refreshToken + " scope = " + scope);
+        Client client = authenticateClient(exchange);
+        if(client != null) {
+            // make sure that the refresh token can be found and client_id matches.
+            IMap<String, Map<String, Object>> tokens = CacheStartupHookProvider.hz.getMap("tokens");
+            Map<String, Object> refreshTokenMap = (Map)tokens.remove(refreshToken);
+            if(refreshTokenMap != null) {
+                String userId = (String)refreshTokenMap.get("userId");
+                String clientId = (String)refreshTokenMap.get("clientId");
+                String oldScope = (String)refreshTokenMap.get("scope");
+                if(client.getClientId().equals(clientId)) {
+                    IMap<String, User> users = CacheStartupHookProvider.hz.getMap("users");
+                    User user = users.get(userId);
+                    if(scope == null) {
+                        scope = oldScope; // use the previous scope when access token is generated
+                    } else {
+                        // make sure scope is the same as oldScope or contained in oldScope.
+                        if(!matchScope(scope, oldScope)) {
+                            throw new ApiException(new Status(MISMATCH_SCOPE, scope, oldScope));
+                        }
+                    }
+                    String jwt;
+                    try {
+                        jwt = JwtHelper.getJwt(mockAcClaims(client.getClientId(), scope, userId, user.getUserType().toString()));
+                    } catch (Exception e) {
+                        throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
+                    }
+                    // generate a new refresh token and associate it with userId and clientId
+                    String newRefreshToken = UUID.randomUUID().toString();
+                    Map<String, Object> newRefreshTokenMap = new HashMap<>();
+                    newRefreshTokenMap.put("refreshToken", newRefreshToken);
+                    newRefreshTokenMap.put("userId", userId);
+                    newRefreshTokenMap.put("clientId", client.getClientId());
+                    newRefreshTokenMap.put("scope", scope);
+                    tokens.put(refreshToken, newRefreshTokenMap);
+
+                    Map<String, Object> resMap = new HashMap<>();
+                    resMap.put("access_token", jwt);
+                    resMap.put("token_type", "bearer");
+                    resMap.put("expires_in", 600);
+                    resMap.put("refresh_token", newRefreshToken);
+                    return resMap;
+
+                } else {
+                    // mismatched client id
+                    throw new ApiException(new Status(MISMATCH_CLIENT_ID, client.getClientId(), clientId));
+                }
+            } else {
+                // refresh token cannot be found.
+                throw new ApiException(new Status(REFRESH_TOKEN_NOT_FOUND, refreshToken));
             }
         }
         return new HashMap<>(); // return an empty hash map. this is actually not reachable at all.
@@ -260,5 +366,23 @@ public class Oauth2TokenPostHandler implements HttpHandler {
 
     private static String decodeCredentials(String cred) {
         return new String(org.apache.commons.codec.binary.Base64.decodeBase64(cred), UTF_8);
+    }
+
+    private static boolean matchScope(String s1, String s2) {
+        boolean matched = true;
+        if(s1 == null || s2 == null) {
+            matched = false;
+        } else {
+            if(!s1.equals(s2)) {
+                String[] split = s1.split("\\s+");
+                for (String aSplit : split) {
+                    if (!s2.contains(aSplit)) {
+                        matched = false;
+                        break;
+                    }
+                }
+            }
+        }
+        return matched;
     }
 }

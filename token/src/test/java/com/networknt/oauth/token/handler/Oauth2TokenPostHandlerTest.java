@@ -1,5 +1,6 @@
 package com.networknt.oauth.token.handler;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.hazelcast.core.IMap;
 import com.networknt.config.Config;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
@@ -36,9 +37,9 @@ public class Oauth2TokenPostHandlerTest {
     @ClassRule
     public static TestServer server = TestServer.getInstance();
 
-    static final Logger logger = LoggerFactory.getLogger(Oauth2TokenPostHandlerTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(Oauth2TokenPostHandlerTest.class);
 
-    public static String encodeCredentials(String clientId, String clientSecret) {
+    private static String encodeCredentials(String clientId, String clientSecret) {
         String cred;
         if(clientSecret != null) {
             cred = clientId + ":" + clientSecret;
@@ -191,14 +192,45 @@ public class Oauth2TokenPostHandlerTest {
         urlParameters.add(new BasicNameValuePair("grant_type", "password"));
         urlParameters.add(new BasicNameValuePair("username", "admin"));
         urlParameters.add(new BasicNameValuePair("password", "123456"));
-        urlParameters.add(new BasicNameValuePair("scope", "overwrite.r"));
+        urlParameters.add(new BasicNameValuePair("scope", "petstore.r"));
 
         httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
         HttpResponse response = client.execute(httpPost);
-        Assert.assertEquals(200, response.getStatusLine().getStatusCode());
         String body = EntityUtils.toString(response.getEntity());
+        Assert.assertEquals(200, response.getStatusLine().getStatusCode());
         logger.debug("response body = " + body);
         Assert.assertTrue(body.indexOf("access_token") > 0);
+    }
+
+    @Test
+    public void testPasswordMismatchScope() throws Exception {
+        String url = "http://localhost:6882/oauth2/token";
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setHeader("Authorization", "Basic " + encodeCredentials("f7d42348-c647-4efb-a52d-4c5787421e72", "f6h1FTI8Q3-7UScPZDzfXA"));
+
+        List<NameValuePair> urlParameters = new ArrayList<>();
+        urlParameters.add(new BasicNameValuePair("grant_type", "password"));
+        urlParameters.add(new BasicNameValuePair("username", "admin"));
+        urlParameters.add(new BasicNameValuePair("password", "123456"));
+        urlParameters.add(new BasicNameValuePair("scope", "overwrite.r"));
+        httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
+
+        try {
+            HttpResponse response = client.execute(httpPost);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body = EntityUtils.toString(response.getEntity());
+            Assert.assertEquals(400, statusCode);
+            if(statusCode == 400) {
+                Status status = Config.getInstance().getMapper().readValue(body, Status.class);
+                Assert.assertNotNull(status);
+                Assert.assertEquals("ERR12027", status.getCode());
+                Assert.assertEquals("MISMATCH_SCOPE", status.getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Test
@@ -350,6 +382,41 @@ public class Oauth2TokenPostHandlerTest {
                 Assert.assertNotNull(status);
                 Assert.assertEquals("ERR12026", status.getCode());
                 Assert.assertEquals("MISMATCH_REDIRECT_URI", status.getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testRefreshToken() throws Exception {
+        // setup refresh token map for userId and clientId
+        Map<String, Object> refreshTokenMap = new HashMap<>();
+        refreshTokenMap.put("userId", "admin");
+        refreshTokenMap.put("clientId", "6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d");
+        refreshTokenMap.put("scope", "petstore.r petstore.w");
+        CacheStartupHookProvider.hz.getMap("tokens").put("86c0a39f-0789-4b71-9fed-d99fe6dc9281", refreshTokenMap);
+
+        String url = "http://localhost:6882/oauth2/token";
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setHeader("Authorization", "Basic " + encodeCredentials("6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d", "f6h1FTI8Q3-7UScPZDzfXA"));
+
+        List<NameValuePair> urlParameters = new ArrayList<>();
+        urlParameters.add(new BasicNameValuePair("grant_type", "refresh_token"));
+        urlParameters.add(new BasicNameValuePair("refresh_token", "86c0a39f-0789-4b71-9fed-d99fe6dc9281"));
+
+        httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
+        try {
+            CloseableHttpResponse response = client.execute(httpPost);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertEquals(200, statusCode);
+            if(statusCode == 200) {
+                logger.debug("body = " + body);
+                Map map = Config.getInstance().getMapper().readValue(body, new TypeReference<Map<String, Object>>(){});
+                String refreshToken = (String)map.get("refresh_token");
+                Assert.assertNotEquals("86c0a39f-0789-4b71-9fed-d99fe6dc9281", refreshToken);
             }
         } catch (Exception e) {
             e.printStackTrace();
