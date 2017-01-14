@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.hazelcast.core.IMap;
 import com.networknt.config.Config;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
+import com.networknt.oauth.cache.model.RefreshToken;
 import com.networknt.status.Status;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -391,11 +392,12 @@ public class Oauth2TokenPostHandlerTest {
     @Test
     public void testRefreshToken() throws Exception {
         // setup refresh token map for userId and clientId
-        Map<String, Object> refreshTokenMap = new HashMap<>();
-        refreshTokenMap.put("userId", "admin");
-        refreshTokenMap.put("clientId", "6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d");
-        refreshTokenMap.put("scope", "petstore.r petstore.w");
-        CacheStartupHookProvider.hz.getMap("tokens").put("86c0a39f-0789-4b71-9fed-d99fe6dc9281", refreshTokenMap);
+        RefreshToken token = new RefreshToken();
+        token.setRefreshToken("86c0a39f-0789-4b71-9fed-d99fe6dc9281");
+        token.setUserId("admin");
+        token.setClientId("6e9d1db3-2feb-4c1f-a5ad-9e93ae8ca59d");
+        token.setScope("petstore.r petstore.w");
+        CacheStartupHookProvider.hz.getMap("tokens").put("86c0a39f-0789-4b71-9fed-d99fe6dc9281", token);
 
         String url = "http://localhost:6882/oauth2/token";
         CloseableHttpClient client = HttpClients.createDefault();

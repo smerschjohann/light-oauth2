@@ -7,6 +7,7 @@ import com.networknt.config.Config;
 import com.networknt.exception.ApiException;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
 import com.networknt.oauth.cache.model.Client;
+import com.networknt.oauth.cache.model.RefreshToken;
 import com.networknt.oauth.cache.model.User;
 import com.networknt.security.JwtHelper;
 import com.networknt.status.Status;
@@ -165,13 +166,13 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                 }
                 // generate a refresh token and associate it with userId and clientId
                 String refreshToken = UUID.randomUUID().toString();
-                Map<String, Object> refreshTokenMap = new HashMap<>();
-                refreshTokenMap.put("refreshToken", refreshToken);
-                refreshTokenMap.put("userId", userId);
-                refreshTokenMap.put("clientId", client.getClientId());
-                refreshTokenMap.put("scope", scope);
-                IMap<String, Map<String, Object>> tokens = CacheStartupHookProvider.hz.getMap("tokens");
-                tokens.put(refreshToken, refreshTokenMap);
+                RefreshToken token = new RefreshToken();
+                token.setRefreshToken(refreshToken);
+                token.setUserId(userId);
+                token.setClientId(client.getClientId());
+                token.setScope(scope);
+                IMap<String, RefreshToken> tokens = CacheStartupHookProvider.hz.getMap("tokens");
+                tokens.set(refreshToken, token);
                 Map<String, Object> resMap = new HashMap<>();
                 resMap.put("access_token", jwt);
                 resMap.put("token_type", "bearer");
@@ -212,13 +213,13 @@ public class Oauth2TokenPostHandler implements HttpHandler {
 
                                 // generate a refresh token and associate it with userId and clientId
                                 String refreshToken = UUID.randomUUID().toString();
-                                Map<String, Object> refreshTokenMap = new HashMap<>();
-                                refreshTokenMap.put("refreshToken", refreshToken);
-                                refreshTokenMap.put("userId", userId);
-                                refreshTokenMap.put("clientId", client.getClientId());
-                                refreshTokenMap.put("scope", scope);
-                                IMap<String, Map<String, Object>> tokens = CacheStartupHookProvider.hz.getMap("tokens");
-                                tokens.put(refreshToken, refreshTokenMap);
+                                RefreshToken token = new RefreshToken();
+                                token.setRefreshToken(refreshToken);
+                                token.setUserId(userId);
+                                token.setClientId(client.getClientId());
+                                token.setScope(scope);
+                                IMap<String, RefreshToken> tokens = CacheStartupHookProvider.hz.getMap("tokens");
+                                tokens.set(refreshToken, token);
 
                                 Map<String, Object> resMap = new HashMap<>();
                                 resMap.put("access_token", jwt);
@@ -252,12 +253,12 @@ public class Oauth2TokenPostHandler implements HttpHandler {
         Client client = authenticateClient(exchange);
         if(client != null) {
             // make sure that the refresh token can be found and client_id matches.
-            IMap<String, Map<String, Object>> tokens = CacheStartupHookProvider.hz.getMap("tokens");
-            Map<String, Object> refreshTokenMap = (Map)tokens.remove(refreshToken);
-            if(refreshTokenMap != null) {
-                String userId = (String)refreshTokenMap.get("userId");
-                String clientId = (String)refreshTokenMap.get("clientId");
-                String oldScope = (String)refreshTokenMap.get("scope");
+            IMap<String, RefreshToken> tokens = CacheStartupHookProvider.hz.getMap("tokens");
+            RefreshToken token = tokens.remove(refreshToken);
+            if(token != null) {
+                String userId = token.getUserId();
+                String clientId = token.getClientId();
+                String oldScope = token.getScope();
                 if(client.getClientId().equals(clientId)) {
                     IMap<String, User> users = CacheStartupHookProvider.hz.getMap("users");
                     User user = users.get(userId);
@@ -277,13 +278,12 @@ public class Oauth2TokenPostHandler implements HttpHandler {
                     }
                     // generate a new refresh token and associate it with userId and clientId
                     String newRefreshToken = UUID.randomUUID().toString();
-                    Map<String, Object> newRefreshTokenMap = new HashMap<>();
-                    newRefreshTokenMap.put("refreshToken", newRefreshToken);
-                    newRefreshTokenMap.put("userId", userId);
-                    newRefreshTokenMap.put("clientId", client.getClientId());
-                    newRefreshTokenMap.put("scope", scope);
-                    tokens.put(refreshToken, newRefreshTokenMap);
-
+                    RefreshToken newToken = new RefreshToken();
+                    newToken.setRefreshToken(newRefreshToken);
+                    newToken.setUserId(userId);
+                    newToken.setClientId(client.getClientId());
+                    newToken.setScope(scope);
+                    tokens.put(refreshToken, newToken);
                     Map<String, Object> resMap = new HashMap<>();
                     resMap.put("access_token", jwt);
                     resMap.put("token_type", "bearer");
