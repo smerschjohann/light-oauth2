@@ -63,7 +63,7 @@ public class Oauth2UserGetHandlerTest {
                 // make sure that there are three users in the result.
                 List<User> users = Config.getInstance().getMapper().readValue(body, new TypeReference<List<User>>(){});
                 logger.debug("users size = " + users.size());
-                Assert.assertTrue(users.size() >= 3 && users.size() <=4);
+                Assert.assertTrue(users.size() >= 3 && users.size() <=5);
             }
         } catch (Exception e) {
             e.printStackTrace();
