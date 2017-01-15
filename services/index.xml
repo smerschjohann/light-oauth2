@@ -229,7 +229,7 @@ thus MUST NOT include characters outside the set %x21 / %x23-5B / %x5D-7E.&lt;/p
 &lt;p&gt;REQUIRED if a &amp;ldquo;state&amp;rdquo; parameter was present in the client authorization request.&lt;br /&gt;
 The exact value received from the client.&lt;/p&gt;
 
-&lt;h2 id=&#34;service&#34;&gt;Service&lt;/h2&gt;
+&lt;h2 id=&#34;implementation&#34;&gt;Implementation&lt;/h2&gt;
 
 &lt;p&gt;There are two endpoints and the service default listening port is 6881.&lt;/p&gt;
 
@@ -479,7 +479,7 @@ to authenticate with the authorization server.&lt;/p&gt;
 &lt;h3 id=&#34;response&#34;&gt;Response&lt;/h3&gt;
 
 &lt;p&gt;If the access token request is valid and authorized, the authorization server
-issues an access token and optional refresh token.  If the request client
+issues an access token and a refresh token.  If the request client
 authentication failed or is invalid, the authorization server returns an error
 response.&lt;/p&gt;
 
@@ -584,10 +584,65 @@ to authenticate with the authorization server.&lt;/p&gt;
 &lt;h3 id=&#34;response-2&#34;&gt;Response&lt;/h3&gt;
 
 &lt;p&gt;If the access token request is valid and authorized, the authorization server
-issues an access token and optional refresh token. If the request failed client
+issues an access token and a refresh token. If the request failed client
 authentication or is invalid, the authorization server returns an error response.&lt;/p&gt;
 
-&lt;h2 id=&#34;service-1&#34;&gt;Service&lt;/h2&gt;
+&lt;h2 id=&#34;refresh-token-grant-type&#34;&gt;Refresh Token Grant Type&lt;/h2&gt;
+
+&lt;p&gt;If the authorization server issued a refresh token to the client, the client
+makes a refresh request to the token endpoint by adding the following parameters
+using the &amp;ldquo;application/x-www-form-urlencoded&amp;rdquo; format with a character encoding of
+UTF-8 in the HTTP request entity-body.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;grant_type&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;REQUIRED.  Value MUST be set to &amp;ldquo;refresh_token&amp;rdquo;.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;refresh_token&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;REQUIRED.  The refresh token issued to the client.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;scope&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;OPTIONAL.  The scope of the access request. The requested scope MUST NOT include
+any scope not originally granted by the resource owner, and if omitted is treated
+as equal to the scope originally granted by the resource owner.&lt;/p&gt;
+
+&lt;p&gt;Because refresh tokens are typically long-lasting credentials used to request
+additional access tokens, the refresh token is bound to the client to which it was
+issued. If the client type is confidential or the client was issued client credentials
+(or assigned other authentication requirements), the client MUST authenticate with the
+authorization server.&lt;/p&gt;
+
+&lt;p&gt;The authorization server MUST:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;require client authentication for confidential clients or for any client that was
+issued client credentials (or with other authentication requirements),&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;authenticate the client if client authentication is included and ensure that the
+refresh token was issued to the authenticated client, and&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;validate the refresh token.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;If valid and authorized, the authorization server issues an access token. If the
+request failed verification or is invalid, the authorization server returns an error
+response.&lt;/p&gt;
+
+&lt;p&gt;The authorization server issues a new refresh token and the client MUST discard the
+old refresh token and replace it with the new refresh token. The authorization server
+revoke the old refresh token after issuing a new refresh token to the client. The new
+refresh token scope MUST be identical to that of the refresh token included by the
+client in the request.&lt;/p&gt;
+
+&lt;h2 id=&#34;implementation-1&#34;&gt;Implementation&lt;/h2&gt;
 
 &lt;p&gt;There is only one post endpoint for this service and the default port is 6882.&lt;/p&gt;
 
@@ -631,6 +686,7 @@ paths:
         - authorization_code
         - client_credentials
         - password
+        - refresh_token
         required: true
         in: formData
       - name: code
@@ -651,6 +707,10 @@ paths:
         in: formData
       - name: redirect_uri
         description: &amp;quot;used in authorization code if code endpoint with rediret_uri&amp;quot;
+        type: string
+        in: formData
+      - name: refresh_token
+        description: &amp;quot;refresh token used to get another access token&amp;quot;
         type: string
         in: formData
       responses:
@@ -757,7 +817,7 @@ following error will be returned.&lt;/li&gt;
 
 &lt;p&gt;If all validation is passed, a JWT token will be generated and returned in a JSON object.&lt;/p&gt;
 
-&lt;h1 id=&#34;service-2&#34;&gt;Service&lt;/h1&gt;
+&lt;h1 id=&#34;service&#34;&gt;Service&lt;/h1&gt;
 
 &lt;p&gt;Every micro service or API needs to register itself to OAuth2 server in order to control who
 can access it. During the registration/on-boarding, a list of scopes defined in the OpenAPI
@@ -2244,6 +2304,226 @@ then the following error will be returned.&lt;/li&gt;
     &amp;quot;code&amp;quot;: &amp;quot;ERR10010&amp;quot;,
     &amp;quot;message&amp;quot;: &amp;quot;RUNTIME_EXCEPTION&amp;quot;,
     &amp;quot;description&amp;quot;: &amp;quot;Unexpected runtime exception&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;refresh-token&#34;&gt;Refresh Token&lt;/h1&gt;
+
+&lt;p&gt;Refresh Token is issued in Authorization Code Grant and Resource Owner Password Credentials
+Grant along with access token. Also, for maximum security, a refresh token is issued every
+time the old refresh token is used to renew an access token.&lt;/p&gt;
+
+&lt;p&gt;This service is listening to port number 6886.&lt;/p&gt;
+
+&lt;p&gt;Here is the specification&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;swagger: &#39;2.0&#39;
+
+info:
+  version: &amp;quot;1.0.0&amp;quot;
+  title: OAuth2 Refresh Token Management
+  description: OAuth2 refresh token management microservices endpoints. 
+  contact:
+    email: stevehu@gmail.com
+  license:
+    name: &amp;quot;Apache 2.0&amp;quot;
+    url: &amp;quot;http://www.apache.org/licenses/LICENSE-2.0.html&amp;quot;
+host: oauth2.networknt.com
+schemes:
+  - http
+  - https
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+paths:
+  /oauth2/refresh_token:
+    get:
+      description: Return all refresh tokens
+      operationId: getAllRefreshToken
+      parameters:
+      - name: &amp;quot;page&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;Page number&amp;quot;
+        required: true
+        type: &amp;quot;integer&amp;quot;
+        format: &amp;quot;int32&amp;quot;
+      - name: &amp;quot;pageSize&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;Pag size&amp;quot;
+        required: false
+        type: &amp;quot;integer&amp;quot;
+        format: &amp;quot;int32&amp;quot;
+      - name: &amp;quot;userId&amp;quot;
+        in: &amp;quot;query&amp;quot;
+        description: &amp;quot;Partial userId for filter&amp;quot;
+        required: false
+        type: &amp;quot;string&amp;quot;
+      responses:
+        200:
+          description: &amp;quot;successful operation&amp;quot;
+          schema:
+            type: &amp;quot;array&amp;quot;
+            items:
+              $ref: &amp;quot;#/definitions/RefreshToken&amp;quot;
+      security:
+      - refresh_token_auth:
+        - &amp;quot;oauth.refresh_token.r&amp;quot;
+          
+  /oauth2/refresh_token/{refreshToken}:
+    delete:
+      description: Delete a refresh token
+      operationId: deleteRefreshToken
+      parameters:
+      - name: &amp;quot;refreshToken&amp;quot;
+        in: &amp;quot;path&amp;quot;
+        description: &amp;quot;Refresh Token&amp;quot;
+        required: true
+        type: &amp;quot;string&amp;quot;
+      responses:
+        400:
+          description: &amp;quot;Invalid refresh token supplied&amp;quot;
+        404:
+          description: &amp;quot;Refresh token not found&amp;quot;
+      security:
+        - refresh_token_auth:
+          - oauth.refresh_token.w
+    get:
+      description: Get a refresh token
+      operationId: getRefreshToken
+      parameters:
+      - name: &amp;quot;refreshToken&amp;quot;
+        in: &amp;quot;path&amp;quot;
+        description: &amp;quot;Refresh token&amp;quot;
+        required: true
+        type: &amp;quot;string&amp;quot;
+      responses:
+        200: 
+          description: Successful response
+          schema:
+            $ref: &amp;quot;#/definitions/RefreshToken&amp;quot;          
+        400:
+          description: &amp;quot;Invalid refresh token supplied&amp;quot;
+        404:
+          description: &amp;quot;Refresh token not found&amp;quot;
+      security:
+        - refresh_token_auth:
+          - oauth.refresh_token.r
+          - oauth.refresh_token.w
+
+securityDefinitions:
+  refresh_token_auth:
+    type: &amp;quot;oauth2&amp;quot;
+    authorizationUrl: &amp;quot;http://localhost:8888/oauth2/code&amp;quot;
+    flow: &amp;quot;implicit&amp;quot;
+    scopes:
+      oauth.refresh_token.w: &amp;quot;write oauth refresh token&amp;quot;
+      oauth.refresh_token.r: &amp;quot;read oauth refresh token&amp;quot;
+definitions:
+  RefreshToken:
+    type: &amp;quot;object&amp;quot;
+    required:
+    - &amp;quot;refreshToken&amp;quot;
+    - &amp;quot;userId&amp;quot;
+    - &amp;quot;clientId&amp;quot;
+    properties:
+      refreshToken:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;refresh token&amp;quot;
+      userId:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;user id&amp;quot;
+      clientId:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;client id&amp;quot;
+      scope:
+        type: &amp;quot;string&amp;quot;
+        description: &amp;quot;service scopes separated by space&amp;quot;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;implementation-2&#34;&gt;Implementation&lt;/h2&gt;
+
+&lt;h3 id=&#34;oauth2-refresh-token-get&#34;&gt;/oauth2/refresh_token@get&lt;/h3&gt;
+
+&lt;p&gt;This endpoint gets all the issued refresh tokens with filter and sorted on
+userId. A page query parameter is mandatory. pageSize and userId filter
+are optional.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;page&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Page number which must be specified. It starts with 1 and an empty list will
+be returned if the page is greater than the last page.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;pageSize&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Default pageSize is 10 and you can overwrite it with another number. Please don&amp;rsquo;t
+use a big number due to performance reason.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;userId&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This is the only filter available and it supports filter by start with a few characters.
+For example, &amp;ldquo;userId=abc&amp;rdquo; means any userId starts with &amp;ldquo;abc&amp;rdquo;. The result is also
+sorted by userId in the pagination.&lt;/p&gt;
+
+&lt;p&gt;The following validation will be performed in the service.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If page is missing from the query parameter, an error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR11000&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 400,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR11000&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;VALIDATOR_REQUEST_PARAMETER_QUERY_MISSING&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Query parameter &#39;%s&#39; is required on path &#39;%s&#39; but not found in request.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;oauth2-refresh-token-refreshtoken-delete&#34;&gt;/oauth2/refresh_token/{refreshToken}@delete&lt;/h3&gt;
+
+&lt;p&gt;This endpoint is used to revoke a refresh token. It removes the refresh token from
+in memory data grid when calling this endpoint. On the user interface, please make
+sure the operator confirms the action before submitting the request to the service.&lt;/p&gt;
+
+&lt;p&gt;Before the refresh token is deleted, the following validation will be performed.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If refresh token doesn&amp;rsquo;t exist in memory, then the following error will be
+returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12029&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12029&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;REFRESH_TOKEN_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Refresh token %s is not found.&amp;quot;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;oauth2-refresh-token-refreshtoken&#34;&gt;/oauth2/refresh_token/{refreshToken}&lt;/h3&gt;
+
+&lt;p&gt;This is the endpoint to get a particular refresh token information. The server
+will perform the following validations before the refresh token object is returned
+to the consumer.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If refresh token doesn&amp;rsquo;t exist in cache, then the following error will be returned.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;  &amp;quot;ERR12029&amp;quot;: {
+    &amp;quot;statusCode&amp;quot;: 404,
+    &amp;quot;code&amp;quot;: &amp;quot;ERR12029&amp;quot;,
+    &amp;quot;message&amp;quot;: &amp;quot;REFRESH_TOKEN_NOT_FOUND&amp;quot;,
+    &amp;quot;description&amp;quot;: &amp;quot;Refresh token %s is not found.&amp;quot;
   }
 &lt;/code&gt;&lt;/pre&gt;
 </description>
