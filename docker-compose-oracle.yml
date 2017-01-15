@@ -104,6 +104,22 @@
       #    gelf-address: "udp://localhost:12201"
       #    tag: "oauth2-key"
       #    env: "dev"
+    oauth2-refresh-token:
+      build: refresh-token/
+      ports:
+        - "6887:6887"
+      volumes:
+        - ./db/oracle/config:/config
+      networks:
+        - light
+      depends_on:
+        - oracledb
+      #logging:
+      #  driver: "gelf"
+      #  options:
+      #    gelf-address: "udp://localhost:12201"
+      #    tag: "oauth2-refresh-token"
+      #    env: "dev"
 
   networks:
     light:

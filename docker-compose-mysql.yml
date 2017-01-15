@@ -102,3 +102,19 @@
       #    gelf-address: "udp://localhost:12201"
       #    tag: "oauth2-key"
       #    env: "dev"
+    oauth2-refresh-token:
+      build: refresh-token/
+      ports:
+        - "6887:6887"
+      volumes:
+        - ./db/mysql/config:/config
+      depends_on:
+        - mysqldb
+      links:
+        - mysqldb
+      #logging:
+      #  driver: "gelf"
+      #  options:
+      #    gelf-address: "udp://localhost:12201"
+      #    tag: "oauth2-refresh-token"
+      #    env: "dev"
