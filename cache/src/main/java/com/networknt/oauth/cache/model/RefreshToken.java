@@ -2,6 +2,8 @@ package com.networknt.oauth.cache.model;
 
 import java.io.IOException;
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
@@ -17,9 +19,6 @@ public class RefreshToken implements IdentifiedDataSerializable {
 
   private String scope = null;
 
-  /**
-   * refresh token
-   **/
   public RefreshToken refreshToken(String refreshToken) {
     this.refreshToken = refreshToken;
     return this;
@@ -35,9 +34,6 @@ public class RefreshToken implements IdentifiedDataSerializable {
     this.refreshToken = refreshToken;
   }
 
-  /**
-   * user id
-   **/
   public RefreshToken userId(String userId) {
     this.userId = userId;
     return this;
@@ -53,9 +49,6 @@ public class RefreshToken implements IdentifiedDataSerializable {
     this.userId = userId;
   }
 
-  /**
-   * client id
-   **/
   public RefreshToken clientId(String clientId) {
     this.clientId = clientId;
     return this;
@@ -71,9 +64,6 @@ public class RefreshToken implements IdentifiedDataSerializable {
     this.clientId = clientId;
   }
 
-  /**
-   * service scopes separated by space
-   **/
   public RefreshToken scope(String scope) {
     this.scope = scope;
     return this;
@@ -98,11 +88,11 @@ public class RefreshToken implements IdentifiedDataSerializable {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    RefreshToken refreshToken = (RefreshToken) o;
-    return Objects.equals(refreshToken, refreshToken.refreshToken) &&
-        Objects.equals(userId, refreshToken.userId) &&
-        Objects.equals(clientId, refreshToken.clientId) &&
-        Objects.equals(scope, refreshToken.scope);
+    RefreshToken token = (RefreshToken) o;
+    return Objects.equals(refreshToken, token.refreshToken) &&
+        Objects.equals(userId, token.userId) &&
+        Objects.equals(clientId, token.clientId) &&
+        Objects.equals(scope, token.scope);
   }
 
   @Override
@@ -154,11 +144,13 @@ public class RefreshToken implements IdentifiedDataSerializable {
     out.writeUTF(this.scope);
   }
 
+  @JsonIgnore
   @Override
   public int getFactoryId() {
     return RefreshTokenDataSerializableFactory.ID;
   }
 
+  @JsonIgnore
   @Override
   public int getId() {
     return RefreshTokenDataSerializableFactory.REFRESH_TOKEN_TYPE;

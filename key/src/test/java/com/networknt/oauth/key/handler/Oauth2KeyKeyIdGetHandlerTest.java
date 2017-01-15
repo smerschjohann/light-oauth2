@@ -119,12 +119,12 @@ public class Oauth2KeyKeyIdGetHandlerTest {
             CloseableHttpResponse response = client.execute(httpGet);
             int statusCode = response.getStatusLine().getStatusCode();
             String body  = IOUtils.toString(response.getEntity().getContent(), "utf8");
-            Assert.assertEquals(500, statusCode);
-            if(statusCode == 500) {
+            Assert.assertEquals(400, statusCode);
+            if(statusCode == 400) {
                 Status status = Config.getInstance().getMapper().readValue(body, Status.class);
                 Assert.assertNotNull(status);
-                Assert.assertEquals("ERR10010", status.getCode());
-                Assert.assertEquals("RUNTIME_EXCEPTION", status.getMessage());
+                Assert.assertEquals("ERR12030", status.getCode());
+                Assert.assertEquals("INVALID_KEY_ID", status.getMessage());
             }
         } catch (Exception e) {
             e.printStackTrace();

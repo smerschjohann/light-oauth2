@@ -2,6 +2,8 @@ package com.networknt.oauth.cache.model;
 
 import java.io.IOException;
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -60,9 +62,6 @@ public class Service implements IdentifiedDataSerializable {
 
   private Date updateDt = null;
 
-  /**
-   * a unique service id
-   **/
   public Service serviceId(String serviceId) {
     this.serviceId = serviceId;
     return this;
@@ -78,9 +77,6 @@ public class Service implements IdentifiedDataSerializable {
     this.serviceId = serviceId;
   }
 
-  /**
-   * service type
-   **/
   public Service serviceType(ServiceTypeEnum serviceType) {
     this.serviceType = serviceType;
     return this;
@@ -96,9 +92,6 @@ public class Service implements IdentifiedDataSerializable {
     this.serviceType = serviceType;
   }
 
-  /**
-   * service name
-   **/
   public Service serviceName(String serviceName) {
     this.serviceName = serviceName;
     return this;
@@ -114,9 +107,6 @@ public class Service implements IdentifiedDataSerializable {
     this.serviceName = serviceName;
   }
 
-  /**
-   * service description
-   **/
   public Service serviceDesc(String serviceDesc) {
     this.serviceDesc = serviceDesc;
     return this;
@@ -132,9 +122,6 @@ public class Service implements IdentifiedDataSerializable {
     this.serviceDesc = serviceDesc;
   }
 
-  /**
-   * service owner userId
-   **/
   public Service ownerId(String ownerId) {
     this.ownerId = ownerId;
     return this;
@@ -150,9 +137,6 @@ public class Service implements IdentifiedDataSerializable {
     this.ownerId = ownerId;
   }
 
-  /**
-   * service scopes separated by space
-   **/
   public Service scope(String scope) {
     this.scope = scope;
     return this;
@@ -168,9 +152,6 @@ public class Service implements IdentifiedDataSerializable {
     this.scope = scope;
   }
 
-  /**
-   * create date time
-   **/
   public Service createDt(Date createDt) {
     this.createDt = createDt;
     return this;
@@ -186,9 +167,6 @@ public class Service implements IdentifiedDataSerializable {
     this.createDt = createDt;
   }
 
-  /**
-   * update date time
-   **/
   public Service updateDt(Date updateDt) {
     this.updateDt = updateDt;
     return this;
@@ -285,11 +263,13 @@ public class Service implements IdentifiedDataSerializable {
     out.writeObject(this.updateDt);
   }
 
+  @JsonIgnore
   @Override
   public int getFactoryId() {
     return ServiceDataSerializableFactory.ID;
   }
 
+  @JsonIgnore
   @Override
   public int getId() {
     return ServiceDataSerializableFactory.SERVICE_TYPE;

@@ -2,13 +2,14 @@ package com.networknt.oauth.cache.model;
 
 import java.io.IOException;
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.IdentifiedDataSerializable;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Date;
 
@@ -104,9 +105,6 @@ public class Client implements IdentifiedDataSerializable {
 
   private Date updateDt = null;
 
-  /**
-   * a unique client id
-   **/
   public Client clientId(String clientId) {
     this.clientId = clientId;
     return this;
@@ -122,9 +120,6 @@ public class Client implements IdentifiedDataSerializable {
     this.clientId = clientId;
   }
 
-  /**
-   * client secret
-   **/
   public Client clientSecret(String clientSecret) {
     this.clientSecret = clientSecret;
     return this;
@@ -140,9 +135,6 @@ public class Client implements IdentifiedDataSerializable {
     this.clientSecret = clientSecret;
   }
 
-  /**
-   * client type
-   **/
   public Client clientType(ClientTypeEnum clientType) {
     this.clientType = clientType;
     return this;
@@ -158,9 +150,6 @@ public class Client implements IdentifiedDataSerializable {
     this.clientType = clientType;
   }
 
-  /**
-   * client profile
-   **/
   public Client clientProfile(ClientProfileEnum clientProfile) {
     this.clientProfile = clientProfile;
     return this;
@@ -176,9 +165,6 @@ public class Client implements IdentifiedDataSerializable {
     this.clientProfile = clientProfile;
   }
 
-  /**
-   * client name
-   **/
   public Client clientName(String clientName) {
     this.clientName = clientName;
     return this;
@@ -194,9 +180,6 @@ public class Client implements IdentifiedDataSerializable {
     this.clientName = clientName;
   }
 
-  /**
-   * client description
-   **/
   public Client clientDesc(String clientDesc) {
     this.clientDesc = clientDesc;
     return this;
@@ -212,9 +195,6 @@ public class Client implements IdentifiedDataSerializable {
     this.clientDesc = clientDesc;
   }
 
-  /**
-   * client owner id
-   **/
   public Client ownerId(String ownerId) {
     this.ownerId = ownerId;
     return this;
@@ -230,9 +210,6 @@ public class Client implements IdentifiedDataSerializable {
     this.ownerId = ownerId;
   }
 
-  /**
-   * client scope separated by space
-   **/
   public Client scope(String scope) {
     this.scope = scope;
     return this;
@@ -248,9 +225,6 @@ public class Client implements IdentifiedDataSerializable {
     this.scope = scope;
   }
 
-  /**
-   * redirect uri
-   **/
   public Client redirectUri(String redirectUri) {
     this.redirectUri = redirectUri;
     return this;
@@ -266,9 +240,6 @@ public class Client implements IdentifiedDataSerializable {
     this.redirectUri = redirectUri;
   }
 
-  /**
-   * create date time
-   **/
   public Client createDt(Date createDt) {
     this.createDt = createDt;
     return this;
@@ -284,9 +255,6 @@ public class Client implements IdentifiedDataSerializable {
     this.createDt = createDt;
   }
 
-  /**
-   * update date time
-   **/
   public Client updateDt(Date updateDt) {
     this.updateDt = updateDt;
     return this;
@@ -395,11 +363,13 @@ public class Client implements IdentifiedDataSerializable {
     out.writeObject(this.updateDt);
   }
 
+  @JsonIgnore
   @Override
   public int getFactoryId() {
     return ClientDataSerializableFactory.ID;
   }
 
+  @JsonIgnore
   @Override
   public int getId() {
     return ClientDataSerializableFactory.CLIENT_TYPE;

@@ -42,7 +42,7 @@ public class Oauth2ClientGetHandlerTest {
                 List<com.networknt.oauth.cache.model.Client> clients = Config.getInstance().getMapper().readValue(body, new TypeReference<List<com.networknt.oauth.cache.model.Client>>(){});
                 Assert.assertTrue(clients.size() >= 1 && clients.size() <= 2);
                 // make sure that the first is AACT0001
-                Assert.assertEquals("Petstore", clients.get(0).getClientName());
+                Assert.assertEquals("PetStore Web Server", clients.get(0).getClientName());
                 // make sure that client_secret is null.
                 Assert.assertNull(clients.get(0).getClientSecret());
             }

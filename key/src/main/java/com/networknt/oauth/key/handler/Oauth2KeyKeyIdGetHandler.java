@@ -40,6 +40,7 @@ public class Oauth2KeyKeyIdGetHandler implements HttpHandler {
     static final String CLIENT_NOT_FOUND = "ERR12014";
     static final String RUNTIME_EXCEPTION = "ERR10010";
     static final String UNAUTHORIZED_CLIENT = "ERR12007";
+    static final String INVALID_KEY_ID = "ERR12030";
 
     private static final String BASIC_PREFIX = BASIC + " ";
     private static final String LOWERCASE_BASIC_PREFIX = BASIC_PREFIX.toLowerCase(Locale.ENGLISH);
@@ -78,16 +79,23 @@ public class Oauth2KeyKeyIdGetHandler implements HttpHandler {
             Map<String, Object> certificateConfig = (Map<String, Object>)jwtConfig.get(CONFIG_CERTIFICATE);
             // find the path for certificate file
             String filename = (String)certificateConfig.get(keyId);
-            String content = Config.getInstance().getStringFromFile(filename);
-            if(logger.isDebugEnabled()) logger.debug("certificate = " + content);
-            if(content != null) {
-                exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/text");
-                exchange.getResponseSender().send(content);
+            if(filename != null) {
+                String content = Config.getInstance().getStringFromFile(filename);
+                if(logger.isDebugEnabled()) logger.debug("certificate = " + content);
+                if(content != null) {
+                    exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/text");
+                    exchange.getResponseSender().send(content);
+                } else {
+                    logger.info("Certificate " + Encode.forJava(filename) + " not found.");
+                    Status status = new Status(KEY_NOT_FOUND, keyId);
+                    exchange.setStatusCode(status.getStatusCode());
+                    exchange.getResponseSender().send(status.toString());
+                }
             } else {
-                logger.info("Certificate " + Encode.forJava(filename) + " not found.");
-                Status status = new Status(KEY_NOT_FOUND, keyId);
+                Status status = new Status(INVALID_KEY_ID, keyId);
                 exchange.setStatusCode(status.getStatusCode());
                 exchange.getResponseSender().send(status.toString());
+                return;
             }
         }
     }

@@ -2,6 +2,8 @@ package com.networknt.oauth.cache.model;
 
 import java.io.IOException;
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -67,9 +69,6 @@ public class User implements IdentifiedDataSerializable {
 
   private Date updateDt = null;
 
-  /**
-   * a unique id
-   **/
   public User userId(String userId) {
     this.userId = userId;
     return this;
@@ -85,9 +84,6 @@ public class User implements IdentifiedDataSerializable {
     this.userId = userId;
   }
 
-  /**
-   * user type
-   **/
   public User userType(UserTypeEnum userType) {
     this.userType = userType;
     return this;
@@ -103,9 +99,6 @@ public class User implements IdentifiedDataSerializable {
     this.userType = userType;
   }
 
-  /**
-   * first name
-   **/
   public User firstName(String firstName) {
     this.firstName = firstName;
     return this;
@@ -121,9 +114,6 @@ public class User implements IdentifiedDataSerializable {
     this.firstName = firstName;
   }
 
-  /**
-   * last name
-   **/
   public User lastName(String lastName) {
     this.lastName = lastName;
     return this;
@@ -139,9 +129,6 @@ public class User implements IdentifiedDataSerializable {
     this.lastName = lastName;
   }
 
-  /**
-   * email address
-   **/
   public User email(String email) {
     this.email = email;
     return this;
@@ -157,9 +144,6 @@ public class User implements IdentifiedDataSerializable {
     this.email = email;
   }
 
-  /**
-   * password
-   **/
   public User password(String password) {
     this.password = password;
     return this;
@@ -175,9 +159,6 @@ public class User implements IdentifiedDataSerializable {
     this.password = password;
   }
 
-  /**
-   * password confirm
-   **/
   public User passwordConfirm(String passwordConfirm) {
     this.passwordConfirm = passwordConfirm;
     return this;
@@ -193,9 +174,6 @@ public class User implements IdentifiedDataSerializable {
     this.passwordConfirm = passwordConfirm;
   }
 
-  /**
-   * create date time
-   **/
   public User createDt(Date createDt) {
     this.createDt = createDt;
     return this;
@@ -211,9 +189,6 @@ public class User implements IdentifiedDataSerializable {
     this.createDt = createDt;
   }
 
-  /**
-   * update date time
-   **/
   public User updateDt(Date updateDt) {
     this.updateDt = updateDt;
     return this;
@@ -312,11 +287,13 @@ public class User implements IdentifiedDataSerializable {
     out.writeObject(this.updateDt);
   }
 
+  @JsonIgnore
   @Override
   public int getFactoryId() {
     return UserDataSerializableFactory.ID;
   }
 
+  @JsonIgnore
   @Override
   public int getId() {
     return UserDataSerializableFactory.USER_TYPE;
