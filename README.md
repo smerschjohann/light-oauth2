@@ -56,4 +56,3 @@ during runtime based on the key_id from JWT header.
 [light-oauth2](https://github.com/networknt/light-oauth2) to control API access
 
 [light-portal](https://github.com/networknt/light-portal) to manage clients and APIs
-
