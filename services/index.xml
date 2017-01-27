@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Services on Light OAuth2 - OAuth2 Serivces based on Light Java</title>
+    <title>Services-rsses on Light OAuth2 - OAuth2 Serivces based on Light Java</title>
     <link>https://networknt.github.io/light-oauth2/services/index.xml</link>
-    <description>Recent content in Services on Light OAuth2 - OAuth2 Serivces based on Light Java</description>
+    <description>Recent content in Services-rsses on Light OAuth2 - OAuth2 Serivces based on Light Java</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Released under the MIT license</copyright>
@@ -16,12 +16,12 @@
       <pubDate>Sun, 01 Jan 2017 09:37:52 -0500</pubDate>
       
       <guid>https://networknt.github.io/light-oauth2/services/</guid>
-      <description>&lt;p&gt;There are three editions of OAuth2 servers available and each edition has different set of services and endpoints. For
-Development edition, there is only one service to serve both code and token endpoints. And for Enterprise edition, there are six services with numeric endpoints. Provider edition is still in planning phase but it will have more features than Enterprise edition.&lt;/p&gt;
+      <description>&lt;p&gt;There are two editions of OAuth2 servers available and each edition has different set of
+services and endpoints. For Enterprise edition, there are 7 services with numeric endpoints.
+Provider edition is still in planning phase but it will have more features than Enterprise
+edition.&lt;/p&gt;
 
-&lt;p&gt;The following links documented services and endpoints served by each service for three editions.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;development/&#34;&gt;Development edition&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;The following links documented services and endpoints served by each service for two editions.&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;enterprise/&#34;&gt;Enterprise edition&lt;/a&gt;&lt;/p&gt;
 
@@ -2527,15 +2527,6 @@ to the consumer.&lt;/p&gt;
   }
 &lt;/code&gt;&lt;/pre&gt;
 </description>
-    </item>
-    
-    <item>
-      <title>Development Edition</title>
-      <link>https://networknt.github.io/light-oauth2/services/development/</link>
-      <pubDate>Sun, 01 Jan 2017 09:28:06 -0500</pubDate>
-      
-      <guid>https://networknt.github.io/light-oauth2/services/development/</guid>
-      <description></description>
     </item>
     
   </channel>

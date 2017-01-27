@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=10" />
     <title>Light OAuth2 - OAuth2 Serivces based on Light Java</title>
-    <meta name="generator" content="Hugo 0.18.1" />
+    <meta name="generator" content="Hugo 0.17" />
 
     
     <meta name="description" content="Light OAuth2 Docs">
@@ -404,8 +404,8 @@
 <p>The Development Edition can support 60000 user login and get authorization code redirect
 and can generate 700 access tokens per second on my laptop.</p>
 
-<p>The Enterprise Edition has 6 microservices connected with in-memory data grid
-and each service can be scaled individually.</p>
+<p>It has 7 microservices connected with in-memory data grid and each service can be
+scaled individually.</p>
 
 <h3 id="more-secure-than-other-implementations">More secure than other implementations</h3>
 
@@ -426,11 +426,15 @@ client can issue resource owner password credentials grant type.</p>
 <li>Open sourced OpenAPI specifications for all microserivces</li>
 </ul>
 
-<h3 id="development-edition-for-api-or-service-development-and-integration">Development Edition for API or Service development and integration</h3>
+<h3 id="easy-to-integrate-with-your-apis-or-services">Easy to integrate with your APIs or services</h3>
 
-<p>It has no dependency and everything is in memory with externalized configuration
-for users and clients. Seamlessly move to enterprise edition or provider edition
-for production.</p>
+<p>The OAuth2 services can be started in a docker compose and for your local devolopment
+and can managed by Kubernetes on official environment.</p>
+
+<h3 id="support-mutilple-databases-and-can-be-extended-and-customized-easily">Support mutilple databases and can be extended and customized easily</h3>
+
+<p>Out of the box, it supports Mysql, Postgres and Oracle XE and H2 for unit tests. Other
+databases can be easily added with configuration change in service.json.</p>
 
 <h3 id="public-key-certificate-distribution">Public key certificate distribution</h3>
 

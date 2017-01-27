@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://networknt.github.io/light-oauth2/</loc>
+    <lastmod>2017-01-08T16:15:49-05:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://networknt.github.io/light-oauth2/tutorials/longlive/</loc>
     <lastmod>2017-01-08T16:15:49-05:00</lastmod>
   </url>
@@ -24,11 +29,6 @@
   <url>
     <loc>https://networknt.github.io/light-oauth2/tutorials/enterprise/</loc>
     <lastmod>2017-01-01T15:14:13-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://networknt.github.io/light-oauth2/tutorials/development/</loc>
-    <lastmod>2017-01-01T15:14:05-05:00</lastmod>
   </url>
   
   <url>
@@ -67,11 +67,6 @@
   </url>
   
   <url>
-    <loc>https://networknt.github.io/light-oauth2/services/development/</loc>
-    <lastmod>2017-01-01T09:28:06-05:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://networknt.github.io/light-oauth2/getting-started/</loc>
     <lastmod>2016-12-31T21:20:22-05:00</lastmod>
   </url>
@@ -84,42 +79,6 @@
   <url>
     <loc>https://networknt.github.io/light-oauth2/</loc>
     <lastmod>2016-12-31T20:29:38-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://networknt.github.io/light-oauth2/architecture/</loc>
-    <lastmod>2016-12-31T21:16:50-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://networknt.github.io/light-oauth2/getting-started/</loc>
-    <lastmod>2017-01-01T10:12:55-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://networknt.github.io/light-oauth2/</loc>
-    <lastmod>2017-01-08T16:15:49-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://networknt.github.io/light-oauth2/services/</loc>
-    <lastmod>2017-01-01T09:37:52-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://networknt.github.io/light-oauth2/tools/</loc>
-    <lastmod>2017-01-08T15:50:36-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://networknt.github.io/light-oauth2/tutorials/</loc>
-    <lastmod>2017-01-08T16:15:49-05:00</lastmod>
-    <priority>0</priority>
   </url>
   
 </urlset>

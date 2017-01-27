@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=10" />
     <title>Getting Started - Light OAuth2 - OAuth2 Serivces based on Light Java</title>
-    <meta name="generator" content="Hugo 0.18.1" />
+    <meta name="generator" content="Hugo 0.17" />
 
     
     <meta name="description" content="Light OAuth2 Docs">
@@ -398,53 +398,23 @@
 
 <h2 id="oauth2-introduction">OAuth2 Introduction</h2>
 
-<p>If you are new to OAuth2, please read this <a href="introduction/">introduction</a> document to get familiar with the concept.</p>
+<p>If you are new to OAuth2, please read this <a href="introduction/">introduction</a> document to get familiar
+with the concept.</p>
 
 <h2 id="select-the-right-edition">Select the Right Edition</h2>
 
-<p>There are three editions of OAuth2 server and they should be used in different situations.</p>
-
-<h3 id="developerment-edition">Developerment Edition</h3>
-
-<p>This is the simplest OAuth2 server designed for development as it doesn&rsquo;t have any dependency.
-Client and User info is retrieved from configuration files which can be externalized
-and modified.</p>
-
-<p>This server has two endpoints:</p>
-
-<p>/oauth2/code</p>
-
-<p>/oauth2/token</p>
-
-<p>The code endpoint is to authenticate user and provide authorization code redirect to
-the user-agent. It can handle 60K requests per second user login to get auth code on
-a core i7 laptop.</p>
-
-<p>The token endpoint is to issue access token and other tokens. It can generate 700
-private key signed JWT tokens per second on a core i7 laptop.</p>
-
-<p>As client and user info are in JSON config files, it can only manage up to hundreds
-of clients and users for development purpose.</p>
-
-<p>Codebase can be accessed from dev branch and it is functional.</p>
-
 <h3 id="enterprise-edition">Enterprise Edition</h3>
 
-<p>A microservices and database based OAuth2 server that have 6 services and numeric endpoints to
+<p>A microservices and database based OAuth2 server that have 7 services and numeric endpoints to
 support user login, access token, user registration, service registration, client
 registration and public key certificate distribution. It can support millions users
 and thousands of clients and services with scopes. It should be easily handle
 thousands of concurrent users per instance and each microservice can be scaled individually.</p>
 
-<p>Enterprise edition is designed for production use and Specifications can be found at <a href="https://github.com/networknt/swagger">https://github.com/networknt/swagger</a></p>
+<p>Enterprise edition is designed for production use and Specifications can be found at
+<a href="https://github.com/networknt/swagger">https://github.com/networknt/swagger</a></p>
 
-<p>Three databases are supported:</p>
-
-<p>Oracle - Codebase can be acccessed from oracle branch.</p>
-
-<p>MySQL - Codebase can be accessed from mysql branch</p>
-
-<p>Postgres - Codebase can be accessed from postgres branch</p>
+<p>Three databases are supported: Oracle, Mysql and Postgres</p>
 
 <h3 id="provider-edition">Provider Edition</h3>
 
@@ -473,7 +443,7 @@ ultimate scalability, maximum throughput and minimum latency.</p>
 <nav class="pagination" aria-label="Footer">
   <div class="previous">
   
-      <a href="https://networknt.github.io/light-oauth2/services/development/" title="Development Edition">
+      <a href="https://networknt.github.io/light-oauth2/tools/curl/" title="curl">
         <span class="direction">
           Previous
         </span>
@@ -483,7 +453,7 @@ ultimate scalability, maximum throughput and minimum latency.</p>
           </div>
           <div class="stretch">
             <div class="title">
-              Development Edition
+              curl
             </div>
           </div>
         </div>

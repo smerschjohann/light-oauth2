@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Getting-starteds on Light OAuth2 - OAuth2 Serivces based on Light Java</title>
+    <title>Getting-started-rsses on Light OAuth2 - OAuth2 Serivces based on Light Java</title>
     <link>https://networknt.github.io/light-oauth2/getting-started/index.xml</link>
-    <description>Recent content in Getting-starteds on Light OAuth2 - OAuth2 Serivces based on Light Java</description>
+    <description>Recent content in Getting-started-rsses on Light OAuth2 - OAuth2 Serivces based on Light Java</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Released under the MIT license</copyright>
@@ -291,53 +291,23 @@ flow should be used.&lt;/p&gt;
 
 &lt;h2 id=&#34;oauth2-introduction&#34;&gt;OAuth2 Introduction&lt;/h2&gt;
 
-&lt;p&gt;If you are new to OAuth2, please read this &lt;a href=&#34;introduction/&#34;&gt;introduction&lt;/a&gt; document to get familiar with the concept.&lt;/p&gt;
+&lt;p&gt;If you are new to OAuth2, please read this &lt;a href=&#34;introduction/&#34;&gt;introduction&lt;/a&gt; document to get familiar
+with the concept.&lt;/p&gt;
 
 &lt;h2 id=&#34;select-the-right-edition&#34;&gt;Select the Right Edition&lt;/h2&gt;
 
-&lt;p&gt;There are three editions of OAuth2 server and they should be used in different situations.&lt;/p&gt;
-
-&lt;h3 id=&#34;developerment-edition&#34;&gt;Developerment Edition&lt;/h3&gt;
-
-&lt;p&gt;This is the simplest OAuth2 server designed for development as it doesn&amp;rsquo;t have any dependency.
-Client and User info is retrieved from configuration files which can be externalized
-and modified.&lt;/p&gt;
-
-&lt;p&gt;This server has two endpoints:&lt;/p&gt;
-
-&lt;p&gt;/oauth2/code&lt;/p&gt;
-
-&lt;p&gt;/oauth2/token&lt;/p&gt;
-
-&lt;p&gt;The code endpoint is to authenticate user and provide authorization code redirect to
-the user-agent. It can handle 60K requests per second user login to get auth code on
-a core i7 laptop.&lt;/p&gt;
-
-&lt;p&gt;The token endpoint is to issue access token and other tokens. It can generate 700
-private key signed JWT tokens per second on a core i7 laptop.&lt;/p&gt;
-
-&lt;p&gt;As client and user info are in JSON config files, it can only manage up to hundreds
-of clients and users for development purpose.&lt;/p&gt;
-
-&lt;p&gt;Codebase can be accessed from dev branch and it is functional.&lt;/p&gt;
-
 &lt;h3 id=&#34;enterprise-edition&#34;&gt;Enterprise Edition&lt;/h3&gt;
 
-&lt;p&gt;A microservices and database based OAuth2 server that have 6 services and numeric endpoints to
+&lt;p&gt;A microservices and database based OAuth2 server that have 7 services and numeric endpoints to
 support user login, access token, user registration, service registration, client
 registration and public key certificate distribution. It can support millions users
 and thousands of clients and services with scopes. It should be easily handle
 thousands of concurrent users per instance and each microservice can be scaled individually.&lt;/p&gt;
 
-&lt;p&gt;Enterprise edition is designed for production use and Specifications can be found at &lt;a href=&#34;https://github.com/networknt/swagger&#34;&gt;https://github.com/networknt/swagger&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Enterprise edition is designed for production use and Specifications can be found at
+&lt;a href=&#34;https://github.com/networknt/swagger&#34;&gt;https://github.com/networknt/swagger&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;Three databases are supported:&lt;/p&gt;
-
-&lt;p&gt;Oracle - Codebase can be acccessed from oracle branch.&lt;/p&gt;
-
-&lt;p&gt;MySQL - Codebase can be accessed from mysql branch&lt;/p&gt;
-
-&lt;p&gt;Postgres - Codebase can be accessed from postgres branch&lt;/p&gt;
+&lt;p&gt;Three databases are supported: Oracle, Mysql and Postgres&lt;/p&gt;
 
 &lt;h3 id=&#34;provider-edition&#34;&gt;Provider Edition&lt;/h3&gt;
 

@@ -93,16 +93,13 @@ keytool -export -alias selfsigned -keystore primary.jks -rfc -file primary.crt
       <pubDate>Sun, 01 Jan 2017 15:14:28 -0500</pubDate>
       
       <guid>https://networknt.github.io/light-oauth2/tutorials/</guid>
-      <description>&lt;p&gt;There are three editions of OAuth2 servers available and each edition has different
-set of services and endpoints. For Development edition, there is only one service
-to serve both code and token endpoints. And for Enterprise edition, there are six
+      <description>&lt;p&gt;There are two editions of OAuth2 servers available and each edition has different
+set of services and endpoints. For Enterprise edition, there are seven
 services with numeric endpoints. Provider edition is still in planning phase but
 it will have more features than Enterprise edition.&lt;/p&gt;
 
 &lt;p&gt;The following links documented services and endpoints served by each service for
-three editions and some other useful guides.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;development/&#34;&gt;How to use development edition&lt;/a&gt;&lt;/p&gt;
+two editions and some other useful guides.&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;enterprise/&#34;&gt;How to use enterprise edition&lt;/a&gt;&lt;/p&gt;
 
@@ -438,15 +435,6 @@ owVmdKg/0w==
     </item>
     
     <item>
-      <title>development</title>
-      <link>https://networknt.github.io/light-oauth2/tutorials/development/</link>
-      <pubDate>Sun, 01 Jan 2017 15:14:05 -0500</pubDate>
-      
-      <guid>https://networknt.github.io/light-oauth2/tutorials/development/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>OAuth2 Introduction</title>
       <link>https://networknt.github.io/light-oauth2/getting-started/introduction/</link>
       <pubDate>Sun, 01 Jan 2017 10:12:55 -0500</pubDate>
@@ -723,12 +711,12 @@ flow should be used.&lt;/p&gt;
       <pubDate>Sun, 01 Jan 2017 09:37:52 -0500</pubDate>
       
       <guid>https://networknt.github.io/light-oauth2/services/</guid>
-      <description>&lt;p&gt;There are three editions of OAuth2 servers available and each edition has different set of services and endpoints. For
-Development edition, there is only one service to serve both code and token endpoints. And for Enterprise edition, there are six services with numeric endpoints. Provider edition is still in planning phase but it will have more features than Enterprise edition.&lt;/p&gt;
+      <description>&lt;p&gt;There are two editions of OAuth2 servers available and each edition has different set of
+services and endpoints. For Enterprise edition, there are 7 services with numeric endpoints.
+Provider edition is still in planning phase but it will have more features than Enterprise
+edition.&lt;/p&gt;
 
-&lt;p&gt;The following links documented services and endpoints served by each service for three editions.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;development/&#34;&gt;Development edition&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;The following links documented services and endpoints served by each service for two editions.&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;enterprise/&#34;&gt;Enterprise edition&lt;/a&gt;&lt;/p&gt;
 
@@ -3271,15 +3259,6 @@ to the consumer.&lt;/p&gt;
     </item>
     
     <item>
-      <title>Development Edition</title>
-      <link>https://networknt.github.io/light-oauth2/services/development/</link>
-      <pubDate>Sun, 01 Jan 2017 09:28:06 -0500</pubDate>
-      
-      <guid>https://networknt.github.io/light-oauth2/services/development/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Getting Started</title>
       <link>https://networknt.github.io/light-oauth2/getting-started/</link>
       <pubDate>Sat, 31 Dec 2016 21:20:22 -0500</pubDate>
@@ -3289,53 +3268,23 @@ to the consumer.&lt;/p&gt;
 
 &lt;h2 id=&#34;oauth2-introduction&#34;&gt;OAuth2 Introduction&lt;/h2&gt;
 
-&lt;p&gt;If you are new to OAuth2, please read this &lt;a href=&#34;introduction/&#34;&gt;introduction&lt;/a&gt; document to get familiar with the concept.&lt;/p&gt;
+&lt;p&gt;If you are new to OAuth2, please read this &lt;a href=&#34;introduction/&#34;&gt;introduction&lt;/a&gt; document to get familiar
+with the concept.&lt;/p&gt;
 
 &lt;h2 id=&#34;select-the-right-edition&#34;&gt;Select the Right Edition&lt;/h2&gt;
 
-&lt;p&gt;There are three editions of OAuth2 server and they should be used in different situations.&lt;/p&gt;
-
-&lt;h3 id=&#34;developerment-edition&#34;&gt;Developerment Edition&lt;/h3&gt;
-
-&lt;p&gt;This is the simplest OAuth2 server designed for development as it doesn&amp;rsquo;t have any dependency.
-Client and User info is retrieved from configuration files which can be externalized
-and modified.&lt;/p&gt;
-
-&lt;p&gt;This server has two endpoints:&lt;/p&gt;
-
-&lt;p&gt;/oauth2/code&lt;/p&gt;
-
-&lt;p&gt;/oauth2/token&lt;/p&gt;
-
-&lt;p&gt;The code endpoint is to authenticate user and provide authorization code redirect to
-the user-agent. It can handle 60K requests per second user login to get auth code on
-a core i7 laptop.&lt;/p&gt;
-
-&lt;p&gt;The token endpoint is to issue access token and other tokens. It can generate 700
-private key signed JWT tokens per second on a core i7 laptop.&lt;/p&gt;
-
-&lt;p&gt;As client and user info are in JSON config files, it can only manage up to hundreds
-of clients and users for development purpose.&lt;/p&gt;
-
-&lt;p&gt;Codebase can be accessed from dev branch and it is functional.&lt;/p&gt;
-
 &lt;h3 id=&#34;enterprise-edition&#34;&gt;Enterprise Edition&lt;/h3&gt;
 
-&lt;p&gt;A microservices and database based OAuth2 server that have 6 services and numeric endpoints to
+&lt;p&gt;A microservices and database based OAuth2 server that have 7 services and numeric endpoints to
 support user login, access token, user registration, service registration, client
 registration and public key certificate distribution. It can support millions users
 and thousands of clients and services with scopes. It should be easily handle
 thousands of concurrent users per instance and each microservice can be scaled individually.&lt;/p&gt;
 
-&lt;p&gt;Enterprise edition is designed for production use and Specifications can be found at &lt;a href=&#34;https://github.com/networknt/swagger&#34;&gt;https://github.com/networknt/swagger&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Enterprise edition is designed for production use and Specifications can be found at
+&lt;a href=&#34;https://github.com/networknt/swagger&#34;&gt;https://github.com/networknt/swagger&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;Three databases are supported:&lt;/p&gt;
-
-&lt;p&gt;Oracle - Codebase can be acccessed from oracle branch.&lt;/p&gt;
-
-&lt;p&gt;MySQL - Codebase can be accessed from mysql branch&lt;/p&gt;
-
-&lt;p&gt;Postgres - Codebase can be accessed from postgres branch&lt;/p&gt;
+&lt;p&gt;Three databases are supported: Oracle, Mysql and Postgres&lt;/p&gt;
 
 &lt;h3 id=&#34;provider-edition&#34;&gt;Provider Edition&lt;/h3&gt;
 
@@ -3346,6 +3295,118 @@ ultimate scalability, maximum throughput and minimum latency.&lt;/p&gt;
 &lt;p&gt;Codebase can be accessed from kafka branch and it is in planning phase.&lt;/p&gt;
 
 &lt;p&gt;Provider edition is used by service providers and it is yet to be implemented.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Architecture</title>
+      <link>https://networknt.github.io/light-oauth2/architecture/</link>
+      <pubDate>Sat, 31 Dec 2016 21:16:50 -0500</pubDate>
+      
+      <guid>https://networknt.github.io/light-oauth2/architecture/</guid>
+      <description>
+
+&lt;h2 id=&#34;microservices&#34;&gt;Microservices&lt;/h2&gt;
+
+&lt;p&gt;It is built on top of Light-Java framework as 7 microservices and each serivce has several
+endpoints to support user login, access token retrieval, user registration, service
+registration, client registration and public key certificate distribution. It can support
+millions users and thousands of clients and services with scopes. It should be easily handle
+thousands of concurrent users per instance and each service can be scaled individually if
+necessary.&lt;/p&gt;
+
+&lt;h2 id=&#34;in-memory-data-grid&#34;&gt;In-Memory Data Grid&lt;/h2&gt;
+
+&lt;p&gt;Hazelcast is used as Data Grid across multiple services and majority of operations
+won&amp;rsquo;t hit database server for best performance. This also makes database as plugin
+so that persistence layer can be anything from SQL to NoSQL.&lt;/p&gt;
+
+&lt;h2 id=&#34;built-in-security&#34;&gt;Built-in Security&lt;/h2&gt;
+
+&lt;p&gt;Except code, token and key services, other services are protected by OAuth2 itself and
+additional security as well. These sevices can be deployed at different locations within
+your network for maximum security and flexibility.&lt;/p&gt;
+
+&lt;h2 id=&#34;multiple-database-support&#34;&gt;Multiple Database Support&lt;/h2&gt;
+
+&lt;p&gt;Currently, Oralce, MySQL and Postgres are supported, but other databases(sql or nosql)
+can be easily supported by implementing a MapStore of Hazelcast and create a initial
+db script.&lt;/p&gt;
+
+&lt;h2 id=&#34;easy-to-customize-and-integrate&#34;&gt;Easy to customize and integrate&lt;/h2&gt;
+
+&lt;p&gt;Each service can be easily customized and won&amp;rsquo;t impact other services. Also, it is very
+easy to extend in order to integrate with other existing services within your organization.&lt;/p&gt;
+
+&lt;h2 id=&#34;cloud-and-docker-friendly&#34;&gt;Cloud and Docker friendly&lt;/h2&gt;
+
+&lt;p&gt;Designed as native cloud services on top of light weight Java framework to lower the cost of
+VM provisioning.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Introduction</title>
+      <link>https://networknt.github.io/light-oauth2/</link>
+      <pubDate>Sat, 31 Dec 2016 20:29:38 -0500</pubDate>
+      
+      <guid>https://networknt.github.io/light-oauth2/</guid>
+      <description>
+
+&lt;h2 id=&#34;why-this-oauth-2-0-authorization-server&#34;&gt;Why this OAuth 2.0 Authorization Server&lt;/h2&gt;
+
+&lt;h3 id=&#34;fast-and-small-memory-footprint-to-lower-production-cost&#34;&gt;Fast and small memory footprint to lower production cost.&lt;/h3&gt;
+
+&lt;p&gt;The Development Edition can support 60000 user login and get authorization code redirect
+and can generate 700 access tokens per second on my laptop.&lt;/p&gt;
+
+&lt;p&gt;It has 7 microservices connected with in-memory data grid and each service can be
+scaled individually.&lt;/p&gt;
+
+&lt;h3 id=&#34;more-secure-than-other-implementations&#34;&gt;More secure than other implementations&lt;/h3&gt;
+
+&lt;p&gt;OAuth 2.0 is just a specification and a lot of details are in the individual
+implementation. Our implementation has a lot of extensions and enhancements
+for additional security and prevent users making mistakes. For example, we
+have added an additional client type called &amp;ldquo;trusted&amp;rdquo; and only this type of
+client can issue resource owner password credentials grant type.&lt;/p&gt;
+
+&lt;h3 id=&#34;seamlessly-integration-with-light-java-framework&#34;&gt;Seamlessly integration with Light-Java framework&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Built on top of Light-Java&lt;/li&gt;
+&lt;li&gt;Light-Java Client and Security modules manages all the communication with OAuth2&lt;/li&gt;
+&lt;li&gt;Support service on-boarding from Light-Portal&lt;/li&gt;
+&lt;li&gt;Support client on-boarding from Light-Portal&lt;/li&gt;
+&lt;li&gt;Support user management from Light-Portal&lt;/li&gt;
+&lt;li&gt;Open sourced OpenAPI specifications for all microserivces&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;easy-to-integrate-with-your-apis-or-services&#34;&gt;Easy to integrate with your APIs or services&lt;/h3&gt;
+
+&lt;p&gt;The OAuth2 services can be started in a docker compose and for your local devolopment
+and can managed by Kubernetes on official environment.&lt;/p&gt;
+
+&lt;h3 id=&#34;support-mutilple-databases-and-can-be-extended-and-customized-easily&#34;&gt;Support mutilple databases and can be extended and customized easily&lt;/h3&gt;
+
+&lt;p&gt;Out of the box, it supports Mysql, Postgres and Oracle XE and H2 for unit tests. Other
+databases can be easily added with configuration change in service.json.&lt;/p&gt;
+
+&lt;h3 id=&#34;public-key-certificate-distribution&#34;&gt;Public key certificate distribution&lt;/h3&gt;
+
+&lt;p&gt;With distributed security verification, JWT signature public key certficates must
+but distributed to all resource servers. The traditional push approach is not
+working with microservices architecture and pull approach is adopted. There is a
+key service with endpoint to retrieve public key certificate from microservices
+during runtime based on the key_id from JWT header.&lt;/p&gt;
+
+&lt;h3 id=&#34;oauth2-server-portal-and-light-java-to-form-ecosystem&#34;&gt;OAuth2 server, portal and light Java to form ecosystem&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/networknt/light-java&#34;&gt;light-java&lt;/a&gt; to build API&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/networknt/light-oauth2&#34;&gt;light-oauth2&lt;/a&gt; to control API access&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/networknt/light-portal&#34;&gt;light-portal&lt;/a&gt; to manage clients and APIs&lt;/p&gt;
 </description>
     </item>
     

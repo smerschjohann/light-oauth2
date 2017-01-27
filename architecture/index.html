@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=10" />
     <title>Architecture - Light OAuth2 - OAuth2 Serivces based on Light Java</title>
-    <meta name="generator" content="Hugo 0.18.1" />
+    <meta name="generator" content="Hugo 0.17" />
 
     
     <meta name="description" content="Light OAuth2 Docs">
@@ -398,15 +398,12 @@
 
 <h2 id="microservices">Microservices</h2>
 
-<p>All three editions are built on top of Light-Java framework as microservices.</p>
-
-<p>Development edition has only one service with two endpoints for code and token.</p>
-
-<p>Enterprise edition has six microservices and each serivce has several endpoints to support user login,
-access token retrieval, user registration, service registration, client registration and public
-key certificate distribution. It can support millions users and thousands of clients
-and services with scopes. It should be easily handle thousands of concurrent users per
-instance and each service can be scaled individually if necessary.</p>
+<p>It is built on top of Light-Java framework as 7 microservices and each serivce has several
+endpoints to support user login, access token retrieval, user registration, service
+registration, client registration and public key certificate distribution. It can support
+millions users and thousands of clients and services with scopes. It should be easily handle
+thousands of concurrent users per instance and each service can be scaled individually if
+necessary.</p>
 
 <h2 id="in-memory-data-grid">In-Memory Data Grid</h2>
 
@@ -416,24 +413,25 @@ so that persistence layer can be anything from SQL to NoSQL.</p>
 
 <h2 id="built-in-security">Built-in Security</h2>
 
-<p>Except code, token and key services, other services are protected by OAuth2 itself and additional security
-as well. These sevices can be deployed at different locations within your network for maximum security and
-flexibility.</p>
+<p>Except code, token and key services, other services are protected by OAuth2 itself and
+additional security as well. These sevices can be deployed at different locations within
+your network for maximum security and flexibility.</p>
 
 <h2 id="multiple-database-support">Multiple Database Support</h2>
 
-<p>Currently, Oralce, MySQL and Postgres are supported, but other databases(sql or nosql) can be easily supported
-by implementing a MapStore of Hazelcast and create a initial db script.</p>
+<p>Currently, Oralce, MySQL and Postgres are supported, but other databases(sql or nosql)
+can be easily supported by implementing a MapStore of Hazelcast and create a initial
+db script.</p>
 
 <h2 id="easy-to-customize-and-integrate">Easy to customize and integrate</h2>
 
-<p>Each service can be easily customized and won&rsquo;t impact other services. Also, it is very easy to extend in order
-to integrate with other existing services within your organization.</p>
+<p>Each service can be easily customized and won&rsquo;t impact other services. Also, it is very
+easy to extend in order to integrate with other existing services within your organization.</p>
 
-<h2 id="three-editions-to-choose-from">Three Editions to choose from</h2>
+<h2 id="cloud-and-docker-friendly">Cloud and Docker friendly</h2>
 
-<p>Given your development phase and production requirement, you can choose development edition,
-enterprise edition and provider edition for your deployment.</p>
+<p>Designed as native cloud services on top of light weight Java framework to lower the cost of
+VM provisioning.</p>
 
 
 			<aside class="copyright" role="note">
