@@ -91,6 +91,7 @@ public class ClientMapStore implements MapStore<String, Client> {
                     client = new Client();
                     client.setClientId(key);
                     client.setClientSecret(rs.getString("client_secret"));
+                    client.setClientPubkey(rs.getString("client_pubkey"));
                     client.setClientType(Client.ClientTypeEnum.fromValue(rs.getString("client_type")));
                     client.setClientProfile(Client.ClientProfileEnum.fromValue(rs.getString("client_profile")));
                     client.setClientName(rs.getString("client_name"));

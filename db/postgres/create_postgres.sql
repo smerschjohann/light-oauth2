@@ -19,6 +19,7 @@ CREATE TABLE clients (
   client_type VARCHAR(12) NOT NULL,  -- public, confidential, trusted
   client_profile VARCHAR(10) NOT NULL, -- webserver, mobile, browser, service, batch
   client_secret VARCHAR(1024) NOT NULL,
+  client_pubkey VARCHAR(4096) NOT NULL,
   client_name VARCHAR(32) NOT NULL,
   client_desc VARCHAR(2048),
   scope VARCHAR(1024),

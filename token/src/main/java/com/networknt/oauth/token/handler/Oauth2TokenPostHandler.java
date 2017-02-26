@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hazelcast.core.IMap;
 import com.networknt.config.Config;
 import com.networknt.exception.ApiException;
+import com.networknt.exception.ExpiredTokenException;
 import com.networknt.oauth.cache.CacheStartupHookProvider;
 import com.networknt.oauth.cache.model.Client;
 import com.networknt.oauth.cache.model.RefreshToken;
 import com.networknt.oauth.cache.model.User;
 import com.networknt.oauth.token.helper.HttpAuth;
+import com.networknt.security.JwtConfig;
 import com.networknt.security.JwtHelper;
 import com.networknt.status.Status;
 import com.networknt.utility.HashUtil;
@@ -20,11 +22,25 @@ import io.undertow.server.handlers.form.FormDataParser;
 import io.undertow.server.handlers.form.FormParserFactory;
 import io.undertow.util.Headers;
 import org.jose4j.jwt.JwtClaims;
+import org.jose4j.jwt.MalformedClaimException;
+import org.jose4j.jwt.NumericDate;
+import org.jose4j.jwt.consumer.InvalidJwtException;
+import org.jose4j.jwt.consumer.JwtConsumer;
+import org.jose4j.jwt.consumer.JwtConsumerBuilder;
+import org.jose4j.jwt.consumer.JwtContext;
+import org.jose4j.jwx.JsonWebStructure;
+import org.jose4j.keys.resolvers.X509VerificationKeyResolver;
 import org.jose4j.lang.JoseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
+import java.io.StringBufferInputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.util.*;
 
@@ -75,19 +91,39 @@ public class Oauth2TokenPostHandler implements HttpHandler {
             return;
         }
         try {
-            if("client_credentials".equals(formMap.get("grant_type"))) {
-                exchange.getResponseSender().send(mapper.writeValueAsString(handleClientCredentials(exchange, (String)formMap.get("scope"), formMap)));
-            } else if("authorization_code".equals(formMap.get("grant_type"))) {
-                exchange.getResponseSender().send(mapper.writeValueAsString(handleAuthorizationCode(exchange, (String)formMap.get("code"), (String)formMap.get("redirect_uri"), formMap)));
-            } else if("password".equals(formMap.get("grant_type"))) {
-                exchange.getResponseSender().send(mapper.writeValueAsString(handlePassword(exchange, (String)formMap.get("username"), (String)formMap.get("password"), (String)formMap.get("scope"), formMap)));
-            } else if("refresh_token".equals(formMap.get("grant_type"))) {
-                exchange.getResponseSender().send(mapper.writeValueAsString(handleRefreshToken(exchange, (String)formMap.get("refresh_token"), (String)formMap.get("scope"), formMap)));
-            } else {
-                Status status = new Status(UNSUPPORTED_GRANT_TYPE, formMap.get("grant_type"));
+            String grantType = (String) formMap.get("grant_type");
+            if(grantType == null || grantType.isEmpty()) {
+                Status status = new Status(UNABLE_TO_PARSE_FORM_DATA, "grant_type not found");
                 exchange.setStatusCode(status.getStatusCode());
                 exchange.getResponseSender().send(status.toString());
+                return;
             }
+
+            String response;
+            switch(grantType.trim().toLowerCase()) {
+                case "client_credentials":
+                    response = mapper.writeValueAsString(handleClientCredentials(exchange, (String)formMap.get("scope"), formMap));
+                    break;
+                case "authorization_code":
+                    response = mapper.writeValueAsString(handleAuthorizationCode(exchange, (String)formMap.get("code"), (String)formMap.get("redirect_uri"), formMap));
+                    break;
+                case "password":
+                    response = mapper.writeValueAsString(handlePassword(exchange, (String)formMap.get("username"), (String)formMap.get("password"), (String)formMap.get("scope"), formMap));
+                    break;
+                case "refresh_token":
+                    response = mapper.writeValueAsString(handleRefreshToken(exchange, (String)formMap.get("refresh_token"), (String)formMap.get("scope"), formMap));
+                    break;
+                case "urn:ietf:params:oauth:grant-type:jwt-bearer":
+                    response = mapper.writeValueAsString(handleJwt(exchange, (String)formMap.get("assertion"), formMap));
+                    break;
+                default:
+                    Status status = new Status(UNSUPPORTED_GRANT_TYPE, formMap.get("grant_type"));
+                    exchange.setStatusCode(status.getStatusCode());
+                    response = status.toString();
+            }
+
+            exchange.getResponseSender().send(response);
+
         } catch (JsonProcessingException e) {
             Status status = new Status(JSON_PROCESSING_EXCEPTION, e.getMessage());
             exchange.setStatusCode(status.getStatusCode());
@@ -95,6 +131,63 @@ public class Oauth2TokenPostHandler implements HttpHandler {
         } catch (ApiException e) {
             exchange.setStatusCode(e.getStatus().getStatusCode());
             exchange.getResponseSender().send(e.getStatus().toString());
+        }
+    }
+
+    static Map<String, Object> securityConfig = (Map)Config.getInstance().getJsonMapConfig(JwtHelper.SECURITY_CONFIG);
+    static Map<String, Object> securityJwtConfig = (Map)securityConfig.get(JwtHelper.JWT_CONFIG);
+    static JwtConfig jwtConfig = (JwtConfig) Config.getInstance().getJsonObjectConfig(JwtHelper.JWT_CONFIG, JwtConfig.class);
+
+    private Map<String, Object> handleJwt(HttpServerExchange exchange, String jwt, Map<String, Object> formMap) throws ApiException {
+        try {
+            JwtClaims claims;
+            JwtConsumer consumer = new JwtConsumerBuilder()
+                    .setDisableRequireSignature()
+                    .setSkipSignatureVerification()
+                    .setExpectedAudience(jwtConfig.getAudience())
+                    .build();
+
+            JwtContext jwtContext = consumer.process(jwt);
+            JwtClaims jwtClaims = jwtContext.getJwtClaims();
+
+            String clientId = jwtClaims.getIssuer();
+
+            IMap<String, Client> clients = CacheStartupHookProvider.hz.getMap("clients");
+            Client client = clients.get(clientId);
+            if(client == null) {
+                throw new ApiException(new Status(CLIENT_NOT_FOUND, clientId));
+            } else {
+                CertificateFactory cf = CertificateFactory.getInstance("X.509");
+                X509Certificate cert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(client.getClientPubkey().getBytes("UTF-8")));
+
+                X509VerificationKeyResolver x509VerificationKeyResolver = new X509VerificationKeyResolver(cert);
+                x509VerificationKeyResolver.setTryAllOnNoThumbHeader(true);
+                consumer = new JwtConsumerBuilder()
+                        .setRequireExpirationTime()
+                        .setAllowedClockSkewInSeconds((Integer) securityJwtConfig.get(JwtHelper.JwT_CLOCK_SKEW_IN_SECONDS))
+                        .setSkipDefaultAudienceValidation()
+                        .setVerificationKeyResolver(x509VerificationKeyResolver)
+                        .build();
+
+                // Validate the JWT and process it to the Claims
+                jwtContext = consumer.process(jwt);
+                claims = jwtContext.getJwtClaims();
+
+                String jwtResult;
+                try {
+                    jwtResult = JwtHelper.getJwt(mockCcClaims(client.getClientId(), client.getScope()));
+                } catch (Exception e) {
+                    throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
+                }
+                Map<String, Object> resMap = new HashMap<>();
+                resMap.put("access_token", jwtResult);
+                resMap.put("token_type", "bearer");
+                resMap.put("expires_in", 600);
+                return resMap;
+            }
+
+        } catch (InvalidJwtException | MalformedClaimException | UnsupportedEncodingException | CertificateException e) {
+            throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
         }
     }
 

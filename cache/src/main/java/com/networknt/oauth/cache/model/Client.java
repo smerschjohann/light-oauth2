@@ -17,6 +17,7 @@ public class Client implements IdentifiedDataSerializable {
   private String clientId = null;
 
   private String clientSecret = null;
+  private String clientPubkey = null;
 
   /**
    * client type
@@ -135,11 +136,24 @@ public class Client implements IdentifiedDataSerializable {
     this.clientSecret = clientSecret;
   }
 
+  public Client clientPubkey(String clientPubkey) {
+    this.clientPubkey = clientPubkey;
+    return this;
+  }
+
+  @ApiModelProperty(example = "null", value = "client public key")
+  @JsonProperty("clientPubkey")
+  public String getClientPubkey() {
+    return clientPubkey;
+  }
+  public void setClientPubkey(String clientPubkey) {
+    this.clientPubkey = clientPubkey;
+  }
+
   public Client clientType(ClientTypeEnum clientType) {
     this.clientType = clientType;
     return this;
   }
-
   
   @ApiModelProperty(example = "null", required = true, value = "client type")
   @JsonProperty("clientType")
@@ -282,6 +296,7 @@ public class Client implements IdentifiedDataSerializable {
     Client client = (Client) o;
     return Objects.equals(clientId, client.clientId) &&
         Objects.equals(clientSecret, client.clientSecret) &&
+        Objects.equals(clientPubkey, client.clientPubkey) &&
         Objects.equals(clientType, client.clientType) &&
         Objects.equals(clientProfile, client.clientProfile) &&
         Objects.equals(clientName, client.clientName) &&
@@ -295,7 +310,7 @@ public class Client implements IdentifiedDataSerializable {
 
   @Override
   public int hashCode() {
-    return Objects.hash(clientId, clientSecret, clientType, clientProfile, clientName, clientDesc, ownerId, scope, redirectUri, createDt, updateDt);
+    return Objects.hash(clientId, clientSecret, clientPubkey, clientType, clientProfile, clientName, clientDesc, ownerId, scope, redirectUri, createDt, updateDt);
   }
 
   @Override
@@ -305,6 +320,7 @@ public class Client implements IdentifiedDataSerializable {
     
     sb.append("    clientId: ").append(toIndentedString(clientId)).append("\n");
     sb.append("    clientSecret: ").append(toIndentedString(clientSecret)).append("\n");
+    sb.append("    clientPubkey: ").append(toIndentedString(clientPubkey)).append("\n");
     sb.append("    clientType: ").append(toIndentedString(clientType)).append("\n");
     sb.append("    clientProfile: ").append(toIndentedString(clientProfile)).append("\n");
     sb.append("    clientName: ").append(toIndentedString(clientName)).append("\n");
@@ -337,6 +353,7 @@ public class Client implements IdentifiedDataSerializable {
   public void readData(ObjectDataInput in) throws IOException {
     this.clientId = in.readUTF();
     this.clientSecret = in.readUTF();
+    this.clientPubkey = in.readUTF();
     this.clientType = Client.ClientTypeEnum.fromValue(in.readUTF());
     this.clientProfile = Client.ClientProfileEnum.fromValue(in.readUTF());
     this.clientName = in.readUTF();
@@ -352,6 +369,7 @@ public class Client implements IdentifiedDataSerializable {
   public void writeData(ObjectDataOutput out) throws IOException {
     out.writeUTF(this.clientId);
     out.writeUTF(this.clientSecret);
+    out.writeUTF(this.clientPubkey);
     out.writeUTF(this.clientType.toString());
     out.writeUTF(this.clientProfile.toString());
     out.writeUTF(this.clientName);
@@ -381,6 +399,7 @@ public class Client implements IdentifiedDataSerializable {
     //for all properties in client
     n.setClientId(c.getClientId());
     n.setClientSecret(c.getClientSecret());
+    n.setClientSecret(c.getClientPubkey());
     n.setClientType(c.getClientType());
     n.setClientProfile(c.getClientProfile());
     n.setClientName(c.getClientName());
